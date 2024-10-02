@@ -55,12 +55,22 @@ int main(int argc, char **argv) {
   int client_addr_len = sizeof(client_addr);
   
   std::cout << "Waiting for a client to connect...\n";
-  
+
   int client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len);  
-  const char* message = "+PONG\r\n";
-  send(client_fd, message, strlen(message), 0);
 
   std::cout << "Client connected\n";
+
+  while (true)
+  {
+      char buffer[1024] = {0};
+      if (recv(client_fd, buffer, 1024, 0) <= 0)
+      {
+          std::cerr << "recv failed\n";
+          break;
+      }
+      std::cout << "Received: " << buffer;
+      send(client_fd, "+PONG\r\n", 7, 0);
+  }
 
   close(server_fd);
 
