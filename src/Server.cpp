@@ -7,6 +7,9 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+//#include <winsock2.h>
+
+
 
 int main(int argc, char **argv) {
   // Flush after every std::cout / std::cerr
@@ -17,7 +20,7 @@ int main(int argc, char **argv) {
   std::cout << "Logs from your program will appear here!\n";
 
   // Uncomment this block to pass the first stage
-  
+
   int server_fd = socket(AF_INET, SOCK_STREAM, 0);
   if (server_fd < 0) {
    std::cerr << "Failed to create server socket\n";
@@ -53,9 +56,12 @@ int main(int argc, char **argv) {
   
   std::cout << "Waiting for a client to connect...\n";
   
-  accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len);
+  int client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len);  
+  const char* message = "+PONG\r\n";
+  send(client_fd, message, strlen(message), 0);
+
   std::cout << "Client connected\n";
-  
+
   close(server_fd);
 
   return 0;
