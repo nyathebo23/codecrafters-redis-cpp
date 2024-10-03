@@ -11,7 +11,14 @@
 
 
 void handle_connection(int clientfd){
-  send(clientfd, "+PONG\r\n", 7, 0);
+  while (1) {
+    char buffer[128];    
+    if (recv(clientfd, &buffer, sizeof(buffer), 0) <= 0) {
+      close(clientfd);
+      return;
+    }
+    send(clientfd, "+PONG\r\n", 7, 0);
+  }
 }
 
 
@@ -66,7 +73,6 @@ int main(int argc, char **argv) {
 
       std::thread connection(handle_connection, client_fd);
       connection.detach();
-
   }
 
   close(server_fd);
