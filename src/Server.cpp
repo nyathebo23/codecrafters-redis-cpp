@@ -11,18 +11,7 @@
 
 
 void handle_connection(int clientfd){
-  while (1){
-    char buffer[128] = {0};
-    if (recv(clientfd, &buffer, sizeof(buffer), 0) < 0){
-      std::cerr << "Failed to receive data\n";
-      close(clientfd);
-      break;
-    }
-    if (send(clientfd, "+PONG\r\n", 7, 0) < 0) {
-      std::cerr << "Failed to send pong\n";
-      break;
-    }
-  }
+  send(clientfd, "+PONG\r\n", 7, 0);
 }
 
 
@@ -77,7 +66,7 @@ int main(int argc, char **argv) {
 
       std::thread connection(handle_connection, client_fd);
       connection.detach();
-      close(client_fd);
+
   }
 
   close(server_fd);
