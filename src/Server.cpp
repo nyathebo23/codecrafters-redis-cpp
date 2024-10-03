@@ -14,7 +14,8 @@ void handle_connection(int clientfd){
   while (1){
     char buffer[128] = {0};
     if (recv(clientfd, &buffer, sizeof(buffer), 0) < 0){
-      std::cerr << "Failed to receive dara\n";
+      std::cerr << "Failed to receive data\n";
+      close(clientfd);
       break;
     }
     if (send(clientfd, "+PONG\r\n", 7, 0) < 0) {
@@ -68,14 +69,15 @@ int main(int argc, char **argv) {
   struct sockaddr_in client_addr;
   int client_addr_len = sizeof(client_addr);
   std::cout << "Waiting for a client to connect...\n";
-  int client_fd, pid;
-  while (true){
-      client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
+
+  while (1){
+      int client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
 
       std::cout << "Client connected\n";
 
       std::thread connection(handle_connection, client_fd);
       connection.detach();
+      //close(client_fd);
   }
 
   close(server_fd);
