@@ -7,9 +7,21 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#include <signal.h>
 
 
+void handle_connection(int clientfd){
+  while (1){
+    char buffer[128] = {0};
+    if (recv(clientfd, &buffer, sizeof(buffer), 0) < 0){
+      std::cerr << "Failed to receive dara\n";
+      break;
+    }
+    if (send(clientfd, "+PONG\n\r", 7, 0) < 0) {
+      std::cerr << "Failed to send pong\n";
+      break;
+    }
+  }
+}
 
 
 int main(int argc, char **argv) {
@@ -71,7 +83,7 @@ int main(int argc, char **argv) {
       if (pid == 0)
       {
         close(server_fd);
-        send(client_fd, "+PONG\r\n", 7, 0);
+        handle_connection(client_fd);
         exit(0);
       }
       else
@@ -79,6 +91,6 @@ int main(int argc, char **argv) {
   }
 
   close(server_fd);
-  signal(SIGCHLD, SIG_IGN);
+
   return 0;
 }
