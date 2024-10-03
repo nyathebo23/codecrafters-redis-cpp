@@ -7,7 +7,8 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-//#include <winsock2.h>
+#include <signal.h>
+
 
 
 
