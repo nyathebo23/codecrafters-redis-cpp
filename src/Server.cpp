@@ -54,25 +54,30 @@ int main(int argc, char **argv) {
   struct sockaddr_in client_addr;
   int client_addr_len = sizeof(client_addr);
   
-  std::cout << "Waiting for a client to connect...\n";
+  int client_fd, pid;
+  while (true){
+      std::cout << "Waiting for a client to connect...\n";
 
-  int client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len);  
+      client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
 
-  std::cout << "Client connected\n";
+      std::cout << "Client connected\n";
 
-  while (true)
-  {
-      char buffer[1024] = {0};
-      if (recv(client_fd, buffer, 1024, 0) <= 0)
+      if (client_fd < 0)
+        std::cerr << "ERROR on accept";
+      pid = fork();
+      if (pid < 0)
+        std::cerr << "ERROR on fork";
+      if (pid == 0)
       {
-          std::cerr << "recv failed\n";
-          break;
+        close(server_fd);
+        send(client_fd, "+PONG\r\n", 7, 0);
+        exit(0);
       }
-      std::cout << "Received: " << buffer;
-      send(client_fd, "+PONG\r\n", 7, 0);
+      else
+        close(client_fd);
   }
 
   close(server_fd);
-
+  signal(SIGCHLD, SIG_IGN);
   return 0;
 }
