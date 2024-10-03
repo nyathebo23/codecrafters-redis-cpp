@@ -16,7 +16,7 @@ void handle_connection(int clientfd){
       std::cerr << "Failed to receive dara\n";
       break;
     }
-    if (send(clientfd, "+PONG\n\r", 7, 0) < 0) {
+    if (send(clientfd, "+PONG\r\n", 7, 0) < 0) {
       std::cerr << "Failed to send pong\n";
       break;
     }
