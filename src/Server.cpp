@@ -7,6 +7,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <thread>
 
 
 void handle_connection(int clientfd){
@@ -66,28 +67,15 @@ int main(int argc, char **argv) {
   
   struct sockaddr_in client_addr;
   int client_addr_len = sizeof(client_addr);
-  
+  std::cout << "Waiting for a client to connect...\n";
   int client_fd, pid;
   while (true){
-      std::cout << "Waiting for a client to connect...\n";
-
       client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
 
       std::cout << "Client connected\n";
 
-      if (client_fd < 0)
-        std::cerr << "ERROR on accept";
-      pid = fork();
-      if (pid < 0)
-        std::cerr << "ERROR on fork";
-      if (pid == 0)
-      {
-        close(server_fd);
-        handle_connection(client_fd);
-        exit(0);
-      }
-      else
-        close(client_fd);
+      std::thread connection(handle_connection, client_fd);
+      connection.detach();
   }
 
   close(server_fd);
