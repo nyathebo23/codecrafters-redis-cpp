@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
 
       std::thread connection(handle_connection, client_fd);
       connection.detach();
-      //close(client_fd);
+      close(client_fd);
   }
 
   close(server_fd);
