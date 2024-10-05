@@ -39,7 +39,6 @@ void handle_connection(int clientfd){
         break;
     }
 
-
     ArrayResp arresp = parse_decode_array(data);
     auto arr = std::get<ArrayAndInd>(arresp.first);
     auto vals = arr.first;
