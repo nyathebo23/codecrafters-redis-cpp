@@ -32,16 +32,14 @@ void handle_connection(int clientfd){
       return;
     }
     std::string data(buffer);
-    auto resdata = parse_decode_bulk_string(data);
-    if (resdata.second && compare_strings_case_insensitive(resdata.first, "ping")){
-        const std::string res = parse_encode_bulk_string("PONG");
-        send(clientfd, res.c_str(), res.length(), 0);
-        break;
-    }
-
     ArrayResp arresp = parse_decode_array(data);
     auto arr = std::get<ArrayAndInd>(arresp.first);
     auto vals = arr.first;
+    if (vals.size() == 1 && vals[0].type() == typeid(std::string) && compare_strings_case_insensitive(vals[0], "ping")){
+        const std::string res = parse_encode_bulk_string("PONG");
+        send(clientfd, res.c_str(), res.length(), 0);
+        continue;
+    }
     if (vals.size() == 2 && vals[0].type() == typeid(std::string) && vals[1].type() == typeid(std::string)){
         std::string cmd = std::any_cast<std::string>(vals[0]);
         std::string msg = std::any_cast<std::string>(vals[1]);
