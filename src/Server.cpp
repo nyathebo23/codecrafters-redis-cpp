@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <thread>
+#include <algorithm>
 #include "utils/decode/array_parser.h"
 #include "utils/encode/small_aggregate_parser.h"
 
