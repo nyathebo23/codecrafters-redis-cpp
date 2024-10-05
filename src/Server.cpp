@@ -39,7 +39,7 @@ void handle_connection(int clientfd){
         std::string msg = std::any_cast<std::string>(vals[1]);
         if (compare_strings_case_insensitive(cmd, "echo")){
             const std::string res = parse_encode_bulk_string(msg);
-            send(clientfd, res, res.length(), 0);
+            send(clientfd, res.c_str(), res.length(), 0);
         }
     }
   }
