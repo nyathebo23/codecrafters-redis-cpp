@@ -8,7 +8,7 @@
 
 
 std::string parse_encode_push(const std::string& msg){
-   
+   return "";
 }
 
 

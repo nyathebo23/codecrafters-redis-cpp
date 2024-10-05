@@ -13,5 +13,5 @@
 
 
 std::string parse_encode_unordered_set(const std::string& msg){
-  
+    return "";
 }

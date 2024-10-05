@@ -22,7 +22,7 @@ std::string parse_encode_boolean(const bool& msg){
 }
 
 std::string parse_encode_double(const double& msg){
-
+    return "," + std::to_string(msg) + "\r\n";
 }
 
 std::string parse_encode_big_number(const std::string& msg){

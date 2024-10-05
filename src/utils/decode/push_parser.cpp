@@ -7,7 +7,6 @@
 #include <cmath>
 #include "small_aggregate_parser.h"
 #include "simple_data_parser.h"
-#include "map_parser.h"
 #include "array_parser.h"
 #include "push_parser.h"
 
@@ -159,28 +158,28 @@ ArrayPushResp parse_decode_push(const std::string& msg){
                 count_elements++;    
                 break;
             }
-            case '%':
-            {
-                auto pair_token = parse_decode_map(msg.substr(start_pos));
-                if (!pair_token.second)
-                    return std::make_pair("Array format error", false);
-                auto pair_array_resp = std::get<MapAndInd>(pair_token.first);
-                end_symbol_pos = pair_array_resp.second;
-                elements.push_back(pair_array_resp.first);
-                count_elements++;    
-                break;
-            }
-            case '|':
-            {
-                auto pair_token = parse_decode_map(msg.substr(start_pos));
-                if (!pair_token.second)
-                    return std::make_pair("Array format error", false);
-                auto pair_map_resp = std::get<MapAndInd>(pair_token.first);
-                end_symbol_pos = pair_map_resp.second;
-                elements.push_back(pair_map_resp.first);
-                count_elements++;   
-            }
-                break;
+            // case '%':
+            // {
+            //     auto pair_token = parse_decode_map(msg.substr(start_pos));
+            //     if (!pair_token.second)
+            //         return std::make_pair("Array format error", false);
+            //     auto pair_array_resp = std::get<MapAndInd>(pair_token.first);
+            //     end_symbol_pos = pair_array_resp.second;
+            //     elements.push_back(pair_array_resp.first);
+            //     count_elements++;    
+            //     break;
+            // }
+            // case '|':
+            // {
+            //     auto pair_token = parse_decode_map(msg.substr(start_pos));
+            //     if (!pair_token.second)
+            //         return std::make_pair("Array format error", false);
+            //     auto pair_map_resp = std::get<MapAndInd>(pair_token.first);
+            //     end_symbol_pos = pair_map_resp.second;
+            //     elements.push_back(pair_map_resp.first);
+            //     count_elements++;   
+            // }
+            //     break;
 
             default:
                 return std::make_pair("Array format error", false);

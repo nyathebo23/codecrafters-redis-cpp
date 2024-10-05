@@ -7,5 +7,5 @@
 #include <map>
 
 std::string parse_encode_map(const std::map<std::any, std::any>& msg){
-    
+    return "";
 }

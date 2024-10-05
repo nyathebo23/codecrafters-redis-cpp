@@ -9,5 +9,5 @@
 
 
 std::string parse_encode_array(const std::string& msg){
-
+    return ""; 
 }
