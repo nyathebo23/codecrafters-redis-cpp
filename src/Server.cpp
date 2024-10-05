@@ -10,6 +10,7 @@
 #include <thread>
 #include <algorithm>
 #include "utils/decode/array_parser.h"
+#include "utils/decode/small_aggregate_parser.h"
 #include "utils/encode/small_aggregate_parser.h"
 
 bool compare_strings_case_insensitive(const std::string& str1, const std::string& str2) {
@@ -31,6 +32,14 @@ void handle_connection(int clientfd){
       return;
     }
     std::string data(buffer);
+    auto resdata = parse_decode_bulk_string(data);
+    if (resdata.second && compare_strings_case_insensitive(resdata.first, "ping")){
+        const std::string res = parse_encode_bulk_string("PONG");
+        send(clientfd, res.c_str(), res.length(), 0);
+        break;
+    }
+
+
     ArrayResp arresp = parse_decode_array(data);
     auto arr = std::get<ArrayAndInd>(arresp.first);
     auto vals = arr.first;
