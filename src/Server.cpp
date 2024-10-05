@@ -9,9 +9,9 @@
 #include <netdb.h>
 #include <thread>
 #include <algorithm>
+#include "utils/encode/small_aggregate_parser_encode.h"
 #include "utils/decode/array_parser.h"
 #include "utils/decode/small_aggregate_parser.h"
-#include "utils/encode/small_aggregate_parser.h"
 
 bool compare_strings_case_insensitive(const std::string& str1, const std::string& str2) {
     std::string str1_lower = str1;

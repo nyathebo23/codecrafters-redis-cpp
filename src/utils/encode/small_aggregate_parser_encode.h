@@ -1,5 +1,5 @@
-#ifndef SMALL_AGGREGATE_H // Prévention des inclusions multiples
-#define SMALL_AGGREGATE_H
+#ifndef SMALL_AGGREGATE_ENCODE_H // Prévention des inclusions multiples
+#define SMALL_AGGREGATE_ENCODE_H
 
 #include <utility>
 #include <string>
