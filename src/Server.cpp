@@ -13,17 +13,6 @@
 #include "utils/decode/array_parser.h"
 #include "utils/decode/small_aggregate_parser.h"
 
-bool compare_strings_case_insensitive(const std::string& str1, const std::string& str2) {
-    std::string str1_lower = str1;
-    std::string str2_lower = str2;
-
-    // Convertir les chaînes en minuscules
-    std::transform(str1_lower.begin(), str1_lower.end(), str1_lower.begin(), ::tolower);
-    std::transform(str2_lower.begin(), str2_lower.end(), str2_lower.begin(), ::tolower);
-
-    return str1_lower == str2_lower;
-}
-
 void handle_connection(int clientfd){
   while (1) {
     char buffer[128];    
@@ -35,18 +24,26 @@ void handle_connection(int clientfd){
     ArrayResp arresp = parse_decode_array(data);
     auto arr = std::get<ArrayAndInd>(arresp.first);
     auto vals = arr.first;
-    if (vals.size() == 1 && vals[0].type() == typeid(std::string) && compare_strings_case_insensitive(vals[0], "ping")){
-        const std::string res = parse_encode_bulk_string("PONG");
-        send(clientfd, res.c_str(), res.length(), 0);
-        continue;
-    }
-    if (vals.size() == 2 && vals[0].type() == typeid(std::string) && vals[1].type() == typeid(std::string)){
+    if (vals[0].type() == typeid(std::string)){
         std::string cmd = std::any_cast<std::string>(vals[0]);
-        std::string msg = std::any_cast<std::string>(vals[1]);
-        if (compare_strings_case_insensitive(cmd, "echo")){
-            const std::string res = parse_encode_bulk_string(msg);
-            send(clientfd, res.c_str(), res.length(), 0);
+        std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
+        std::string res;
+        switch (cmd){
+          case "echo":
+            if (vals.size() == 2 && vals[1].type() == typeid(std::string)){
+               res = parse_encode_bulk_string(std::any_cast<std::string>(vals[1]));
+            }
+            break;
+          case "ping":
+            if (vals.size() == 1){
+               res = parse_encode_bulk_string("PONG");
+            }
+            break;
+          default:
+            break;
         }
+        if (res)
+            send(clientfd, res.c_str(), res.length(), 0);
     }
   }
 }
