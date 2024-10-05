@@ -8,7 +8,19 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <thread>
+#include "utils/decode/array_parser.h"
+#include "utils/encode/small_aggregate_parser.h"
 
+bool compare_strings_case_insensitive(const std::string& str1, const std::string& str2) {
+    std::string str1_lower = str1;
+    std::string str2_lower = str2;
+
+    // Convertir les chaînes en minuscules
+    std::transform(str1_lower.begin(), str1_lower.end(), str1_lower.begin(), ::tolower);
+    std::transform(str2_lower.begin(), str2_lower.end(), str2_lower.begin(), ::tolower);
+
+    return str1_lower == str2_lower;
+}
 
 void handle_connection(int clientfd){
   while (1) {
@@ -17,7 +29,18 @@ void handle_connection(int clientfd){
       close(clientfd);
       return;
     }
-    send(clientfd, "+PONG\r\n", 7, 0);
+    std::string data(buffer);
+    ArrayResp arresp = parse_decode_array(data);
+    auto arr = std::get<ArrayAndInd>(arresp.first);
+    auto vals = arr.first;
+    if (vals.size() == 2 && vals[0].type() == typeid(std::string) && vals[1].type() == typeid(std::string)){
+        std::string cmd = std::any_cast<std::string>(vals[0]);
+        std::string msg = std::any_cast<std::string>(vals[1]);
+        if (compare_strings_case_insensitive(msg, "echo")){
+            const std::string res = parse_encode_bulk_string(vals[1]);
+            send(clientfd, res, res.length(), 0);
+        }
+    }
   }
 }
 

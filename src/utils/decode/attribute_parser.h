@@ -1,0 +1,1 @@
+//g++ -std=c++17 array_parser.cpp map_parser.cpp push_parser.cpp simple_data_parser.cpp small_aggregate_parser.cpp -o array_decode -lstdc++ 
