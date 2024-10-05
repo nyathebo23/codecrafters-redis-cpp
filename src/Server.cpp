@@ -28,19 +28,15 @@ void handle_connection(int clientfd){
         std::string cmd = std::any_cast<std::string>(vals[0]);
         std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
         std::string res;
-        switch (cmd){
-          case "echo":
+        if (cmd == "echo"){
             if (vals.size() == 2 && vals[1].type() == typeid(std::string)){
                res = parse_encode_bulk_string(std::any_cast<std::string>(vals[1]));
             }
-            break;
-          case "ping":
+        }
+        else if (cmd == "ping"){
             if (vals.size() == 1){
                res = parse_encode_bulk_string("PONG");
             }
-            break;
-          default:
-            break;
         }
         if (!res.empty())
             send(clientfd, res.c_str(), res.length(), 0);
