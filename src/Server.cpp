@@ -37,8 +37,8 @@ void handle_connection(int clientfd){
     if (vals.size() == 2 && vals[0].type() == typeid(std::string) && vals[1].type() == typeid(std::string)){
         std::string cmd = std::any_cast<std::string>(vals[0]);
         std::string msg = std::any_cast<std::string>(vals[1]);
-        if (compare_strings_case_insensitive(msg, "echo")){
-            const std::string res = parse_encode_bulk_string(vals[1]);
+        if (compare_strings_case_insensitive(cmd, "echo")){
+            const std::string res = parse_encode_bulk_string(msg);
             send(clientfd, res, res.length(), 0);
         }
     }
