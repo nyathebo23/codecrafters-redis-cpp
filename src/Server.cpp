@@ -42,7 +42,7 @@ void handle_connection(int clientfd){
           default:
             break;
         }
-        if (res)
+        if (!res.empty())
             send(clientfd, res.c_str(), res.length(), 0);
     }
   }
