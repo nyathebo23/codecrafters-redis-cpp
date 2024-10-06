@@ -63,6 +63,7 @@ void handle_connection(int clientfd){
                 std::transform(param.begin(), param.end(), param.begin(), ::tolower);
                 if (param == "px"){
                     const int duration = std::any_cast<int>(vals[4]);
+                    std::cout << duration;
                     std::thread t(execute_after_delay, duration, key);
                 }
               }
