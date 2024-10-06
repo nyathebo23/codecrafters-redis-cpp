@@ -59,7 +59,7 @@ void handle_connection(int clientfd){
               dict_data[key] = std::any_cast<std::string>(vals[2]);
               res = parse_encode_simple_string("OK");
               if (vals.size() == 5 && vals[3].type() == typeid(std::string)){
-                const std::string param = std::any_cast<std::string>(vals[3]);
+                std::string param = std::any_cast<std::string>(vals[3]);
                 std::transform(param.begin(), param.end(), param.begin(), ::tolower);
                 if (param == "px"){
                     const int duration = std::any_cast<int>(vals[4]);
