@@ -72,9 +72,10 @@ void handle_connection(int clientfd){
         else if (cmd == "get"){
             if (vals.size() == 2 && vals[1].type() == typeid(std::string)){
                std::string key = std::any_cast<std::string>(vals[1]);
-               res = parse_encode_bulk_string(std::any_cast<std::string>(dict_data[key]));
                if (dict_data.count(key) == 0)
                   res = "$-1\r\n";
+               else
+                  res = parse_encode_bulk_string(std::any_cast<std::string>(dict_data[key]));
             }
         }
         if (!res.empty())
