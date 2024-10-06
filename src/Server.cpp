@@ -56,7 +56,7 @@ void handle_connection(int clientfd){
         else if (cmd == "set"){
             if (vals.size() > 2){
               const std::string key = std::any_cast<std::string>(vals[1]);
-              dict_data[] = std::any_cast<std::string>(vals[2]);
+              dict_data[key] = std::any_cast<std::string>(vals[2]);
               res = parse_encode_simple_string("OK");
               if (vals.size() == 5){
                 const std::string param = std::any_cast<std::string>(vals[3]);
