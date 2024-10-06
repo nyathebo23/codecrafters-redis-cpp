@@ -17,6 +17,17 @@
 
 std::map<std::string, std::string> dict_data;
 
+// Fonction à exécuter
+void erase_key(const std::string& key) {
+    dict_data.erase(key);
+}
+
+// Fonction qui démarre un thread pour exécuter maFonction après un délai
+void execute_after_delay(int delay, const std::string& key) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+    erase_key(key);
+}
+
 void handle_connection(int clientfd){
   while (1) {
     char buffer[128];    
@@ -44,14 +55,25 @@ void handle_connection(int clientfd){
         }
         else if (cmd == "set"){
             if (vals.size() > 2){
-              dict_data[std::any_cast<std::string>(vals[1])] = std::any_cast<std::string>(vals[2]);
+              const std::string key = std::any_cast<std::string>(vals[1]);
+              dict_data[] = std::any_cast<std::string>(vals[2]);
               res = parse_encode_simple_string("OK");
+              if (vals.size() == 5){
+                const std::string param = std::any_cast<std::string>(vals[3]);
+                std::transform(param.begin(), param.end(), param.begin(), ::tolower);
+                if (param == "px"){
+                    const duration = std::any_cast<std::int>(vals[4]);
+                    execute_after_delay(duration, key);
+                }
+              }
             }
         }
         else if (cmd == "get"){
             if (vals.size() == 2 && vals[1].type() == typeid(std::string)){
                std::string key = std::any_cast<std::string>(vals[1]);
                res = parse_encode_bulk_string(std::any_cast<std::string>(dict_data[key]));
+               if (dict_data.count() == 0)
+                  res = "$-1\r\n";
             }
         }
         if (!res.empty())
