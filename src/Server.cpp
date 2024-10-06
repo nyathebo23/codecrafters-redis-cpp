@@ -58,7 +58,7 @@ void handle_connection(int clientfd){
               const std::string key = std::any_cast<std::string>(vals[1]);
               dict_data[key] = std::any_cast<std::string>(vals[2]);
               res = parse_encode_simple_string("OK");
-              if (vals.size() == 5){
+              if (vals.size() == 5 && vals[3].type() == typeid(std::string)){
                 const std::string param = std::any_cast<std::string>(vals[3]);
                 std::transform(param.begin(), param.end(), param.begin(), ::tolower);
                 if (param == "px"){
