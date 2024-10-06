@@ -6,6 +6,7 @@
 #include <variant>
 #include <any>
 #include <cmath>
+#include "array_parser_enc.h"
 
 
 std::string parse_encode_array(const std::string& msg){

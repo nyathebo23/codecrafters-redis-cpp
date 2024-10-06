@@ -1,5 +1,5 @@
-#ifndef SIMPLE_DATA_PARSER_H // Prévention des inclusions multiples
-#define SIMPLE_DATA_PARSER_H
+#ifndef SIMPLE_DATA_PARSER_ENC_H // Prévention des inclusions multiples
+#define SIMPLE_DATA_PARSER_ENC_H
 
 #include <utility>
 #include <string>

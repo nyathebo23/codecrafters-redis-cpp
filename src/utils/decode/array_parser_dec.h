@@ -1,5 +1,5 @@
-#ifndef ARRAY_PARSER_H // Prévention des inclusions multiples
-#define ARRAY_PARSER_H
+#ifndef ARRAY_PARSER_DEC_H // Prévention des inclusions multiples
+#define ARRAY_PARSER_DEC_H
 
 #include <utility>
 #include <string>

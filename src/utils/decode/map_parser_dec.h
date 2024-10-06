@@ -1,5 +1,5 @@
-#ifndef MAP_PARSER_H // Prévention des inclusions multiples
-#define MAP_PARSER_H
+#ifndef MAP_PARSER_DEC_H // Prévention des inclusions multiples
+#define MAP_PARSER_DEC_H
 
 #include <utility>
 #include <string>

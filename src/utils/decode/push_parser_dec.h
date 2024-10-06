@@ -1,5 +1,5 @@
-#ifndef PUSH_PARSER_H // Prévention des inclusions multiples
-#define PUSH_PARSER_H
+#ifndef PUSH_PARSER_DEC_H // Prévention des inclusions multiples
+#define PUSH_PARSER_DEC_H
 
 #include <utility>
 #include <string>

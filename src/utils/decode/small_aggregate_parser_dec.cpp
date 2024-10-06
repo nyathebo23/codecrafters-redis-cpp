@@ -2,8 +2,8 @@
 #include <string>
 #include <cmath>
 #include <variant>
-#include "small_aggregate_parser.h"
-#include "simple_data_parser.h"
+#include "small_aggregate_parser_dec.h"
+#include "simple_data_parser_dec.h"
 
 
 

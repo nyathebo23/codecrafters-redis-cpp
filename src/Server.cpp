@@ -9,9 +9,13 @@
 #include <netdb.h>
 #include <thread>
 #include <algorithm>
-#include "utils/encode/small_aggregate_parser_encode.h"
-#include "utils/decode/array_parser.h"
-#include "utils/decode/small_aggregate_parser.h"
+#include "utils/encode/small_aggregate_parser_enc.h"
+#include "utils/decode/small_aggregate_parser_dec.h"
+#include "utils/encode/simple_data_parser_enc.h"
+#include "utils/decode/array_parser_dec.h"
+#include <map>
+
+std::map<std::any, std::any> dict_data;
 
 void handle_connection(int clientfd){
   while (1) {
@@ -36,6 +40,17 @@ void handle_connection(int clientfd){
         else if (cmd == "ping"){
             if (vals.size() == 1){
                res = parse_encode_bulk_string("PONG");
+            }
+        }
+        else if (cmd == "set"){
+            if (vals.size() > 2){
+              dict_data[vals[1]] = vals[2];
+              res = parse_encode_simple_string("OK");
+            }
+        }
+        else if (cmd == "get"){
+            if (vals.size() == 2){
+               res = parse_encode_bulk_string(dict_data[vals[1]]);
             }
         }
         if (!res.empty())
