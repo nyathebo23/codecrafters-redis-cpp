@@ -15,7 +15,7 @@
 #include "utils/decode/array_parser_dec.h"
 #include <map>
 
-std::map<std::any, std::any> dict_data;
+std::map<std::string, std::string> dict_data;
 
 void handle_connection(int clientfd){
   while (1) {
@@ -44,13 +44,13 @@ void handle_connection(int clientfd){
         }
         else if (cmd == "set"){
             if (vals.size() > 2){
-              dict_data[vals[1]] = vals[2];
+              dict_data[std::any_cast<std::string>(vals[1])] = std::any_cast<std::string>(vals[2]);
               res = parse_encode_simple_string("OK");
             }
         }
         else if (cmd == "get"){
-            if (vals.size() == 2){
-               res = parse_encode_bulk_string(dict_data[vals[1]]);
+            if (vals.size() == 2 && vals[1].type() == typeid(std::string)){
+               res = parse_encode_bulk_string(std::any_cast<std::string>(dict_data[vals[1]]));
             }
         }
         if (!res.empty())
