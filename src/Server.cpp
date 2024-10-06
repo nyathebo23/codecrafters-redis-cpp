@@ -63,7 +63,7 @@ void handle_connection(int clientfd){
                 std::transform(param.begin(), param.end(), param.begin(), ::tolower);
                 if (param == "px"){
                     const duration = std::any_cast<std::int>(vals[4]);
-                    execute_after_delay(duration, key);
+                    std::thread t(execute_after_delay, duration, key);
                 }
               }
             }
@@ -80,6 +80,7 @@ void handle_connection(int clientfd){
             send(clientfd, res.c_str(), res.length(), 0);
     }
   }
+  
 }
 
 
