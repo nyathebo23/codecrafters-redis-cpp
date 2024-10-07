@@ -9,8 +9,8 @@
 #include <bitset>
 #include "process_rdbfile_datas.h"
 
-std::string get_key_from_line(std::ifstream& file, std::string& line){
-    std::cout << "azerjkj";
+ std::string get_key_from_line(std::ifstream& file, std::string& line){
+
     if (line == "00") {
         getline(file, line);
         const std::string key = hexstr_to_ASCII_string(line);
@@ -40,17 +40,25 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
       if (line == "FC") {
         getline(input_file, line);
         getline(input_file, line);
-        keys.push_back(get_key_from_line(input_file, line));
+        const std::string key = get_key_from_line(input_file, line);
+        if (key != "")
+            keys.push_back(get_key_from_line(input_file, line));
         continue;
       }
       if (line == "FD") {
         getline(input_file, line);
         getline(input_file, line);
-        keys.push_back(get_key_from_line(input_file, line));
+        const std::string key = get_key_from_line(input_file, line);
+        if (key != "")
+            keys.push_back(get_key_from_line(input_file, line));
         continue;
       } 
-      if (line == "00")
-        keys.push_back(get_key_from_line(input_file, line));
+      if (line == "00"){
+        const std::string key = get_key_from_line(input_file, line);
+        if (key != "")
+            keys.push_back(get_key_from_line(input_file, line));
+
+      }
       getline(input_file, line);
     }
     return keys;

@@ -197,7 +197,7 @@ ArrayResp parse_decode_array(const std::string& msg){
 }
 
 // int main(int argc, char **argv) {
-//     const std::string str = "*3\r\n*3\r\n:50\r\n+retypA\r\n=8\r\ntxt:ECHO\r\n$3\r\nhey\r\n*2\r\n*3\r\n,25.55e10\r\n$6\r\nECHOpA\r\n$6\r\neleven\r\n#t\r\n";
+//     const std::string str = "*2\r\n$4\r\nKEYS\r\n$1\r\n*\r\n";
 //     ArrayResp arrresp = parse_decode_array(str);
 //     auto arr = std::get<ArrayAndInd>(arrresp.first);
 //     auto vals = arr.first;
