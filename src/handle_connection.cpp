@@ -100,7 +100,7 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
           std::string param = std::any_cast<std::string>(vals[1]);
           std::transform(param.begin(), param.end(), param.begin(), ::tolower);
           if (param == "\"*\""){
-             std::vector<std::any> keys = get_keys_values_from_file(args_map["--dir"] + "/" + args_map["--dbfilename"]);     
+             std::vector<std::string> keys = get_keys_values_from_file(args_map["--dir"] + "/" + args_map["--dbfilename"]);     
              res = parse_encode_array(keys);
           }
         }

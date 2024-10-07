@@ -18,9 +18,9 @@ std::string get_key_from_line(std::ifstream& file, std::string& line){
     return "";
 }
 
-std::vector<std::string> get_keys_values_from_file(std::string filepath){
+std::vector<std::any> get_keys_values_from_file(std::string filepath){
     std::ifstream input_file(filepath);
-    std::vector<std::string> keys;
+    std::vector<std::any> keys;
     if (!input_file.is_open()) {
         std::cerr << "Error opening the file!" << std::endl;
       return {};
