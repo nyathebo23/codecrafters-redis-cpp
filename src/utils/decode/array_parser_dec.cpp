@@ -201,10 +201,10 @@ ArrayResp parse_decode_array(const std::string& msg){
 //     ArrayResp arrresp = parse_decode_array(str);
 //     auto arr = std::get<ArrayAndInd>(arrresp.first);
 //     auto vals = arr.first;
-//     for (int i = 0; i < argc; i++){
-//         std::cout << argv[i] << std::endl;
-//     }
+
 //     printArray(vals);
+//     bool b = std::any_cast<std::string>(vals[1]) == "*";
+//     std::cout << b << true;
 //     return 0;
 // }
 

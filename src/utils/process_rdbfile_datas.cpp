@@ -41,15 +41,15 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
     if (is_file_empty(filepath))
         return {};
     std::ifstream input_file(filepath);
-    std::vector<std::any> keys;
     if (!input_file.is_open())
       return {};
-    
+
+    std::vector<std::any> keys;
     std::string line;
-    while (trim(line) != "FE") {
+    while (trim(line) != "FE" && !input_file.eof()) {
       getline(input_file, line);
     }
-    while (trim(line) != "FB") {
+    while (trim(line) != "FB" && !input_file.eof()) {
       getline(input_file, line);
     }
     getline(input_file, line);
@@ -65,7 +65,7 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
         catch(const std::exception& e){}
     };
 
-    while(trim(line) != "FF"){
+    while(trim(line) != "FF"  && !input_file.eof()){
       if (trim(line) == "FC") {
         getline(input_file, line);
         add_key();
@@ -137,11 +137,11 @@ std::string hexstr_to_ASCII_string(std::string hexnums) {
     return ss.str();
 }
 
-// int main(int argc, char **argv) {
-//     std::vector<std::any> str = get_keys_values_from_file("rdbfile.txt");
-//     std::cout << str.size();
-//     for (int i = 0; i < str.size(); i++)
-//         std::cout << std::any_cast<std::string>(str[i]);
+int main(int argc, char **argv) {
+    std::vector<std::any> str = get_keys_values_from_file("rdbfile.rdb");
+    std::cout << str.size();
+    for (int i = 0; i < str.size(); i++)
+        std::cout << std::any_cast<std::string>(str[i]);
 
-//     return 0;
-// }
+    return 0;
+}
