@@ -15,9 +15,7 @@
 #include "utils/decode/array_parser_dec.h"
 #include "handle_connection.h"
 
-std::map<std::string, std::string> dict_data;
 std::map<std::string, std::string> args_map;
-
 
 int main(int argc, char **argv) {
 
@@ -76,7 +74,7 @@ int main(int argc, char **argv) {
 
       std::cout << "Client connected\n";
 
-      std::thread connection(handle_connection, client_fd, dict_data, args_map);
+      std::thread connection(handle_connection, client_fd, args_map);
       connection.detach();
   }
 

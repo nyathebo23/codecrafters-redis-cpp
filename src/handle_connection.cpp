@@ -6,6 +6,7 @@
 #include <thread>
 #include <any>
 #include <cmath>
+#include <map>
 #include "handle_connection.h"
 #include "utils/encode/array_parser_enc.h"
 #include "utils/encode/simple_data_parser_enc.h"
@@ -17,20 +18,20 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 
+std::map<std::string, std::string> dict_data;
 
 // Fonction à exécuter
-void erase_key(const std::string& key, std::map<std::string, std::string>& dict_data) {
+void erase_key(const std::string& key) {
     dict_data.erase(key);
 }
 
 // Fonction qui démarre un thread pour exécuter maFonction après un délai
-void execute_after_delay(int delay, const std::string& key, std::map<std::string, std::string>& dict_data) {
+void execute_after_delay(int delay, const std::string& key) {
     std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-    erase_key(key, dict_data);
+    erase_key(key);
 }
 
-void handle_connection(const int& clientfd, std::map<std::string, std::string>& dict_data, 
-    std::map<std::string, std::string>& args_map){
+void handle_connection(const int& clientfd, std::map<std::string, std::string>& args_map){
   while (1) {
     char buffer[128];    
     if (recv(clientfd, &buffer, sizeof(buffer), 0) <= 0) {
@@ -65,7 +66,7 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string>& 
                 std::transform(param.begin(), param.end(), param.begin(), ::tolower);
                 if (param == "px"){
                     const int duration = std::stoi(std::any_cast<std::string>(vals[4]));
-                    std::thread t(execute_after_delay, duration, key, dict_data);
+                    std::thread t(execute_after_delay, duration, key);
                     t.detach();
                 }
               }
@@ -102,7 +103,6 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string>& 
              std::vector<std::string> keys = get_keys_values_from_file(args_map["--dir"] + "/" + args_map["--dbfilename"]);     
              res = parse_encode_array(keys);
           }
-
         }
         if (!res.empty())
             send(clientfd, res.c_str(), res.length(), 0);
