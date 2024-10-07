@@ -98,7 +98,7 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
         }
         else if (cmd == "keys"){
           std::string param = std::any_cast<std::string>(vals[1]);
-          std::transform(param.begin(), param.end(), param.begin(), ::tolower);
+          //std::transform(param.begin(), param.end(), param.begin(), ::tolower);
           if (param == "*"){
              auto keys = get_keys_values_from_file(args_map["--dir"] + "/" + args_map["--dbfilename"]);
              std::vector<std::any> v;
