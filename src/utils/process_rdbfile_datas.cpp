@@ -61,7 +61,7 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
         getline(input_file, line);
         line = trim(line);
         try {
-            const str_nullable key = std::get<std::string>(get_key_from_line(input_file, line));
+            const std::string key = std::get<std::string>(get_key_from_line(input_file, line));
             keys.push_back(key);
         }
         catch(const std::exception& e){}
@@ -72,7 +72,7 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
         getline(input_file, line);
         line = trim(line);
         try {
-            const str_nullable key = std::get<std::string>(get_key_from_line(input_file, line));
+            const std::string key = std::get<std::string>(get_key_from_line(input_file, line));
             keys.push_back(key);
         }
         catch(const std::exception& e){}
@@ -80,7 +80,7 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
       } 
       if ((line = trim(line)) == "00"){
         try {
-            const str_nullable key = std::get<std::string>(get_key_from_line(input_file, line));
+            const std::string key = std::get<std::string>(get_key_from_line(input_file, line));
             keys.push_back(key);
         }
         catch(const std::exception& e){}
@@ -139,11 +139,11 @@ std::string hexstr_to_ASCII_string(std::string hexnums) {
     return ss.str();
 }
 
-// int main(int argc, char **argv) {
-//     std::vector<std::string> str = get_keys_values_from_file("rdbfile.txt");
-//     std::cout << str.size();
-//     for (int i = 0; i < str.size(); i++)
-//         std::cout << str[i];
+int main(int argc, char **argv) {
+    std::vector<std::any> str = get_keys_values_from_file("rdbfile.txt");
+    std::cout << str.size();
+    for (int i = 0; i < str.size(); i++)
+        std::cout << std::any_cast<std::string>(str[i]);
 
-//     return 0;
-// }
+    return 0;
+}
