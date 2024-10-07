@@ -80,16 +80,21 @@ void handle_connection(int clientfd){
               res = parse_encode_bulk_string(std::any_cast<std::string>(dict_data[key]));
           }
         }
-        else if (cmd == "config get"){
-          std::string key = std::any_cast<std::string>(vals[1]);
-          if (key == "dir"){
-            std::vector<std::any> values = {key, args_map["--dir"]};
-            res = parse_encode_array(values);
+        else if (cmd == "config"){
+          std::string cmd2 = std::any_cast<std::string>(vals[1]);
+          std::transform(cmd2.begin(), cmd2.end(), cmd2.begin(), ::tolower);
+          if (cmd2 == "get"){
+             std::string key = std::any_cast<std::string>(vals[2]);
+             if (key == "dir"){
+                std::vector<std::any> values = {key, args_map["--dir"]};
+                res = parse_encode_array(values);
+             }
+             else if (key == "dbfilename"){
+                std::vector<std::any> values = {key, args_map["--dbfilename"]};
+                res = parse_encode_array(values);          
+             }
           }
-          else if (key == "dbfilename"){
-            std::vector<std::any> values = {key, args_map["--dbfilename"]};
-            res = parse_encode_array(values);          
-          }
+
         }
         if (!res.empty())
             send(clientfd, res.c_str(), res.length(), 0);
