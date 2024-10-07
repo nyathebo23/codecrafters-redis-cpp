@@ -102,8 +102,8 @@ void handle_connection(int clientfd){
 int main(int argc, char **argv) {
 
   if (argc == 5){
-      args_map[std::string(argv[1])] = std::string(argv[2]);
-      args_map[std::string(argv[3])] = std::string(argv[4]);
+      args_map[std::string::basic_string(argv[1])] = std::string::basic_string(argv[2]);
+      args_map[std::string::basic_string(argv[3])] = std::string::basic_string(argv[4]);
   }
 
   // Flush after every std::cout / std::cerr
