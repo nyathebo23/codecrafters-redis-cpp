@@ -10,8 +10,8 @@
 #include "process_rdbfile_datas.h"
 
 std::string get_key_from_line(std::ifstream& file, std::string& line){
+    std::cout << "azerjkj";
     if (line == "00") {
-        std::cout << "azerjkj";
         getline(file, line);
         const std::string key = hexstr_to_ASCII_string(line);
         return key;
