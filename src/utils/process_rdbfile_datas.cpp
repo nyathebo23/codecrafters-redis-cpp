@@ -32,12 +32,19 @@ str_nullable get_key_from_line(std::ifstream& file, std::string& line){
     return nullptr;
 }
 
+bool is_file_empty(const std::string& fileName) {
+    std::ifstream file(fileName, std::ios::ate);  // Open the file in "ate" mode to move the cursor to the end
+    return file.tellg() == 0;  // tellg() returns the position of the cursor, which will be 0 if the file is empty
+}
+
 std::vector<std::any> get_keys_values_from_file(std::string filepath){
+    if (is_file_empty(filepath))
+        return {};
     std::ifstream input_file(filepath);
     std::vector<std::any> keys;
-    if (!input_file.is_open()) {
+    if (!input_file.is_open())
       return {};
-    }
+    
     std::string line;
     while (trim(line) != "FE") {
       getline(input_file, line);
