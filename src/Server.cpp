@@ -12,10 +12,12 @@
 #include "utils/encode/small_aggregate_parser_enc.h"
 #include "utils/decode/small_aggregate_parser_dec.h"
 #include "utils/encode/simple_data_parser_enc.h"
+#include "utils/encode/array_parser_enc.h"
 #include "utils/decode/array_parser_dec.h"
 #include <map>
 
 std::map<std::string, std::string> dict_data;
+std::map<std::string, std::string> args_map;
 
 // Fonction à exécuter
 void erase_key(const std::string& key) {
@@ -70,13 +72,24 @@ void handle_connection(int clientfd){
             }
         }
         else if (cmd == "get"){
-            if (vals.size() == 2 && vals[1].type() == typeid(std::string)){
-               std::string key = std::any_cast<std::string>(vals[1]);
-               if (dict_data.count(key) == 0)
-                  res = "$-1\r\n";
-               else
-                  res = parse_encode_bulk_string(std::any_cast<std::string>(dict_data[key]));
-            }
+          if (vals.size() == 2 && vals[1].type() == typeid(std::string)){
+            std::string key = std::any_cast<std::string>(vals[1]);
+            if (dict_data.count(key) == 0)
+              res = "$-1\r\n";
+            else
+              res = parse_encode_bulk_string(std::any_cast<std::string>(dict_data[key]));
+          }
+        }
+        else if (cmd == "config get"){
+          std::string key = std::any_cast<std::string>(vals[1]);
+          if (key == "dir"){
+            std::vector<std::string> values = {key, args_map["--dir"]};
+            res = parse_encode_array(values);
+          }
+          else if (key == "dbfilename"){
+            std::vector<std::string> values = {key, args_map["--dbfilename"]};
+            res = parse_encode_array(values);          
+          }
         }
         if (!res.empty())
             send(clientfd, res.c_str(), res.length(), 0);
@@ -87,6 +100,12 @@ void handle_connection(int clientfd){
 
 
 int main(int argc, char **argv) {
+
+  if (argc == 5){
+      args_map[std::string(argv[1])] = std::string(argv[2]);
+      args_map[std::string(argv[3])] = std::string(argv[4]);
+  }
+
   // Flush after every std::cout / std::cerr
   std::cout << std::unitbuf;
   std::cerr << std::unitbuf;
