@@ -83,11 +83,11 @@ void handle_connection(int clientfd){
         else if (cmd == "config get"){
           std::string key = std::any_cast<std::string>(vals[1]);
           if (key == "dir"){
-            std::vector<std::string> values = {key, args_map["--dir"]};
+            std::vector<std::any> values = {key, args_map["--dir"]};
             res = parse_encode_array(values);
           }
           else if (key == "dbfilename"){
-            std::vector<std::string> values = {key, args_map["--dbfilename"]};
+            std::vector<std::any> values = {key, args_map["--dbfilename"]};
             res = parse_encode_array(values);          
           }
         }
