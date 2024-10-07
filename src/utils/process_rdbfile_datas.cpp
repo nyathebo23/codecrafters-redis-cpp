@@ -55,9 +55,7 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
     getline(input_file, line);
     getline(input_file, line);
 
-    while(trim(line) != "FF"){
-      if (trim(line) == "FC") {
-        getline(input_file, line);
+    auto add_key = [&input_file, &line, &keys]() {
         getline(input_file, line);
         line = trim(line);
         try {
@@ -65,17 +63,17 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
             keys.push_back(key);
         }
         catch(const std::exception& e){}
+    };
+
+    while(trim(line) != "FF"){
+      if (trim(line) == "FC") {
+        getline(input_file, line);
+        add_key();
         continue;
       }
       if (trim(line) == "FD") {
         getline(input_file, line);
-        getline(input_file, line);
-        line = trim(line);
-        try {
-            const std::string key = std::get<std::string>(get_key_from_line(input_file, line));
-            keys.push_back(key);
-        }
-        catch(const std::exception& e){}
+        add_key();
         continue;
       } 
       if ((line = trim(line)) == "00"){
