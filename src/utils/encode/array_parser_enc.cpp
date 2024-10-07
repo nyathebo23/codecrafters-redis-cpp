@@ -11,7 +11,7 @@
 #include "small_aggregate_parser_enc.h"
 
 
-std::string parse_encode_array(std::vector<std::any> msg){
+std::string parse_encode_array(const std::vector<std::any>& msg){
     if (msg.size() == 0)
         return "*0\r\n";
     const std::string startenc = "*" + std::to_string(msg.size()) + "\r\n";
