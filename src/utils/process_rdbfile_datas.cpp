@@ -9,21 +9,22 @@
 #include <bitset>
 #include "process_rdbfile_datas.h"
 
- std::string get_key_from_line(std::ifstream& file, std::string& line){
 
+using str_nullable = std::variant<std::string, std::nullptr_t>;
+
+str_nullable get_key_from_line(std::ifstream& file, std::string& line){
     if (line == "00") {
         getline(file, line);
         const std::string key = hexstr_to_ASCII_string(line);
         return key;
     }
-    return "";
+    return nullptr;
 }
 
 std::vector<std::any> get_keys_values_from_file(std::string filepath){
     std::ifstream input_file(filepath);
     std::vector<std::any> keys;
     if (!input_file.is_open()) {
-        std::cerr << "Error opening the file!" << std::endl;
       return {};
     }
     std::string line;
@@ -40,24 +41,36 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
       if (line == "FC") {
         getline(input_file, line);
         getline(input_file, line);
-        const std::string key = get_key_from_line(input_file, line);
-        if (key != "")
-            keys.push_back(get_key_from_line(input_file, line));
+        try {
+            const str_nullable key = std::get<std::string>(get_key_from_line(input_file, line));
+            keys.push_back(key);
+        }
+        catch(const std::exception& e){
+
+        }
         continue;
       }
       if (line == "FD") {
         getline(input_file, line);
         getline(input_file, line);
-        const std::string key = get_key_from_line(input_file, line);
-        if (key != "")
-            keys.push_back(get_key_from_line(input_file, line));
+        const str_nullable key = get_key_from_line(input_file, line);
+        try {
+            const str_nullable key = std::get<std::string>(get_key_from_line(input_file, line));
+            keys.push_back(key);
+        }
+        catch(const std::exception& e){
+
+        }
         continue;
       } 
       if (line == "00"){
-        const std::string key = get_key_from_line(input_file, line);
-        if (key != "")
-            keys.push_back(get_key_from_line(input_file, line));
-
+        const str_nullable key = get_key_from_line(input_file, line);
+        try {
+            const str_nullable key = std::get<std::string>(get_key_from_line(input_file, line));
+            keys.push_back(key);
+        }
+        catch(const std::exception& e){
+        }
       }
       getline(input_file, line);
     }
