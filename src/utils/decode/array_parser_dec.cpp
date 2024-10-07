@@ -196,33 +196,33 @@ ArrayResp parse_decode_array(const std::string& msg){
 
 }
 
-int main(int argc, char **argv) {
-    const std::string str = "*3\r\n*3\r\n:50\r\n+retypA\r\n=8\r\ntxt:ECHO\r\n$3\r\nhey\r\n*2\r\n*3\r\n,25.55e10\r\n$6\r\nECHOpA\r\n$6\r\neleven\r\n#t\r\n";
-    ArrayResp arrresp = parse_decode_array(str);
-    auto arr = std::get<ArrayAndInd>(arrresp.first);
-    auto vals = arr.first;
-    for (int i = 0; i < argc; i++){
-        std::cout << argv[i] << std::endl;
-    }
-    printArray(vals);
-    return 0;
-}
+// int main(int argc, char **argv) {
+//     const std::string str = "*3\r\n*3\r\n:50\r\n+retypA\r\n=8\r\ntxt:ECHO\r\n$3\r\nhey\r\n*2\r\n*3\r\n,25.55e10\r\n$6\r\nECHOpA\r\n$6\r\neleven\r\n#t\r\n";
+//     ArrayResp arrresp = parse_decode_array(str);
+//     auto arr = std::get<ArrayAndInd>(arrresp.first);
+//     auto vals = arr.first;
+//     for (int i = 0; i < argc; i++){
+//         std::cout << argv[i] << std::endl;
+//     }
+//     printArray(vals);
+//     return 0;
+// }
 
-void printArray(std::vector<std::any> arr){
+// void printArray(std::vector<std::any> arr){
 
-    for (const auto& elt: arr){
-        if (elt.type() == typeid(int)) {
-            std::cout << std::any_cast<int>(elt) << '\n';
-        } else if (elt.type() == typeid(double)) {
-            std::cout << std::any_cast<double>(elt) << '\n';
-        } else if (elt.type() == typeid(std::string)) {
-            std::cout << std::any_cast<std::string>(elt) << '\n';
-        }
-        else if (elt.type() == typeid(bool)) {
-            std::cout << std::any_cast<bool>(elt) << '\n';
-        }
-        else if (elt.type() == typeid(std::vector<std::any>)) {
-            printArray(std::any_cast<std::vector<std::any>>(elt));
-        }
-    }
-}
+//     for (const auto& elt: arr){
+//         if (elt.type() == typeid(int)) {
+//             std::cout << std::any_cast<int>(elt) << '\n';
+//         } else if (elt.type() == typeid(double)) {
+//             std::cout << std::any_cast<double>(elt) << '\n';
+//         } else if (elt.type() == typeid(std::string)) {
+//             std::cout << std::any_cast<std::string>(elt) << '\n';
+//         }
+//         else if (elt.type() == typeid(bool)) {
+//             std::cout << std::any_cast<bool>(elt) << '\n';
+//         }
+//         else if (elt.type() == typeid(std::vector<std::any>)) {
+//             printArray(std::any_cast<std::vector<std::any>>(elt));
+//         }
+//     }
+// }
