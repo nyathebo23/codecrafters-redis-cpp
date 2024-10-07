@@ -12,9 +12,20 @@
 
 using str_nullable = std::variant<std::string, std::nullptr_t>;
 
+std::string trim(const std::string& str) {
+    size_t first = str.find_first_not_of(' ');
+    if (first == std::string::npos) {
+        return ""; // If the string is all spaces, return an empty string
+    }
+    
+    size_t last = str.find_last_not_of(' ');
+    return str.substr(first, (last - first + 1));
+}
+
 str_nullable get_key_from_line(std::ifstream& file, std::string& line){
     if (line == "00") {
         getline(file, line);
+        line = trim(line);
         const std::string key = hexstr_to_ASCII_string(line);
         return key;
     }
@@ -28,56 +39,51 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
       return {};
     }
     std::string line;
-    while (line != "FE") {
+    while (trim(line) != "FE") {
       getline(input_file, line);
     }
-    while (line != "FB") {
+    while (trim(line) != "FB") {
       getline(input_file, line);
     }
     getline(input_file, line);
     getline(input_file, line);
 
-    while(line != "FF"){
-      if (line == "FC") {
+    while(trim(line) != "FF"){
+      if (trim(line) == "FC") {
         getline(input_file, line);
         getline(input_file, line);
+        line = trim(line);
         try {
             const str_nullable key = std::get<std::string>(get_key_from_line(input_file, line));
             keys.push_back(key);
         }
-        catch(const std::exception& e){
-
-        }
+        catch(const std::exception& e){}
         continue;
       }
-      if (line == "FD") {
+      if (trim(line) == "FD") {
         getline(input_file, line);
         getline(input_file, line);
-        const str_nullable key = get_key_from_line(input_file, line);
+        line = trim(line);
         try {
             const str_nullable key = std::get<std::string>(get_key_from_line(input_file, line));
             keys.push_back(key);
         }
-        catch(const std::exception& e){
-
-        }
+        catch(const std::exception& e){}
         continue;
       } 
-      if (line == "00"){
-        const str_nullable key = get_key_from_line(input_file, line);
+      if ((line = trim(line)) == "00"){
         try {
             const str_nullable key = std::get<std::string>(get_key_from_line(input_file, line));
             keys.push_back(key);
         }
-        catch(const std::exception& e){
-        }
+        catch(const std::exception& e){}
       }
       getline(input_file, line);
     }
     return keys;
 }
 
-std::string hexstr_to_ASCII_string(std::string hexnums) {
+std::string hexstr_to_ASCII_string(std::string hexnums) {        
     std::stringstream ss;
     std::istringstream iss(hexnums);
     std::string hexnum;
