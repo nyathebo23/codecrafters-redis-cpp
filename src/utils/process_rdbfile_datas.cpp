@@ -115,22 +115,24 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
     }
     index++;
     while (index < buffer_size && (int)(unsigned char)buffer[index] != 255){
+       index++;
        if ((int)(unsigned char)buffer[index] == 253) { 
             index += 4;
             if ((int)(unsigned char)buffer[index] == 0){
                 keys.push_back(decode_str_length(index, buffer));
-            }      
+            } 
+            continue;     
        }
        if ((int)(unsigned char)buffer[index] == 252) { 
             index += 8;
             if ((int)(unsigned char)buffer[index] == 0){
                 keys.push_back(decode_str_length(index, buffer));
-            }            
+            } 
+            continue;           
        } 
         if ((int)(unsigned char)buffer[index] == 0){
             keys.push_back(decode_str_length(index, buffer));
         }      
-        index ++;
     }
     return keys;
 
