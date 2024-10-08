@@ -115,7 +115,7 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
     while (index < buffer_size && (int)(unsigned char)buffer[index] != 251){
         index++;
     }
-    index++;
+    index += 2;
     while (index < buffer_size && (int)(unsigned char)buffer[index] != 255){
        index++;
        if ((int)(unsigned char)buffer[index] == 253) { 
