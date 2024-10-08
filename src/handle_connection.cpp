@@ -7,6 +7,7 @@
 #include <any>
 #include <cmath>
 #include <map>
+#include <fstream>
 #include "handle_connection.h"
 #include "utils/encode/array_parser_enc.h"
 #include "utils/encode/simple_data_parser_enc.h"
@@ -101,12 +102,12 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
           //std::transform(param.begin(), param.end(), param.begin(), ::tolower);
           if (param == "*"){
              auto keys = get_keys_values_from_file(args_map["--dir"] + "/" + args_map["--dbfilename"]);  
-            std::ifstream input_file(args_map["--dir"] + "/" + args_map["--dbfilename"]);
-            if (!input_file.is_open()){
+             std::ifstream input_file(args_map["--dir"] + "/" + args_map["--dbfilename"]);
+             if (!input_file.is_open()){
                 std::vector<std::any> v;
                 v.push_back(std::string("strawberry")); 
                 res = parse_encode_array(v);
-            }
+             }
              res = parse_encode_array(keys);
           }
         }
