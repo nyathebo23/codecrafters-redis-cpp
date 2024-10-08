@@ -121,6 +121,7 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
        if ((int)(unsigned char)buffer[index] == 253) { 
             index += 5;
             if ((int)(unsigned char)buffer[index] == 0){
+                index++;
                 keys.push_back(decode_str_length(index, buffer));
             } 
             continue;     
@@ -128,6 +129,7 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
        if ((int)(unsigned char)buffer[index] == 252) { 
             index += 9;
             if ((int)(unsigned char)buffer[index] == 0){
+                index++;
                 keys.push_back(decode_str_length(index, buffer));
             } 
             continue;           
