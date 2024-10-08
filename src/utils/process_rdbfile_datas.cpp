@@ -102,18 +102,18 @@ std::string hexstr_to_ASCII_string(std::string hexnums) {
         jump_to = 4;
     }
     else if (semibyte.substr(0, 2) == "11"){
-        if (hexnum == "C0"){
+        if (hexnum == "C0" || hexnum == "c0"){
             iss >> hexnum;
             unsigned int num = std::stoi(hexnum, nullptr, 16); 
             return std::to_string(num);
-        } else if (hexnum == "C1"){
+        } else if (hexnum == "C1" || hexnum == "c1"){
             std::string num = "";
             for (int i = 1; i >= 0; i--){
                 iss >> hexnum;
                 num = hexnum + num;
             }
             return std::to_string(std::stoi(num, nullptr, 16));
-        } else if (hexnum == "C2") {
+        } else if (hexnum == "C2"|| hexnum == "c2") {
             std::string num = "";
             for (int i = 3; i >= 0; i--){
                 iss >> hexnum;
