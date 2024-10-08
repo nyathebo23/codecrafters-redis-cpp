@@ -103,11 +103,10 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
             std::string param = std::any_cast<std::string>(vals[1]);
             //std::transform(param.begin(), param.end(), param.begin(), ::tolower);
             if (param == "*"){
-                //auto keys = get_keys_values_from_file(args_map["--dir"] + "/" + args_map["--dbfilename"]);
+                auto keys = get_keys_values_from_file(args_map["--dir"] + "/" + args_map["--dbfilename"]);
+                res = parse_encode_array(keys);
+
             }
-            std::vector<std::any> keys;
-            keys.push_back(std::string("azdffdf"));
-            res = parse_encode_array(keys);
         }
         if (!res.empty())
             send(clientfd, res.c_str(), res.length(), 0);
