@@ -20,7 +20,7 @@
 #include <netdb.h>
 
 std::map<std::string, std::string> dict_data;
-
+std::string trim_lower(const std::string& str);
 // Fonction à exécuter
 void erase_key(const std::string& key) {
     dict_data.erase(key);
