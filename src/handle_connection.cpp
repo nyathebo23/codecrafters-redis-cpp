@@ -20,7 +20,7 @@
 #include <netdb.h>
 
 std::map<std::string, std::string> dict_data;
-std::string trim_lower(const std::string& str);
+std::string trim_low(const std::string& str);
 // Fonction à exécuter
 void erase_key(const std::string& key) {
     dict_data.erase(key);
@@ -112,16 +112,16 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                 std::vector<std::any> keys;
                 std::string line;
                 getline(input_file, line);
-                while (trim_lower(line) != "fe" && getline(input_file, line)) {
+                while (trim_low(line) != "fe" && getline(input_file, line)) {
                     keys.push_back(line);
                 }
-                if (trim_lower(line) != "fe")
+                if (trim_low(line) != "fe")
                     res = parse_encode_array(keys);
 
-                // while (trim_lower(line) != "fb" && getline(input_file, line)) {
+                // while (trim_low(line) != "fb" && getline(input_file, line)) {
                 //     keys.push_back(line);
                 // }
-                // if (trim_lower(line) != "fb")
+                // if (trim_low(line) != "fb")
                 //     res = parse_encode_array(keys);
 
              }
@@ -133,7 +133,7 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
   }
   
 }
-std::string trim_lower(const std::string& str) {
+std::string trim_low(const std::string& str) {
     size_t first = str.find_first_not_of(' ');
     if (first == std::string::npos) {
         return ""; // If the string is all spaces, return an empty string
