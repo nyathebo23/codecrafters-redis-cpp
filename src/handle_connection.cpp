@@ -126,6 +126,8 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                         index += 8;
                         get_key_name(buffer, index, keys);
                     } 
+                    int u = (int)(unsigned char)buffer[index];
+                    keys.push_back(std::to_string(u));
                     if ((int)(unsigned char)buffer[index] == 0){
 
                     unsigned char ch = buffer[index];
@@ -172,8 +174,7 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
 
 
                     }
-                                        int u = (int)(unsigned char)buffer[index];
-                    keys.push_back(std::to_string(u));
+
                 }
             res = parse_encode_array(keys);
 
