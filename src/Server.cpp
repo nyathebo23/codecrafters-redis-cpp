@@ -7,7 +7,6 @@
 #include <netdb.h>
 #include <thread>
 #include <map>
-#include <algorithm>
 #include "utils/encode/small_aggregate_parser_enc.h"
 #include "utils/decode/small_aggregate_parser_dec.h"
 #include "utils/encode/simple_data_parser_enc.h"

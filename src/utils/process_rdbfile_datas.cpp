@@ -8,24 +8,27 @@
 #include <sstream>
 #include <bitset>
 #include "process_rdbfile_datas.h"
-
+#include <algorithm>
 
 using str_nullable = std::variant<std::string, std::nullptr_t>;
 
-std::string trim(const std::string& str) {
+std::string trim_lower(const std::string& str) {
     size_t first = str.find_first_not_of(' ');
     if (first == std::string::npos) {
         return ""; // If the string is all spaces, return an empty string
     }
     
     size_t last = str.find_last_not_of(' ');
-    return str.substr(first, (last - first + 1));
+    std::string lowcase_str = str.substr(first, (last - first + 1));
+    std::transform(lowcase_str.begin(), lowcase_str.end(), lowcase_str.begin(), ::tolower);
+
+    return lowcase_str;
 }
 
 str_nullable get_key_from_line(std::ifstream& file, std::string& line){
     if (line == "00") {
         getline(file, line);
-        line = trim(line);
+        line = trim_lower(line);
         const std::string key = hexstr_to_ASCII_string(line);
         return key;
     }
@@ -47,13 +50,13 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
     std::vector<std::any> keys;
     std::string line;
     getline(input_file, line);
-    while (trim(line) != "FE" && getline(input_file, line)) {}
-    while (trim(line) != "FB" && getline(input_file, line)) {}
+    while (trim_lower(line) != "fe" && getline(input_file, line)) {}
+    while (trim_lower(line) != "fb" && getline(input_file, line)) {}
     getline(input_file, line);
     getline(input_file, line);
     auto add_key = [&input_file, &line, &keys]() {
         getline(input_file, line);
-        line = trim(line);
+        line = trim_lower(line);
         try {
             const std::string key = std::get<std::string>(get_key_from_line(input_file, line));
             keys.push_back(key);
@@ -61,18 +64,18 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
         catch(const std::exception& e){}
     };
 
-    while(trim(line) != "FF"  && getline(input_file, line)){
-      if (trim(line) == "FC") {
+    while(trim_lower(line) != "ff"  && getline(input_file, line)){
+      if (trim_lower(line) == "fc") {
         getline(input_file, line);
         add_key();
         continue;
       }
-      if (trim(line) == "FD") {
+      if (trim_lower(line) == "fd") {
         getline(input_file, line);
         add_key();
         continue;
       } 
-      if ((line = trim(line)) == "00"){
+      if ((line = trim_lower(line)) == "00"){
         try {
             const std::string key = std::get<std::string>(get_key_from_line(input_file, line));
             keys.push_back(key);
@@ -132,11 +135,11 @@ std::string hexstr_to_ASCII_string(std::string hexnums) {
     return ss.str();
 }
 
-// int main(int argc, char **argv) {
-//     std::vector<std::any> str = get_keys_values_from_file("rdbfile.rdb");
-//     std::cout << str.size();
-//     for (int i = 0; i < str.size(); i++)
-//         std::cout << std::any_cast<std::string>(str[i]);
+int main(int argc, char **argv) {
+    std::vector<std::any> str = get_keys_values_from_file("rdbfile.rdb");
+    std::cout << str.size();
+    for (int i = 0; i < str.size(); i++)
+        std::cout << std::any_cast<std::string>(str[i]);
 
-//     return 0;
-// }
+    return 0;
+}
