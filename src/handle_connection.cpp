@@ -105,7 +105,7 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
             if (param == "*"){
                 //auto keys = get_keys_values_from_file(args_map["--dir"] + "/" + args_map["--dbfilename"]);
             }
-            std::vector<std::string> keys;
+            std::vector<std::any> keys;
             keys.push_back(std::string("azdffdf"));
             res = parse_encode_array(keys);
             res = "*1\r\n$1\r\nz\r\n";
