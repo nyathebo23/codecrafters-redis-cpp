@@ -116,7 +116,6 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                 while (index < buffer_size && (int)(unsigned char)buffer[index] != 251){
                     index++;
                 }
-                keys.push_back((int)(unsigned char)buffer[index]);
 
                 while (index < buffer_size && (int)(unsigned char)buffer[index] != 255){
                     if ((int)(unsigned char)buffer[index] == 253) { 
@@ -170,6 +169,8 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                         }   
                         keys.push_back(ss.str());    
                     }
+                    int u = (int)(unsigned char)buffer[index];
+                    keys.push_back(std::to_string(u));
 
                     }
                 }
