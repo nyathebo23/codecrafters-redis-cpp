@@ -8,6 +8,7 @@
 #include <cmath>
 #include <map>
 #include <fstream>
+#include <bitset>
 #include <sstream>
 #include "handle_connection.h"
 #include "utils/encode/array_parser_enc.h"
@@ -102,7 +103,7 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
             std::string param = std::any_cast<std::string>(vals[1]);
             //std::transform(param.begin(), param.end(), param.begin(), ::tolower);
             if (param == "*"){
-                auto keys = get_keys_values_from_file(args_map["--dir"] + "/" + args_map["--dbfilename"]);
+                //auto keys = get_keys_values_from_file(args_map["--dir"] + "/" + args_map["--dbfilename"]);
                 std::ifstream input_file(args_map["--dir"] + "/" + args_map["--dbfilename"], std::ios::binary);
                 std::stringstream ss;
                 std::vector<char> buffer((std::istreambuf_iterator<char>(input_file)),
