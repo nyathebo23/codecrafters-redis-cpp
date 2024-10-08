@@ -122,7 +122,8 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                                         std::string u({buffer[index]});
                     keys.push_back(u);
                 }
-                                       
+                                         keys.push_back(std::string("azdffdf"));
+              
                 while (index < buffer_size && (int)(unsigned char)buffer[index] != 255){
                     if ((int)(unsigned char)buffer[index] == 253) { 
                         index += 4;
@@ -182,9 +183,10 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
             res = parse_encode_array(keys);
 
           }
+
+        }
             if (!res.empty())
                 send(clientfd, res.c_str(), res.length(), 0);
-        }
     }
   }
 }
