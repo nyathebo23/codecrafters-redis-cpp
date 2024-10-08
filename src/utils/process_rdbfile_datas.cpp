@@ -135,11 +135,11 @@ std::string hexstr_to_ASCII_string(std::string hexnums) {
     return ss.str();
 }
 
-int main(int argc, char **argv) {
-    std::vector<std::any> str = get_keys_values_from_file("rdbfile.rdb");
-    std::cout << str.size();
-    for (int i = 0; i < str.size(); i++)
-        std::cout << std::any_cast<std::string>(str[i]);
+// int main(int argc, char **argv) {
+//     std::vector<std::any> str = get_keys_values_from_file("rdbfile.rdb");
+//     std::cout << str.size();
+//     for (int i = 0; i < str.size(); i++)
+//         std::cout << std::any_cast<std::string>(str[i]);
 
-    return 0;
-}
+//     return 0;
+// }
