@@ -110,6 +110,8 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                                         std::istreambuf_iterator<char>());
                 std::vector<std::any> keys;
                 int index = 0, buffer_size = buffer.size();
+                                                        std::string u({buffer[index]});
+                    keys.push_back(u);
                 while (index < buffer_size && (int)(unsigned char)buffer[index] != 254){
                     index++;
                                         std::string u({buffer[index]});
@@ -125,11 +127,9 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                 while (index < buffer_size && (int)(unsigned char)buffer[index] != 255){
                     if ((int)(unsigned char)buffer[index] == 253) { 
                         index += 4;
-                        get_key_name(buffer, index, keys);
                     }
                     if ((int)(unsigned char)buffer[index] == 252) { 
                         index += 8;
-                        get_key_name(buffer, index, keys);
                     } 
 
                     if ((int)(unsigned char)buffer[index] == 0){
