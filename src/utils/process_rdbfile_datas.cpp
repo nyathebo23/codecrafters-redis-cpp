@@ -52,8 +52,6 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
     getline(input_file, line);
     while (trim_lower(line) != "fe" && getline(input_file, line)) {}
     while (trim_lower(line) != "fb" && getline(input_file, line)) {}
-    getline(input_file, line);
-    getline(input_file, line);
     auto add_key = [&input_file, &line, &keys]() {
         getline(input_file, line);
         line = trim_lower(line);
