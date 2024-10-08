@@ -38,8 +38,8 @@ bool is_file_empty(const std::string& fileName) {
 }
 
 std::vector<std::any> get_keys_values_from_file(std::string filepath){
-    // if (is_file_empty(filepath))
-    //     return {};
+    if (is_file_empty(filepath))
+        return {};
     std::ifstream input_file(filepath);
     if (!input_file.is_open())
       return {};
@@ -47,15 +47,10 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
     std::vector<std::any> keys;
     std::string line;
     getline(input_file, line);
-    while (trim(line) != "FE" && !input_file.eof()) {
-      getline(input_file, line);
-    }
-    while (trim(line) != "FB" && !input_file.eof()) {
-      getline(input_file, line);
-    }
+    while (trim(line) != "FE" && getline(input_file, line)) {}
+    while (trim(line) != "FB" && getline(input_file, line)) {}
     getline(input_file, line);
     getline(input_file, line);
-
     auto add_key = [&input_file, &line, &keys]() {
         getline(input_file, line);
         line = trim(line);
@@ -66,7 +61,7 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
         catch(const std::exception& e){}
     };
 
-    while(trim(line) != "FF"  && !input_file.eof()){
+    while(trim(line) != "FF"  && getline(input_file, line)){
       if (trim(line) == "FC") {
         getline(input_file, line);
         add_key();
@@ -84,7 +79,6 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
         }
         catch(const std::exception& e){}
       }
-      getline(input_file, line);
     }
     return keys;
 }
