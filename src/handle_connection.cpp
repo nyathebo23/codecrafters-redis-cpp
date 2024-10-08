@@ -108,8 +108,23 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                 v.push_back(std::string("strawberry")); 
                 res = parse_encode_array(v);
              }
-             else
-                res = parse_encode_array(keys);
+             else {
+                std::vector<std::any> keys;
+                std::string line;
+                getline(input_file, line);
+                while (trim_lower(line) != "fe" && getline(input_file, line)) {
+                    keys.push_back(line);
+                }
+                if (trim_lower(line) != "fe")
+                    res = parse_encode_array(keys);
+
+                // while (trim_lower(line) != "fb" && getline(input_file, line)) {
+                //     keys.push_back(line);
+                // }
+                // if (trim_lower(line) != "fb")
+                //     res = parse_encode_array(keys);
+
+             }
           }
         }
         if (!res.empty())
