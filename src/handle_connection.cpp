@@ -122,8 +122,7 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                                         std::string u({buffer[index]});
                     keys.push_back(u);
                 }
-                                        std::string u({buffer[index]});
-                    keys.push_back(u);
+                                       
                 while (index < buffer_size && (int)(unsigned char)buffer[index] != 255){
                     if ((int)(unsigned char)buffer[index] == 253) { 
                         index += 4;
