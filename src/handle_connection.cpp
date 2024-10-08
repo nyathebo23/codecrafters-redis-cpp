@@ -108,7 +108,6 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
             std::vector<std::any> keys;
             keys.push_back(std::string("azdffdf"));
             res = parse_encode_array(keys);
-            res = "*1\r\n$1\r\nz\r\n";
         }
         if (!res.empty())
             send(clientfd, res.c_str(), res.length(), 0);
