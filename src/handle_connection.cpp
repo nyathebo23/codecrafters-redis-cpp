@@ -117,6 +117,7 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                     index++;
                 }
                 while (index < buffer_size && (int)(unsigned char)buffer[index] != 255){
+                    keys.push_back((int)(unsigned char)buffer[index]);
                     if ((int)(unsigned char)buffer[index] == 253) { 
                         index += 4;
                         get_key_name(buffer, index, keys);
@@ -169,9 +170,6 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                         keys.push_back(ss.str());    
                     }
 
-                    }
-                    else {
-                        keys.push_back((int)(unsigned char)buffer[index]);
                     }
                 }
             res = parse_encode_array(keys);
