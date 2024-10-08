@@ -35,7 +35,7 @@ std::string decode_str_length(int& index, std::vector<char>& buffer){
             len --;
             index ++;
         }
-        return ss.str();
+        return  std::to_string(len);
     }
     else if (str_byte.substr(0, 2) == "01"){
         ch = buffer[index]; 
@@ -47,7 +47,7 @@ std::string decode_str_length(int& index, std::vector<char>& buffer){
             len --;
             index ++;
         }
-        return ss.str();
+        return std::to_string(len);
     }
     else if (str_byte.substr(0, 2) == "10"){
         std::string lenstr = "";
@@ -63,7 +63,7 @@ std::string decode_str_length(int& index, std::vector<char>& buffer){
             ss << (unsigned char) buffer[index];
             len --;
         }   
-        return "azertt";    
+        return  std::to_string(len);   
     }
     else {
         if (str_byte == "11000000"){
