@@ -35,7 +35,7 @@ std::string decode_str_length(int& index, std::vector<char>& buffer){
             len --;
             index ++;
         }
-        return  std::to_string(len)+"1";
+        return  ss.str();
     }
     else if (str_byte.substr(0, 2) == "01"){
         ch = buffer[index]; 
@@ -47,7 +47,7 @@ std::string decode_str_length(int& index, std::vector<char>& buffer){
             len --;
             index ++;
         }
-        return std::to_string(len)+"2";
+        return ss.str();
     }
     else if (str_byte.substr(0, 2) == "10"){
         std::string lenstr = "";
@@ -63,7 +63,7 @@ std::string decode_str_length(int& index, std::vector<char>& buffer){
             ss << (unsigned char) buffer[index];
             len --;
         }   
-        return  std::to_string(len)+"22";   
+        return  ss.str();   
     }
     else {
         if (str_byte == "11000000"){
@@ -115,7 +115,7 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
     while (index < buffer_size && (int)(unsigned char)buffer[index] != 251){
         index++;
     }
-    index += 2;
+    index += 3;
     while (index < buffer_size && (int)(unsigned char)buffer[index] != 255){
        index++;
        if ((int)(unsigned char)buffer[index] == 253) { 
