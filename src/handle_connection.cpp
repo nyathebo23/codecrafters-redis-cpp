@@ -133,3 +133,15 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
   }
   
 }
+std::string trim_lower(const std::string& str) {
+    size_t first = str.find_first_not_of(' ');
+    if (first == std::string::npos) {
+        return ""; // If the string is all spaces, return an empty string
+    }
+    
+    size_t last = str.find_last_not_of(' ');
+    std::string lowcase_str = str.substr(first, (last - first + 1));
+    std::transform(lowcase_str.begin(), lowcase_str.end(), lowcase_str.begin(), ::tolower);
+
+    return lowcase_str;
+}
