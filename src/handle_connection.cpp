@@ -104,90 +104,14 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
             //std::transform(param.begin(), param.end(), param.begin(), ::tolower);
             if (param == "*"){
                 //auto keys = get_keys_values_from_file(args_map["--dir"] + "/" + args_map["--dbfilename"]);
-                std::ifstream input_file(args_map["--dir"] + "/" + args_map["--dbfilename"], std::ios::binary);
-                std::stringstream ss;
-                std::vector<char> buffer((std::istreambuf_iterator<char>(input_file)),
-                                        std::istreambuf_iterator<char>());
-                std::vector<std::any> keys;
-                int index = 0, buffer_size = buffer.size();
-                                                        std::string u({buffer[index]});
-                    keys.push_back(u);
-                while (index < buffer_size && (int)(unsigned char)buffer[index] != 254){
-                    index++;
-                                        std::string u({buffer[index]});
-                    keys.push_back(u);
-                }
-                while (index < buffer_size && (int)(unsigned char)buffer[index] != 251){
-                    index++;
-                                        std::string u({buffer[index]});
-                    keys.push_back(u);
-                }
-                                         keys.push_back(std::string("azdffdf"));
-              
-                while (index < buffer_size && (int)(unsigned char)buffer[index] != 255){
-                    if ((int)(unsigned char)buffer[index] == 253) { 
-                        index += 4;
-                    }
-                    if ((int)(unsigned char)buffer[index] == 252) { 
-                        index += 8;
-                    } 
-
-                    if ((int)(unsigned char)buffer[index] == 0){
-
-                    unsigned char ch = buffer[index];
-                    int n = ch;
-                    std::stringstream ss;
-                    const std::string str_byte = std::bitset<8>(n).to_string();
-                    int len;
-                    index++;
-                    if (str_byte.substr(0, 2) == "00"){
-                        len = std::stoi(str_byte.substr(2, 6), nullptr, 2);
-                        while (len > 0){
-                            ss << buffer[index];
-                            len --;
-                            index ++;
-                        }
-                        keys.push_back(ss.str());    
-                    }
-                    else if (str_byte.substr(0, 2) == "01"){
-                        ch = buffer[index]; n = ch;
-                        len = std::stoi(str_byte.substr(2, 6) + std::bitset<8>(n).to_string(), nullptr, 2);
-                        index++;
-                        while (len > 0){
-                            ss << buffer[index];
-                            len --;
-                            index ++;
-                        }
-                        keys.push_back(ss.str());    
-                    }
-                    else if (str_byte.substr(0, 2) == "10"){
-                        std::string lenstr = "";
-                        for (int i = 0; i < 4; i++){
-                            ch = buffer[index]; n = ch; 
-                            lenstr += std::bitset<8>(n).to_string();
-                            index ++;
-                        }
-                        len = std::stoi(lenstr, nullptr, 2); 
-                        while (len > 0){
-                            index ++;
-                            ss << buffer[index];
-                            len --;
-                        }   
-                        keys.push_back(ss.str());    
-                    }
-
-
-                    }
-
-                }
+            }
+            std::vector<std::string> keys;
             keys.push_back(std::string("azdffdf"));
             res = parse_encode_array(keys);
             res = "*1\r\n$1\r\nz\r\n";
-          }
-
         }
-            if (!res.empty())
-                send(clientfd, res.c_str(), res.length(), 0);
+        if (!res.empty())
+            send(clientfd, res.c_str(), res.length(), 0);
     }
   }
 }
