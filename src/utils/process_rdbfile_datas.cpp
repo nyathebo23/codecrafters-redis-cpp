@@ -20,7 +20,6 @@ bool is_file_empty(const std::string& fileName) {
     return file.tellg() == 0;  // tellg() returns the position of the cursor, which will be 0 if the file is empty
 }
 
-
 std::string decode_str_length(int& index, std::vector<char>& buffer){
     unsigned char ch = buffer[index];
     int n = ch;
@@ -59,9 +58,9 @@ std::string decode_str_length(int& index, std::vector<char>& buffer){
         }
         len = std::stoi(lenstr, nullptr, 2); 
         while (len > 0){
-            index ++;
             ss << (unsigned char) buffer[index];
             len --;
+            index ++;
         }   
         return  ss.str();   
     }
@@ -91,14 +90,15 @@ std::string decode_str_length(int& index, std::vector<char>& buffer){
     }
 }
 
-void get_key_name(std::vector<char>& buffer, int &index, std::vector<std::any>& keys){
+void get_key_value_pair(std::vector<char>& buffer, int &index, std::vector<std::any>& keys,  std::vector<std::any>& values){
     if ((int)(unsigned char)buffer[index] == 0){
+        index++;
         keys.push_back(decode_str_length(index, buffer));
+        values.push_back(decode_str_length(index, buffer));
     }
 }
 
-
-std::vector<std::any> get_keys_values_from_file(std::string filepath){
+std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_file(std::string filepath){
     if (is_file_empty(filepath))
         return {};
     std::ifstream input_file(filepath, std::ios::binary);
@@ -107,7 +107,10 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
         return {};
     std::vector<char> buffer((std::istreambuf_iterator<char>(input_file)),
                               std::istreambuf_iterator<char>());
+        
     std::vector<std::any> keys;
+    std::vector<std::any> values;
+
     int index = 0, buffer_size = buffer.size();
     while (index < buffer_size && (int)(unsigned char)buffer[index] != 254){
         index++;
@@ -119,28 +122,18 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
     while (index < buffer_size && (int)(unsigned char)buffer[index] != 255){
        if ((int)(unsigned char)buffer[index] == 253) { 
             index += 5;
-            if ((int)(unsigned char)buffer[index] == 0){
-                index++;
-                keys.push_back(decode_str_length(index, buffer));
-            } 
+            get_key_value_pair(buffer, index, keys, values);
             continue;     
        }
        if ((int)(unsigned char)buffer[index] == 252) { 
             index += 9;
-            if ((int)(unsigned char)buffer[index] == 0){
-                index++;
-                keys.push_back(decode_str_length(index, buffer));
-            } 
+            get_key_value_pair(buffer, index, keys, values);
             continue;           
        } 
-        if ((int)(unsigned char)buffer[index] == 0){
-            index++;
-            keys.push_back(decode_str_length(index, buffer));
-        }    
+        get_key_value_pair(buffer, index, keys, values);
         index++;
     }
-    return keys;
-
+    return std::make_pair(keys, values);
 }
 
 

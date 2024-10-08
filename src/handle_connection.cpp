@@ -76,13 +76,20 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
             }
         }
         else if (cmd == "get"){
-          if (vals.size() == 2 && vals[1].type() == typeid(std::string)){
-            std::string key = std::any_cast<std::string>(vals[1]);
-            if (dict_data.count(key) == 0)
-              res = "$-1\r\n";
-            else
-              res = parse_encode_bulk_string(std::any_cast<std::string>(dict_data[key]));
-          }
+            if (vals.size() == 2 && vals[1].type() == typeid(std::string)){
+                std::string key = std::any_cast<std::string>(vals[1]);
+                auto keys_values = get_keys_values_from_file(args_map["--dir"] + "/" + args_map["--dbfilename"]);
+                auto keys = keys_values.first;
+                auto values = keys_values.second;
+                int index = 0, size = keys.size();
+                while (index < size && keys[index] != key){
+                    index++;
+                }
+                if (index > size || size == 0)
+                    res = "$-1\r\n";
+                else
+                    res = parse_encode_bulk_string(std::any_cast<std::string>(values));
+            }
         }
         else if (cmd == "config"){
           std::string cmd2 = std::any_cast<std::string>(vals[1]);
@@ -103,9 +110,9 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
             std::string param = std::any_cast<std::string>(vals[1]);
             //std::transform(param.begin(), param.end(), param.begin(), ::tolower);
             if (param == "*"){
-                auto keys = get_keys_values_from_file(args_map["--dir"] + "/" + args_map["--dbfilename"]);
+                auto keys_values = get_keys_values_from_file(args_map["--dir"] + "/" + args_map["--dbfilename"]);
+                auto keys = keys_values.first;
                 res = parse_encode_array(keys);
-
             }
         }
         if (!res.empty())
