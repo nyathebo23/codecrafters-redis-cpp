@@ -46,6 +46,8 @@ std::vector<std::any> get_keys_values_from_file(std::string filepath){
 
     std::vector<std::any> keys;
     std::string line;
+    getline(input_file, line);
+
     while (trim(line) != "FE" && !input_file.eof()) {
       getline(input_file, line);
     }
