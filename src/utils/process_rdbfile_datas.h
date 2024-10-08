@@ -5,7 +5,8 @@
 #include <vector>
 #include <any>
 
-std::string hexstr_to_ASCII_string(std::string hexnums);
+void get_key_name(std::vector<char>&, int&, std::vector<std::any>&);
 std::vector<std::any> get_keys_values_from_file(std::string filepath);
+std::string decode_str_length(int&, std::vector<char>&);
 
 #endif

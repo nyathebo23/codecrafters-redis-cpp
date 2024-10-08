@@ -98,28 +98,40 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
           }
         }
         else if (cmd == "keys"){
-          std::string param = std::any_cast<std::string>(vals[1]);
-          //std::transform(param.begin(), param.end(), param.begin(), ::tolower);
-          if (param == "*"){
-             auto keys = get_keys_values_from_file(args_map["--dir"] + "/" + args_map["--dbfilename"]);  
-             res = parse_encode_array(keys);
+            std::string param = std::any_cast<std::string>(vals[1]);
+            //std::transform(param.begin(), param.end(), param.begin(), ::tolower);
+            if (param == "*"){
+                auto keys = get_keys_values_from_file(args_map["--dir"] + "/" + args_map["--dbfilename"]);
+                std::ifstream input_file(args_map["--dir"] + "/" + args_map["--dbfilename"], std::ios::binary);
+                std::stringstream ss;
+                std::vector<char> buffer((std::istreambuf_iterator<char>(input_file)),
+                                        std::istreambuf_iterator<char>());
+                std::vector<std::any> keys;
+                int index = 0, buffer_size = buffer.size();
+                while (index < buffer_size && (int)(unsigned char)buffer[index] != 254){
+                    index++;
+                }
+                while (index < buffer_size && (int)(unsigned char)buffer[index] != 251){
+                    index++;
+                }
+                while (index < buffer_size && (int)(unsigned char)buffer[index] != 255){
+                    if ((int)(unsigned char)buffer[index] == 253) { 
+                        index += 4;
+                        get_key_name(buffer, index, keys);
+                    }
+                    if ((int)(unsigned char)buffer[index] == 252) { 
+                        index += 8;
+                        get_key_name(buffer, index, keys);
+                    } 
+                          
+                        keys.push_back(get_key_name(buffer, index, keys));
+                        res = parse_encode_array(keys);
+
+                }
           }
+            if (!res.empty())
+                send(clientfd, res.c_str(), res.length(), 0);
         }
-        if (!res.empty())
-            send(clientfd, res.c_str(), res.length(), 0);
-    }
   }
   
-}
-std::string trim_low(const std::string& str) {
-    size_t first = str.find_first_not_of(' ');
-    if (first == std::string::npos) {
-        return ""; // If the string is all spaces, return an empty string
-    }
-    
-    size_t last = str.find_last_not_of(' ');
-    std::string lowcase_str = str.substr(first, (last - first + 1));
-    std::transform(lowcase_str.begin(), lowcase_str.end(), lowcase_str.begin(), ::tolower);
-
-    return lowcase_str;
 }

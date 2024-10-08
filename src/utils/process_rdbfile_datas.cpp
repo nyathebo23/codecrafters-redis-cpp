@@ -99,19 +99,14 @@ void get_key_name(std::vector<char>& buffer, int &index, std::vector<std::any>& 
 std::vector<std::any> get_keys_values_from_file(std::string filepath){
     if (is_file_empty(filepath))
         return {};
-
     std::ifstream input_file(filepath, std::ios::binary);
     std::stringstream ss;
-
     if (!input_file.is_open())
         return {};
     std::vector<char> buffer((std::istreambuf_iterator<char>(input_file)),
                               std::istreambuf_iterator<char>());
     std::vector<std::any> keys;
-    std::string line;
-
     int index = 0, buffer_size = buffer.size();
-    char byte;
     while (index < buffer_size && (int)(unsigned char)buffer[index] != 254){
         index++;
     }
