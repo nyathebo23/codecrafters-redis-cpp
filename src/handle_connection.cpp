@@ -169,10 +169,11 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                         }   
                         keys.push_back(ss.str());    
                     }
-                    int u = (int)(unsigned char)buffer[index];
-                    keys.push_back(std::to_string(u));
+
 
                     }
+                                        int u = (int)(unsigned char)buffer[index];
+                    keys.push_back(std::to_string(u));
                 }
             res = parse_encode_array(keys);
 
