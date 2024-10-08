@@ -31,7 +31,7 @@ std::string decode_str_length(int& index, std::vector<char>& buffer){
     if (str_byte.substr(0, 2) == "00"){
         len = std::stoi(str_byte.substr(2, 6), nullptr, 2);
         while (len > 0){
-            ss << buffer[index];
+            ss << (unsigned char) buffer[index];
             len --;
             index ++;
         }
@@ -42,7 +42,7 @@ std::string decode_str_length(int& index, std::vector<char>& buffer){
         len = std::stoi(str_byte.substr(2, 6) + std::bitset<8>(n).to_string(), nullptr, 2);
         index++;
         while (len > 0){
-            ss << buffer[index];
+            ss << (unsigned char) buffer[index];
             len --;
             index ++;
         }
@@ -58,7 +58,7 @@ std::string decode_str_length(int& index, std::vector<char>& buffer){
         len = std::stoi(lenstr, nullptr, 2); 
         while (len > 0){
             index ++;
-            ss << buffer[index];
+            ss << (unsigned char) buffer[index];
             len --;
         }   
         return ss.str();    
@@ -84,7 +84,7 @@ std::string decode_str_length(int& index, std::vector<char>& buffer){
             return std::to_string(num);           
         }
         else {
-            return "";
+            return "azerty";
         }
     }
 }
