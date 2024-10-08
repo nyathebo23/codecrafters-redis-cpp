@@ -102,29 +102,7 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
           //std::transform(param.begin(), param.end(), param.begin(), ::tolower);
           if (param == "*"){
              auto keys = get_keys_values_from_file(args_map["--dir"] + "/" + args_map["--dbfilename"]);  
-             std::ifstream input_file(args_map["--dir"] + "/" + args_map["--dbfilename"], std::ios::binary);
-             if (!input_file.is_open()){
-                std::vector<std::any> v;
-                v.push_back(std::string("strawberry")); 
-                res = parse_encode_array(v);
-             }
-             else {
-                std::vector<std::any> keys;
-                std::string line;
-                getline(input_file, line);
-                while (trim_low(line) != "fe" && getline(input_file, line)) {
-                    keys.push_back(line);
-                }
-                if (trim_low(line) != "fe")
-                    res = parse_encode_array(keys);
-
-                // while (trim_low(line) != "fb" && getline(input_file, line)) {
-                //     keys.push_back(line);
-                // }
-                // if (trim_low(line) != "fb")
-                //     res = parse_encode_array(keys);
-
-             }
+             res = parse_encode_array(keys);
           }
         }
         if (!res.empty())
