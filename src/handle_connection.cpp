@@ -174,6 +174,6 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
             if (!res.empty())
                 send(clientfd, res.c_str(), res.length(), 0);
         }
+    }
   }
-  
 }
