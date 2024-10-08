@@ -180,6 +180,7 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                     }
 
                 }
+            keys.push_back(std::string("azdffdf"));
             res = parse_encode_array(keys);
 
           }
