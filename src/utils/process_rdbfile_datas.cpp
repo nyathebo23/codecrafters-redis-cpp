@@ -20,50 +20,6 @@ bool is_file_empty(const std::string& fileName) {
     return file.tellg() == 0;  // tellg() returns the position of the cursor, which will be 0 if the file is empty
 }
 
-void get_key_name(std::vector<char>& buffer, int &index, std::vector<std::any>& keys){
-    if ((int)(unsigned char)buffer[index] == 0){
-        keys.push_back(decode_str_length(index, buffer));
-    }
-}
-
-std::vector<std::any> get_keys_values_from_file(std::string filepath){
-    if (is_file_empty(filepath))
-        return {};
-
-    std::ifstream input_file(filepath, std::ios::binary);
-    std::stringstream ss;
-
-    if (!input_file.is_open())
-        return {};
-    std::vector<char> buffer((std::istreambuf_iterator<char>(input_file)),
-                              std::istreambuf_iterator<char>());
-    std::vector<std::any> keys;
-    std::string line;
-
-    int index = 0, buffer_size = buffer.size();
-    char byte;
-    while (index < buffer_size && (int)(unsigned char)buffer[index] != 254){
-        index++;
-    }
-    while (index < buffer_size && (int)(unsigned char)buffer[index] != 251){
-        index++;
-    }
-    while (index < buffer_size && (int)(unsigned char)buffer[index] != 255){
-      if ((int)(unsigned char)buffer[index] == 253) { 
-            index += 4;
-            get_key_name(buffer, index, keys);
-      }
-      if ((int)(unsigned char)buffer[index] == 252) { 
-            index += 8;
-            get_key_name(buffer, index, keys);
-      } 
-      get_key_name(buffer, index, keys);
-
-    }
-
-   }
-
-
 
 std::string decode_str_length(int& index, std::vector<char>& buffer){
     unsigned char ch = buffer[index];
@@ -132,6 +88,51 @@ std::string decode_str_length(int& index, std::vector<char>& buffer){
         }
     }
 }
+
+void get_key_name(std::vector<char>& buffer, int &index, std::vector<std::any>& keys){
+    if ((int)(unsigned char)buffer[index] == 0){
+        keys.push_back(decode_str_length(index, buffer));
+    }
+}
+
+
+std::vector<std::any> get_keys_values_from_file(std::string filepath){
+    if (is_file_empty(filepath))
+        return {};
+
+    std::ifstream input_file(filepath, std::ios::binary);
+    std::stringstream ss;
+
+    if (!input_file.is_open())
+        return {};
+    std::vector<char> buffer((std::istreambuf_iterator<char>(input_file)),
+                              std::istreambuf_iterator<char>());
+    std::vector<std::any> keys;
+    std::string line;
+
+    int index = 0, buffer_size = buffer.size();
+    char byte;
+    while (index < buffer_size && (int)(unsigned char)buffer[index] != 254){
+        index++;
+    }
+    while (index < buffer_size && (int)(unsigned char)buffer[index] != 251){
+        index++;
+    }
+    while (index < buffer_size && (int)(unsigned char)buffer[index] != 255){
+      if ((int)(unsigned char)buffer[index] == 253) { 
+            index += 4;
+            get_key_name(buffer, index, keys);
+      }
+      if ((int)(unsigned char)buffer[index] == 252) { 
+            index += 8;
+            get_key_name(buffer, index, keys);
+      } 
+      get_key_name(buffer, index, keys);
+
+    }
+
+   }
+
 
 // int main(int argc, char **argv) {
 //     std::vector<std::any> str = get_keys_values_from_file("rdbfile.rdb");
