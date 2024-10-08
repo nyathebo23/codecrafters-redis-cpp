@@ -112,12 +112,12 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                 int index = 0, buffer_size = buffer.size();
                 while (index < buffer_size && (int)(unsigned char)buffer[index] != 254){
                     index++;
-                                        std::string u = buffer[index];
+                                        std::string u(buffer[index]);
                     keys.push_back(u);
                 }
                 while (index < buffer_size && (int)(unsigned char)buffer[index] != 251){
                     index++;
-                                        std::string u = buffer[index];
+                                        std::string u(buffer[index]);
                     keys.push_back(u);
                 }
                     std::string u = buffer[index];
