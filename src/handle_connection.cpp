@@ -82,7 +82,7 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                 auto keys = keys_values.first;
                 auto values = keys_values.second;
                 int index = 0, size = keys.size();
-                while (index < size && keys[index] != key){
+                while (index < size && std::any_cast<std::string>(keys[index]) != key){
                     index++;
                 }
                 if (index > size || size == 0)
