@@ -8,6 +8,7 @@
 #include <cmath>
 #include <map>
 #include <fstream>
+#include <sstream>
 #include "handle_connection.h"
 #include "utils/encode/array_parser_enc.h"
 #include "utils/encode/simple_data_parser_enc.h"
@@ -123,9 +124,49 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                         index += 8;
                         get_key_name(buffer, index, keys);
                     } 
-                          
-                        keys.push_back(get_key_name(buffer, index, keys));
-                        res = parse_encode_array(keys);
+                    unsigned char ch = buffer[index];
+                    int n = ch;
+                    std::stringstream ss;
+                    const std::string str_byte = std::bitset<8>(n).to_string();
+                    int len;
+                    index++;
+                    if (str_byte.substr(0, 2) == "00"){
+                        len = std::stoi(str_byte.substr(2, 6), nullptr, 2);
+                        while (len > 0){
+                            ss << buffer[index];
+                            len --;
+                            index ++;
+                        }
+                        keys.push_back(ss.str());    
+                    }
+                    else if (str_byte.substr(0, 2) == "01"){
+                        ch = buffer[index]; n = ch;
+                        len = std::stoi(str_byte.substr(2, 6) + std::bitset<8>(n).to_string(), nullptr, 2);
+                        index++;
+                        while (len > 0){
+                            ss << buffer[index];
+                            len --;
+                            index ++;
+                        }
+                        keys.push_back(ss.str());    
+                    }
+                    else if (str_byte.substr(0, 2) == "10"){
+                        std::string lenstr = "";
+                        for (int i = 0; i < 4; i++){
+                            ch = buffer[index]; n = ch; 
+                            lenstr += std::bitset<8>(n).to_string();
+                            index ++;
+                        }
+                        len = std::stoi(lenstr, nullptr, 2); 
+                        while (len > 0){
+                            index ++;
+                            ss << buffer[index];
+                            len --;
+                        }   
+                        keys.push_back(ss.str());    
+                    }
+
+                    res = parse_encode_array(keys);
 
                 }
           }
