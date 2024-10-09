@@ -162,8 +162,12 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
        if ((int)(unsigned char)buffer[index] == 252) { 
             if (check_key_date_validity(buffer, index, eight_bytes)){
                 unsigned char binary_num[8];
+                unsigned char binary_num2[8];
+
                 for (int j = 0; j < 8; j++)
                     binary_num[j] = buffer[index+j+1];
+                for (int j = 0; j < 8; j++)
+                    binary_num2[j] = binary_num[8-j-1];
                 auto now = std::chrono::steady_clock::now();
                 // Convert the current time to time since epoch
                 auto duration = now.time_since_epoch();
