@@ -131,6 +131,7 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
         get_key_value_pair(buffer, index, keys, values);
         index++;
     }
+    input_file.close();
     return std::make_pair(keys, values);
 }
 
