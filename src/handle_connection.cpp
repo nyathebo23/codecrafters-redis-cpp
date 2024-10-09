@@ -94,7 +94,7 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                         res = parse_encode_bulk_string(std::any_cast<std::string>(keys_values.second[index]));
                     }
                     catch(std::bad_any_cast){
-                         res = parse_encode_bulk_string(str::string(std::any_cast<char>(keys_values.second[index])));
+                         res = parse_encode_bulk_string(std::string(std::any_cast<char>(keys_values.second[index])));
                     }
                 }
                    
