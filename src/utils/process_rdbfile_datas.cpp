@@ -130,13 +130,15 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
     std::stringstream ss;
     std::vector<std::any> keys;
     std::vector<std::any> values;
-    return std::make_pair(keys, values);
+    
     int index = 0, buffer_size = buffer.size();
     while (index < buffer_size && buffer[index] != 0xFE){
         index++;
     }
+    
     while (index < buffer_size && buffer[index] != 0xFB){
         index++;
+        return std::make_pair(keys, values);
     }
     index += 3;
     while (index < buffer_size && buffer[index] != 0xFF){
