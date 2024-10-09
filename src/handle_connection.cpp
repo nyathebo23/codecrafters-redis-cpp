@@ -87,7 +87,7 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                 // Merge the vectors using the merge function
                 std::merge(keys_values.first.begin(), keys_values.first.end(), keys_values.second.begin(), keys_values.second.end(),
                 merged.begin());
-                res = parse_encode_bulk_string(merged);
+                res = parse_encode_array(merged);
                 // if (index > size || size == 0){
                 //     if (dict_data.count(key) == 0)
                 //         res = "$-1\r\n";
