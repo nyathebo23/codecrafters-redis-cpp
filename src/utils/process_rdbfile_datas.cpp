@@ -149,8 +149,9 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
             continue;     
        }
        if (buffer[index] == 0xFC) { 
-            return std::make_pair(keys, values);
+            
             if (check_key_date_validity(buffer, index, eight_bytes)){
+                return std::make_pair(keys, values);
                 index += 9;
                 get_key_value_pair(buffer, index, keys, values);
                 
