@@ -156,8 +156,8 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
             }
             keys.push_back(std::string("azert"));
             values.push_back(std::string("azert"));
-            if (index > buffer_size - 4)
-                return std::make_pair(keys, values);
+
+            return std::make_pair(keys, values);
             continue;           
        } 
        
