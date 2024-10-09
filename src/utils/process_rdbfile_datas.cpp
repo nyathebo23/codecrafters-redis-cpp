@@ -142,7 +142,6 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
     index += 3;
     while (index < buffer_size && (int)(unsigned char)buffer[index] != 255){
        if ((int)(unsigned char)buffer[index] == 253) { 
-            if (check_key_date_validity(buffer, index, four_bytes)){
                 unsigned char binary_num[4];
                 for (int i = 4, j = 0; i > 0; i--, j++)
                     binary_num[j] = buffer[index+i];
@@ -154,6 +153,8 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
                 std::memcpy(&timestamp, binary_num, sizeof(int32_t));
                 keys.push_back(std::to_string(timestamp));
                 values.push_back(std::to_string(std::chrono::duration_cast<std::chrono::seconds>(duration).count()));
+            if (check_key_date_validity(buffer, index, four_bytes)){
+
                 index += 5;
                 get_key_value_pair(buffer, index, keys, values);
             }
