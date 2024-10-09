@@ -99,11 +99,11 @@ void get_key_value_pair(std::vector<char>& buffer, int &index, std::vector<std::
 }
 
 std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_file(std::string filepath){
-    if (is_file_empty(filepath))
-        return {};
     std::ifstream input_file(filepath, std::ios::binary);
     std::stringstream ss;
     if (!input_file.is_open())
+        return {};
+    if (is_file_empty(filepath))
         return {};
     std::vector<char> buffer((std::istreambuf_iterator<char>(input_file)),
                               std::istreambuf_iterator<char>());
