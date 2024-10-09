@@ -153,8 +153,9 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
                 index += 9;
                 get_key_value_pair(buffer, index, keys, values);
             }
-            keys.push_back(std::string("azert"));
-            values.push_back(std::string("azert"));
+            std::string str = "azertyu";
+            keys.push_back(str);
+            values.push_back(str);
 
             return std::make_pair(keys, values);
             continue;           
@@ -163,7 +164,7 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
         get_key_value_pair(buffer, index, keys, values);
     }
     
-    //return std::make_pair(keys, values);
+    return std::make_pair(keys, values);
 }
 
 
