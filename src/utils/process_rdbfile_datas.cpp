@@ -105,7 +105,7 @@ enum byte_space {one_byte=1, two_bytes=2, four_bytes=4, eight_bytes=8};
 bool check_key_date_validity(std::vector<char>& buffer, int &index, byte_space nb_bytes){
     unsigned char binary_num[nb_bytes];
     for (int j = 0; j < nb_bytes; j++)
-        binary_num[j] = buffer[index+j+1];
+        binary_num[j] = (unsigned char) buffer[index+j+1];
     int64_t timestamp;
     std::memcpy(&timestamp, binary_num, sizeof(int64_t)/(8/nb_bytes));
     auto now = std::chrono::system_clock::now();
