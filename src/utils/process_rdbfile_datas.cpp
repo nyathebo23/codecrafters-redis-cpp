@@ -97,6 +97,8 @@ void get_key_value_pair(std::vector<char>& buffer, int &index, std::vector<std::
         keys.push_back(decode_str_length(index, buffer));
         values.push_back(decode_str_length(index, buffer));
     }
+    else
+        index++;
 }
 
 std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_file(std::string filepath){
@@ -129,7 +131,6 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
             continue;           
        } 
         get_key_value_pair(buffer, index, keys, values);
-        index++;
     }
     input_file.close();
     return std::make_pair(keys, values);
