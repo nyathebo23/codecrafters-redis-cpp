@@ -168,8 +168,8 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
                 // Convert the current time to time since epoch
                 auto duration = now.time_since_epoch();
                 // Convert duration to milliseconds
-                int64_t timestamp;
-                std::memcpy(&timestamp, binary_num, sizeof(int64_t));
+                unsigned long timestamp;
+                std::memcpy(&timestamp, binary_num, sizeof(long));
                 keys.push_back(std::to_string(timestamp));
                 values.push_back(std::to_string(std::chrono::duration_cast<std::chrono::seconds>(duration).count()));
                 index += 9;
