@@ -21,7 +21,7 @@ bool is_file_empty(const std::string& fileName) {
     return file.tellg() == 0;  // tellg() returns the position of the cursor, which will be 0 if the file is empty
 }
 
-std::string decode_str_length(int& index, std::vector<char>& buffer){
+std::string decode_str_length(int& index, std::vector<unsigned char>& buffer){
     unsigned char ch = buffer[index];
     int n = ch;
     std::stringstream ss;
@@ -31,7 +31,7 @@ std::string decode_str_length(int& index, std::vector<char>& buffer){
     if (str_byte.substr(0, 2) == "00"){
         len = std::stoi(str_byte.substr(2, 6), nullptr, 2);
         while (len > 0){
-            ss << (unsigned char) buffer[index];
+            ss <<  buffer[index];
             len --;
             index ++;
         }
@@ -59,7 +59,7 @@ std::string decode_str_length(int& index, std::vector<char>& buffer){
         }
         len = std::stoi(lenstr, nullptr, 2); 
         while (len > 0){
-            ss << (unsigned char) buffer[index];
+            ss <<  buffer[index];
             len --;
             index ++;
         }   
@@ -91,8 +91,8 @@ std::string decode_str_length(int& index, std::vector<char>& buffer){
     }
 }
 
-void get_key_value_pair(std::vector<char>& buffer, int &index, std::vector<std::any>& keys, std::vector<std::any>& values){
-    if ((int)(unsigned char)buffer[index] == 0){
+void get_key_value_pair(std::vector<unsigned char>& buffer, int &index, std::vector<std::any>& keys, std::vector<std::any>& values){
+    if ((int)buffer[index] == 0){
         index++;
         keys.push_back(decode_str_length(index, buffer));
         values.push_back(decode_str_length(index, buffer));
@@ -103,7 +103,7 @@ void get_key_value_pair(std::vector<char>& buffer, int &index, std::vector<std::
 
 enum byte_space {one_byte=1, two_bytes=2, four_bytes=4, eight_bytes=8};
 
-bool check_key_date_validity(std::vector<char>& buffer, int &index, byte_space nb_bytes){
+bool check_key_date_validity(std::vector<unsigned char>& buffer, int &index, byte_space nb_bytes){
     unsigned char binary_num[nb_bytes];
     for (int j = 0; j < nb_bytes; j++)
         binary_num[j] = buffer[index+j+1];
@@ -111,7 +111,7 @@ bool check_key_date_validity(std::vector<char>& buffer, int &index, byte_space n
     // Convert the current time to time since epoch
     auto duration = now.time_since_epoch();
     // Convert duration to milliseconds
-    uint64_t timestamp;
+    int64_t timestamp;
     if (nb_bytes == four_bytes){
         std::memcpy(&timestamp, binary_num, sizeof(int32_t));
         return timestamp > std::chrono::duration_cast<std::chrono::seconds>(duration).count();
@@ -126,29 +126,29 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
     std::ifstream input_file(filepath, std::ios::binary);
     if (std::filesystem::is_directory(filepath) || !input_file.is_open())
         return {};
-    std::vector<char> buffer((std::istreambuf_iterator<char>(input_file)),
+    std::vector<unsigned char> buffer((std::istreambuf_iterator<char>(input_file)),
                               std::istreambuf_iterator<char>());
     std::stringstream ss;
     std::vector<std::any> keys;
     std::vector<std::any> values;
 
     int index = 0, buffer_size = buffer.size();
-    while (index < buffer_size && (int)(unsigned char)buffer[index] != 254){
+    while (index < buffer_size && (int)buffer[index] != 254){
         index++;
     }
-    while (index < buffer_size && (int)(unsigned char)buffer[index] != 251){
+    while (index < buffer_size && (int)buffer[index] != 251){
         index++;
     }
     index += 3;
-    while (index < buffer_size && (int)(unsigned char)buffer[index] != 255){
-       if ((int)(unsigned char)buffer[index] == 253) { 
+    while (index < buffer_size && (int)buffer[index] != 255){
+       if ((int)buffer[index] == 253) { 
             if (check_key_date_validity(buffer, index, four_bytes)){
                 index += 5;
                 get_key_value_pair(buffer, index, keys, values);
             }
             continue;     
        }
-       if ((int)(unsigned char)buffer[index] == 252) { 
+       if ((int)buffer[index] == 252) { 
             if (check_key_date_validity(buffer, index, eight_bytes)){
                 index += 9;
                 get_key_value_pair(buffer, index, keys, values);
