@@ -111,7 +111,7 @@ bool check_key_date_validity(std::vector<char>& buffer, int &index, byte_space n
         std::memcpy(&timestamp, binary_num, sizeof(int32_t));
     else
         std::memcpy(&timestamp, binary_num, sizeof(int64_t));
-    auto now = std::chrono::system_clock::now();
+    auto now = std::chrono::steady_clock::now();
     // Convert the current time to time since epoch
     auto duration = now.time_since_epoch();
     // Convert duration to milliseconds
