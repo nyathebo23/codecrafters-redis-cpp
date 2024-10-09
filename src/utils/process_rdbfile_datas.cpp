@@ -10,6 +10,7 @@
 #include <filesystem>
 #include "process_rdbfile_datas.h"
 #include <cstring> 
+#include <ctime> 
 #include <algorithm>
 
 using str_nullable = std::variant<std::string, std::nullptr_t>;
@@ -121,12 +122,21 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
     index += 3;
     while (index < buffer_size && (int)(unsigned char)buffer[index] != 255){
        if ((int)(unsigned char)buffer[index] == 253) { 
-            index += 5;
+            index += 1;
+            char binary_num[4] = {buffer[index+3], buffer[index+2], buffer[index+1], buffer[index]};
+            unsigned int timestamp;
+            std::memcpy(&timestamp, binary_num, sizeof(int)); 
+            index += 4;
             get_key_value_pair(buffer, index, keys, values);
             continue;     
        }
        if ((int)(unsigned char)buffer[index] == 252) { 
-            index += 9;
+            index += 1;
+            char binary_num[8] = {buffer[index+7], buffer[index+6], buffer[index+5], buffer[index+4], 
+            buffer[index+3], buffer[index+2], buffer[index+1], buffer[index]};
+            unsigned int timestamp;
+            std::memcpy(&timestamp, binary_num, sizeof(int));   
+            index += 8;          
             get_key_value_pair(buffer, index, keys, values);
             continue;           
        } 
