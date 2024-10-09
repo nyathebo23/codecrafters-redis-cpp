@@ -22,28 +22,25 @@ bool is_file_empty(const std::string& fileName) {
 }
 
 std::string decode_str_length(int& index, std::vector<unsigned char>& buffer){
-    unsigned char ch = buffer[index];
-    int n = ch;
+    int n = buffer[index], len;
     std::stringstream ss;
     const std::string str_byte = std::bitset<8>(n).to_string();
-    int len;
     index++;
     if (str_byte.substr(0, 2) == "00"){
         len = std::stoi(str_byte.substr(2, 6), nullptr, 2);
         while (len > 0){
-            ss <<  buffer[index];
+            ss << buffer[index];
             len --;
             index ++;
         }
         return  ss.str();
     }
     else if (str_byte.substr(0, 2) == "01"){
-        ch = buffer[index]; 
-        n = ch;
+        n = buffer[index];
         len = std::stoi(str_byte.substr(2, 6) + std::bitset<8>(n).to_string(), nullptr, 2);
         index++;
         while (len > 0){
-            ss << ch;
+            ss << buffer[index];
             len --;
             index ++;
         }
@@ -52,8 +49,7 @@ std::string decode_str_length(int& index, std::vector<unsigned char>& buffer){
     else if (str_byte.substr(0, 2) == "10"){
         std::string lenstr = "";
         for (int i = 0; i < 4; i++){
-            ch = buffer[index]; 
-            n = ch; 
+            n = buffer[index]; 
             lenstr += std::bitset<8>(n).to_string();
             index ++;
         }
@@ -67,7 +63,7 @@ std::string decode_str_length(int& index, std::vector<unsigned char>& buffer){
     }
     else {
         if (str_byte == "11000000"){
-            ch = buffer[index]; n = ch;
+            n = buffer[index];
             index++;
             return std::to_string(n);            
         } 
