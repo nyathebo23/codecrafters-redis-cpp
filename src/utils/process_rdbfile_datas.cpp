@@ -72,14 +72,14 @@ std::string decode_str_length(int& index, std::vector<unsigned char>& buffer){
             return std::to_string(n);            
         } 
         else if (str_byte == "11000001"){
-            char binary_num[] = {buffer[index+1], buffer[index]};
+            unsigned char binary_num[] = {buffer[index+1], buffer[index]};
             int num;
             std::memcpy(&num, binary_num, sizeof(int)/2); 
             index += 2;
             return std::to_string(num);           
         }
         else if (str_byte == "11000010"){
-            char binary_num[] = {buffer[index+3], buffer[index+2], buffer[index+1], buffer[index]};
+            unsigned char binary_num[] = {buffer[index+3], buffer[index+2], buffer[index+1], buffer[index]};
             int num;
             std::memcpy(&num, binary_num, sizeof(int)); 
             index += 4;
