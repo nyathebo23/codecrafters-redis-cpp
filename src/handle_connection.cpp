@@ -89,8 +89,16 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                     else 
                         res = parse_encode_bulk_string(dict_data[key]);
                 }
-                else
-                    res = parse_encode_bulk_string(std::any_cast<std::string>(keys_values.second[index]));
+                else{
+                    try {
+                        res = parse_encode_bulk_string(std::any_cast<std::string>(keys_values.second[index]));
+
+                    }
+                    catch(std::bad_any_cast){
+                         res = parse_encode_bulk_string(std::string("rawberry"));
+                    }
+                }
+                   
             }
         }
         else if (cmd == "config"){
