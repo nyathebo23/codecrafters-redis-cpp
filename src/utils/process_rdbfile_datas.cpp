@@ -7,6 +7,7 @@
 #include <any>
 #include <sstream>
 #include <bitset>
+#include <filesystem>
 #include "process_rdbfile_datas.h"
 #include <cstring> 
 #include <algorithm>
@@ -100,12 +101,11 @@ void get_key_value_pair(std::vector<char>& buffer, int &index, std::vector<std::
 
 std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_file(std::string filepath){
     std::ifstream input_file(filepath, std::ios::binary);
-    std::stringstream ss;
-    if (!input_file.is_open())
+    if (std::filesystem::is_directory(filepath) || !input_file.is_open())
         return {};
     std::vector<char> buffer((std::istreambuf_iterator<char>(input_file)),
                               std::istreambuf_iterator<char>());
-        
+    std::stringstream ss;
     std::vector<std::any> keys;
     std::vector<std::any> values;
 

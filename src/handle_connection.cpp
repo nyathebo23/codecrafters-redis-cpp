@@ -22,7 +22,7 @@
 #include <netdb.h>
 
 std::map<std::string, std::string> dict_data;
-std::string trim_low(const std::string& str);
+
 // Fonction à exécuter
 void erase_key(const std::string& key) {
     dict_data.erase(key);
@@ -34,7 +34,7 @@ void execute_after_delay(int delay, const std::string& key) {
     erase_key(key);
 }
 
-void handle_connection(const int& clientfd, std::map<std::string, std::string>& args_map){
+void handle_connection(const int& clientfd, std::map<std::string, std::string> args_map){
   while (1) {
     char buffer[128];    
     if (recv(clientfd, &buffer, sizeof(buffer), 0) <= 0) {
@@ -79,10 +79,8 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string>& 
             if (vals.size() == 2 && vals[1].type() == typeid(std::string)){
                 std::string key = std::any_cast<std::string>(vals[1]);
                 auto keys_values = get_keys_values_from_file(args_map["--dir"] + "/" + args_map["--dbfilename"]);
-                auto keys = keys_values.first;
-                auto values = keys_values.second;
                 int index = 0, size = keys.size();
-                while (index < size && std::any_cast<std::string>(keys[index]) != key){
+                while (index < size && std::any_cast<std::string>(keys_values.first[index]) != key){
                     index++;
                 }
                 if (index > size || size == 0){
@@ -93,7 +91,7 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string>& 
                     }
                 }
                 else
-                    res = parse_encode_bulk_string(std::any_cast<std::string>(values[index]));
+                    res = parse_encode_bulk_string(std::any_cast<std::string>(keys_values.second[index]));
             }
         }
         else if (cmd == "config"){
