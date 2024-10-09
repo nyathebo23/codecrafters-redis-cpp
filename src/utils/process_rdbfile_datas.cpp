@@ -103,7 +103,7 @@ void get_key_value_pair(std::vector<char>& buffer, int &index, std::vector<std::
 enum byte_space {one_byte=1, two_bytes=2, four_bytes=4, eight_bytes=8};
 
 bool check_key_date_validity(std::vector<char>& buffer, int &index, byte_space nb_bytes){
-    char binary_num[nb_bytes];
+    unsigned char binary_num[nb_bytes];
     int size = nb_bytes + 1;
     for (int j = 1; j < size; j++)
         binary_num[j] = buffer[index+j];
