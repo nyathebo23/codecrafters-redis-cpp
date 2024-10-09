@@ -86,9 +86,8 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                 if (index > size || size == 0){
                     if (dict_data.count(key) == 0)
                         res = "$-1\r\n";
-                    else {
+                    else 
                         res = parse_encode_bulk_string(std::any_cast<std::string>(dict_data[key]));
-                    }
                 }
                 else
                     res = parse_encode_bulk_string(std::any_cast<std::string>(keys_values.second[index]));
