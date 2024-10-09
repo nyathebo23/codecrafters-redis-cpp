@@ -118,6 +118,13 @@ bool check_key_date_validity(std::vector<unsigned char>& buffer, int &index, byt
     }
 }
 
+void skip_key(std::vector<unsigned char>& buffer, int& index, byte_space nb){
+    index += nb + 1;
+    while (buffer[index] != 0xFD && buffer[index] != 0xFD && buffer[index] != 0xFD && buffer[index] && 0xFD ){
+        index++;
+    }
+}
+
 std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_file(std::string filepath){
     std::ifstream input_file(filepath, std::ios::binary);
     if (std::filesystem::is_directory(filepath) || !input_file.is_open())
@@ -140,12 +147,13 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
     }
     index += 3;
     while (index < buffer_size && buffer[index] != 0xFF){
-        
        if (buffer[index] == 0xFD) { 
             if (check_key_date_validity(buffer, index, four_bytes)){
                 index += 5;
                 get_key_value_pair(buffer, index, keys, values);
             }
+            else 
+                skip_key(buffer, index, four_bytes);
             continue;     
        }
        if (buffer[index] == 0xFC) { 
@@ -154,10 +162,10 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
                 get_key_value_pair(buffer, index, keys, values);
                 return std::make_pair(keys, values);
             }
-            
+            else 
+                skip_key(buffer, index, eight_bytes);
             continue;           
        } 
-       
         get_key_value_pair(buffer, index, keys, values);
     }
     
