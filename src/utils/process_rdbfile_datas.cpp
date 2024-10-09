@@ -161,17 +161,17 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
        }
        if ((int)(unsigned char)buffer[index] == 252) { 
             if (check_key_date_validity(buffer, index, eight_bytes)){
-                unsigned char binary_num[8];
-                for (int i = 8, j = 0; i > 0; i--, j++)
-                    binary_num[j] = buffer[index+i];
-                auto now = std::chrono::steady_clock::now();
-                // Convert the current time to time since epoch
-                auto duration = now.time_since_epoch();
-                // Convert duration to milliseconds
-                int64_t timestamp;
-                std::memcpy(&timestamp, binary_num, sizeof(int64_t));
-                keys.push_back(std::to_string(timestamp));
-                values.push_back(std::to_string(std::chrono::duration_cast<std::chrono::seconds>(duration).count()));
+                // unsigned char binary_num[8];
+                // for (int i = 8, j = 0; i > 0; i--, j++)
+                //     binary_num[j] = buffer[index+i];
+                // auto now = std::chrono::steady_clock::now();
+                // // Convert the current time to time since epoch
+                // auto duration = now.time_since_epoch();
+                // // Convert duration to milliseconds
+                // int64_t timestamp;
+                // std::memcpy(&timestamp, binary_num, sizeof(int64_t));
+                // keys.push_back(std::to_string(timestamp));
+                // values.push_back(std::to_string(std::chrono::duration_cast<std::chrono::seconds>(duration).count()));
                 index += 9;
                 get_key_value_pair(buffer, index, keys, values);
             }
