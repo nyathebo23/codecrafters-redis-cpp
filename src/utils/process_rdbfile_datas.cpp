@@ -10,12 +10,10 @@
 #include <filesystem>
 #include "process_rdbfile_datas.h"
 #include <cstring> 
-#include <ctime> 
 #include <algorithm>
 #include <chrono>
 
 using str_nullable = std::variant<std::string, std::nullptr_t>;
-
 
 
 bool is_file_empty(const std::string& fileName) {
@@ -102,6 +100,22 @@ void get_key_value_pair(std::vector<char>& buffer, int &index, std::vector<std::
     else
         index++;
 }
+enum byte_space {one_byte=1, two_bytes=2, four_bytes=4, eight_bytes=8};
+
+bool check_key_date_validity(std::vector<char>& buffer, int &index, byte_space nb_bytes){
+    char binary_num[nb_bytes];
+    for (int i = nb_bytes, j = 0; i > 0; i--, j++)
+        binary_num[j] = buffer[index+i];
+    int64_t timestamp;
+    std::memcpy(&timestamp, binary_num, sizeof(int64_t)/(8/nb_bytes));
+    auto now = std::chrono::system_clock::now();
+    // Convert the current time to time since epoch
+    auto duration = now.time_since_epoch();
+    // Convert duration to milliseconds
+    auto time = nb_bytes == four_bytes ? std::chrono::duration_cast<std::chrono::seconds>(duration).count() 
+    : std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+    return timestamp > time;
+}
 
 std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_file(std::string filepath){
     std::ifstream input_file(filepath, std::ios::binary);
@@ -123,38 +137,17 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
     index += 3;
     while (index < buffer_size && (int)(unsigned char)buffer[index] != 255){
        if ((int)(unsigned char)buffer[index] == 253) { 
-            index += 1;
-            char binary_num[4] = {buffer[index+3], buffer[index+2], buffer[index+1], buffer[index]};
-            int64_t timestamp;
-            std::memcpy(&timestamp, binary_num, sizeof(int32_t)); 
-            auto now = std::chrono::system_clock::now();
-            // Convert the current time to time since epoch
-            auto duration = now.time_since_epoch();
-            // Convert duration to milliseconds
-            auto seconds = std::chrono::duration_cast<std::chrono::seconds>(
-                    duration).count();
-            if (timestamp > seconds){
-                index += 4;
+            if (check_key_date_validity(buffer, index, four_bytes)){
+                index += 5;
                 get_key_value_pair(buffer, index, keys, values);
             }
             continue;     
        }
        if ((int)(unsigned char)buffer[index] == 252) { 
-            index += 1;
-            char binary_num[8] = {buffer[index+7], buffer[index+6], buffer[index+5], buffer[index+4], 
-            buffer[index+3], buffer[index+2], buffer[index+1], buffer[index]};
-            int64_t timestamp;
-            std::memcpy(&timestamp, binary_num, sizeof(int64_t));
-            auto now = std::chrono::system_clock::now();
-            // Convert the current time to time since epoch
-            auto duration = now.time_since_epoch();
-            // Convert duration to milliseconds
-            auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(
-                    duration).count();
-            if (timestamp > milliseconds){
-                index += 8;          
+            if (check_key_date_validity(buffer, index, eight_bytes)){
+                index += 9;
                 get_key_value_pair(buffer, index, keys, values);
-            } 
+            }
             continue;           
        } 
         get_key_value_pair(buffer, index, keys, values);
@@ -162,6 +155,7 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
     input_file.close();
     return std::make_pair(keys, values);
 }
+
 
 
 // int main(int argc, char **argv) {
