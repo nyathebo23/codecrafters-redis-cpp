@@ -119,7 +119,7 @@ bool check_key_date_validity(std::vector<unsigned char>& buffer, int &index, byt
 }
 
 void skip_key(std::vector<unsigned char>& buffer, int& index, byte_space nb){
-    index += nb + 1;
+    index += nb + 2;
     decode_str_length(index, buffer);
     decode_str_length(index, buffer);
 }
