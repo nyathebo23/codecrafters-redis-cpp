@@ -92,7 +92,7 @@ std::string decode_str_length(int& index, std::vector<unsigned char>& buffer){
 }
 
 void get_key_value_pair(std::vector<unsigned char>& buffer, int &index, std::vector<std::any>& keys, std::vector<std::any>& values){
-    if ((int)(unsigned char)buffer[index] == 0x00){
+    if ((int)(unsigned char)buffer[index] == 0){
         index++;
         keys.push_back(decode_str_length(index, buffer));
         values.push_back(decode_str_length(index, buffer));
@@ -138,7 +138,7 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
     std::vector<std::any> values;
 
     int index = 0, buffer_size = buffer.size();
-    while (index < buffer_size && (int)(unsigned char)buffer[index] != 0){
+    while (index < buffer_size && (int)(unsigned char)buffer[index] != 254){
         index++;
     }
     while (index < buffer_size && (int)(unsigned char)buffer[index] != 251){
