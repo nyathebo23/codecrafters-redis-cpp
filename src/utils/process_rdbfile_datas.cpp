@@ -135,7 +135,6 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
     while (index < buffer_size && buffer[index] != 0xFE){
         index++;
     }
-    
     while (index < buffer_size && buffer[index] != 0xFB){
         index++;
     }
