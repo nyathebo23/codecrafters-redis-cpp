@@ -107,11 +107,11 @@ bool check_key_date_validity(std::vector<char>& buffer, int &index, byte_space n
     unsigned char binary_num[nb_bytes];
     for (int j = 0; j < nb_bytes; j++)
         binary_num[j] = buffer[index+j+1];
-    auto now = std::chrono::steady_clock::now();
+    auto now = std::chrono::system_clock::now();
     // Convert the current time to time since epoch
     auto duration = now.time_since_epoch();
     // Convert duration to milliseconds
-    int64_t timestamp;
+    uint64_t timestamp;
     if (nb_bytes == four_bytes){
         std::memcpy(&timestamp, binary_num, sizeof(int32_t));
         return timestamp > std::chrono::duration_cast<std::chrono::seconds>(duration).count();
