@@ -173,9 +173,9 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
                 auto duration = now.time_since_epoch();
                 // Convert duration to milliseconds
                 unsigned long timestamp;
-                std::memcpy(&timestamp, binary_num, sizeof(long));
+                std::memcpy(&timestamp, binary_num2, sizeof(long));
                 keys.push_back(std::to_string(timestamp));
-                values.push_back(std::to_string(std::chrono::duration_cast<std::chrono::seconds>(duration).count()));
+                keys.push_back(std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()));
                 index += 9;
                 get_key_value_pair(buffer, index, keys, values);
             }
