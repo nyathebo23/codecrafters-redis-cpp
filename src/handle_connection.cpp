@@ -80,14 +80,14 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                 std::string key = std::any_cast<std::string>(vals[1]);
                 auto keys_values = get_keys_values_from_file(args_map["--dir"] + "/" + args_map["--dbfilename"]);
                 int index = 0, size = keys_values.first.size();
-                while (index < size){
+                while (index < size && std::any_cast<std::string>(keys_values.first[index]) != key){
                     index++;
                 }
                 if (index > size || size == 0){
                     if (dict_data.count(key) == 0)
                         res = "$-1\r\n";
                     else 
-                        res = parse_encode_bulk_string(std::any_cast<std::string>(dict_data[key]));
+                        res = parse_encode_bulk_string(dict_data[key]);
                 }
                 else
                     res = parse_encode_bulk_string(std::any_cast<std::string>(keys_values.second[index]));
