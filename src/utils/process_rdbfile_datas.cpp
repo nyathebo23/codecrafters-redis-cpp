@@ -168,20 +168,22 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
                     binary_num[j] = buffer[index+j+1];
                 for (int j = 0; j < 8; j++)
                     binary_num2[j] = binary_num[8-j-1];
-                auto now = std::chrono::steady_clock::now();
+                auto now = std::chrono::system_clock::now();
                 // Convert the current time to time since epoch
                 auto duration = now.time_since_epoch();
                 // Convert duration to milliseconds
-                unsigned long timestamp;
+                int64_t timestamp, timestamp2;
                 std::memcpy(&timestamp, binary_num2, sizeof(long));
                 keys.push_back(std::to_string(timestamp));
+                std::memcpy(&timestamp2, binary_num, sizeof(long));
+                keys.push_back(std::to_string(timestamp2));
                 keys.push_back(std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()));
                 index += 9;
-                get_key_value_pair(buffer, index, keys, values);
+                //get_key_value_pair(buffer, index, keys, values);
             }
             continue;           
        } 
-        get_key_value_pair(buffer, index, keys, values);
+        //get_key_value_pair(buffer, index, keys, values);
     }
     input_file.close();
     return std::make_pair(keys, values);
