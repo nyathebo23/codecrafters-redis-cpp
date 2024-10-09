@@ -83,7 +83,11 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                 while (index < size && std::any_cast<std::string>(keys_values.first[index]) != key){
                     index++;
                 }
-                res = parse_encode_bulk_string(std::any_cast<std::string>(keys_values.first));
+                std::vector<std::any> merged(keys_values.first.size() + keys_values.second.size());
+                // Merge the vectors using the merge function
+                std::merge(keys_values.first.begin(), keys_values.first.end(), keys_values.second.begin(), keys_values.second.end(),
+                merged.begin());
+                res = parse_encode_bulk_string(merged);
                 // if (index > size || size == 0){
                 //     if (dict_data.count(key) == 0)
                 //         res = "$-1\r\n";
