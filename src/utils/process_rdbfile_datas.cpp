@@ -138,10 +138,11 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
     
     while (index < buffer_size && buffer[index] != 0xFB){
         index++;
-        return std::make_pair(keys, values);
+        
     }
     index += 3;
     while (index < buffer_size && buffer[index] != 0xFF){
+        return std::make_pair(keys, values);
        if (buffer[index] == 0xFD) { 
             if (check_key_date_validity(buffer, index, four_bytes)){
                 index += 5;
