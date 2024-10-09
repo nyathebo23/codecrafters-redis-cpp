@@ -106,7 +106,7 @@ bool check_key_date_validity(std::vector<char>& buffer, int &index, byte_space n
     unsigned char binary_num[nb_bytes];
     int size = nb_bytes + 1;
     for (int j = 1; j < size; j++)
-        binary_num[j] = buffer[index+j];
+        binary_num[j-1] = buffer[index+j];
     int64_t timestamp;
     std::memcpy(&timestamp, binary_num, sizeof(int64_t)/(8/nb_bytes));
     auto now = std::chrono::system_clock::now();
