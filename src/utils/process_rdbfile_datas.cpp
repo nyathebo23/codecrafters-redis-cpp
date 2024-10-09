@@ -91,7 +91,7 @@ std::string decode_str_length(int& index, std::vector<char>& buffer){
     }
 }
 
-void get_key_value_pair(std::vector<char>& buffer, int &index, std::vector<std::any>& keys,  std::vector<std::any>& values){
+void get_key_value_pair(std::vector<char>& buffer, int &index, std::vector<std::any>& keys, std::vector<std::any>& values){
     if ((int)(unsigned char)buffer[index] == 0){
         index++;
         keys.push_back(decode_str_length(index, buffer));
@@ -104,8 +104,8 @@ enum byte_space {one_byte=1, two_bytes=2, four_bytes=4, eight_bytes=8};
 
 bool check_key_date_validity(std::vector<char>& buffer, int &index, byte_space nb_bytes){
     unsigned char binary_num[nb_bytes];
-    for (int j = 0; j < nb_bytes; j++)
-        binary_num[j] = (unsigned char) buffer[index+j+1];
+    for (int i = nb_bytes, j = 0; i > 0; i--, j++)
+        binary_num[j] = buffer[index+i];
     int64_t timestamp;
     std::memcpy(&timestamp, binary_num, sizeof(int64_t)/(8/nb_bytes));
     auto now = std::chrono::system_clock::now();
