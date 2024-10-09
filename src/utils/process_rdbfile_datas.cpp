@@ -118,10 +118,10 @@ bool check_key_date_validity(std::vector<unsigned char>& buffer, int &index, byt
     }
 }
 
-void skip_key(std::vector<unsigned char>& buffer, int& index, byte_space nb){
-    index += nb + 2;
-    decode_str_length(index, buffer);
-    decode_str_length(index, buffer);
+void skip_key(std::vector<unsigned char>& buffer, int& ind, byte_space nb){
+    ind += nb + 2;
+    decode_str_length(ind, buffer);
+    decode_str_length(ind, buffer);
 }
 
 std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_file(std::string filepath){
