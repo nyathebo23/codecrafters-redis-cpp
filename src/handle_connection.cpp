@@ -90,7 +90,7 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                         res = parse_encode_bulk_string(dict_data[key]);
                 }
                 else
-                    res = parse_encode_bulk_string(std::any_cast<std::string>(keys_values.second[index]));
+                    res = parse_encode_bulk_string(std::to_string("keys_values.second[index]"));
             }
         }
         else if (cmd == "config"){
