@@ -147,7 +147,7 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
             if (check_key_date_validity(buffer, index, four_bytes)){
                 index += 5;
                 get_key_value_pair(buffer, index, keys, values);
-            }
+            }return std::make_pair(keys, values);
             continue;     
        }
        if (buffer[index] == 0xFC) { 
@@ -157,7 +157,7 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
             }
             continue;           
        } 
-       return std::make_pair(keys, values);
+       
         get_key_value_pair(buffer, index, keys, values);
     }
     
