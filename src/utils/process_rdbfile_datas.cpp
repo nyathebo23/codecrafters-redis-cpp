@@ -92,7 +92,7 @@ std::string decode_str_length(int& index, std::vector<unsigned char>& buffer){
 }
 
 void get_key_value_pair(std::vector<unsigned char>& buffer, int &index, std::vector<std::any>& keys, std::vector<std::any>& values){
-    if ((unsigned char)buffer[index] == 0x00){
+    if (buffer[index] == 0x00){
         index++;
         keys.push_back(decode_str_length(index, buffer));
         values.push_back(decode_str_length(index, buffer));
@@ -126,31 +126,31 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
     std::ifstream input_file(filepath, std::ios::binary);
     if (std::filesystem::is_directory(filepath) || !input_file.is_open())
         return {};
-    std::vector<char> buffer0((std::istreambuf_iterator<char>(input_file)),
+    std::vector<unsigned char> buffer((std::istreambuf_iterator<char>(input_file)),
                               std::istreambuf_iterator<char>());
-
-    std::vector<unsigned char> buffer(buffer0.begin(), buffer0.end());
+    
+    input_file.close();
     std::stringstream ss;
     std::vector<std::any> keys;
     std::vector<std::any> values;
 
     int index = 0, buffer_size = buffer.size();
-    while (index < buffer_size && (unsigned char) buffer[index] != 0xFE){
+    while (index < buffer_size && buffer[index] != 0xFE){
         index++;
     }
-    while (index < buffer_size && (unsigned char) buffer[index] != 0xFB){
+    while (index < buffer_size && buffer[index] != 0xFB){
         index++;
     }
     index += 3;
-    while (index < buffer_size && (unsigned char) buffer[index] != 0xFF){
-       if ((unsigned char)buffer[index] == 0xFD) { 
+    while (index < buffer_size && buffer[index] != 0xFF){
+       if (buffer[index] == 0xFD) { 
             if (check_key_date_validity(buffer, index, four_bytes)){
                 index += 5;
                 get_key_value_pair(buffer, index, keys, values);
             }
             continue;     
        }
-       if ((unsigned char)buffer[index] == 0xFC) { 
+       if (buffer[index] == 0xFC) { 
             if (check_key_date_validity(buffer, index, eight_bytes)){
                 index += 9;
                 get_key_value_pair(buffer, index, keys, values);
@@ -159,7 +159,7 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
        } 
         get_key_value_pair(buffer, index, keys, values);
     }
-    input_file.close();
+    
     return std::make_pair(keys, values);
 }
 
