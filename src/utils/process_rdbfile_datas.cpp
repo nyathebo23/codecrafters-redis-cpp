@@ -160,7 +160,6 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
             if (check_key_date_validity(buffer, index, eight_bytes)){
                 index += 9;
                 get_key_value_pair(buffer, index, keys, values);
-                return std::make_pair(keys, values);
             }
             else 
                 skip_key(buffer, index, eight_bytes);
