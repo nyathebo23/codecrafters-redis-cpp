@@ -83,20 +83,16 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                 while (index < size && std::any_cast<std::string>(keys_values.first[index]) != key){
                     index++;
                 }
-                if (index > size || size == 0){
+                if (index >= size || size == 0){
                     if (dict_data.count(key) == 0)
                         res = "$-1\r\n";
                     else 
                         res = parse_encode_bulk_string(dict_data[key]);
                 }
-                else{
-                    try {
-                        res = parse_encode_bulk_string(std::any_cast<std::string>(keys_values.second[index]));
-                    }
-                    catch(std::bad_any_cast){
-                         res = parse_encode_bulk_string(std::string(std::any_cast<char>(keys_values.second[index])));
-                    }
-                }
+                else
+                    res = parse_encode_bulk_string(std::any_cast<std::string>(keys_values.second[index]));
+
+           
                    
             }
         }
