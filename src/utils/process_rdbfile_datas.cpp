@@ -179,7 +179,7 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
                 keys.push_back(std::to_string(timestamp2));
                 keys.push_back(std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(duration).count()));
                 index += 9;
-                //get_key_value_pair(buffer, index, keys, values);
+                get_key_value_pair(buffer, index, keys, values);
             }
             continue;           
        } 
