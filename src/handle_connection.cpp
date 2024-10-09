@@ -34,7 +34,7 @@ void execute_after_delay(int delay, const std::string& key) {
     erase_key(key);
 }
 
-void handle_connection(const int& clientfd, std::map<std::string, std::string> args_map){
+void handle_connection(const int& clientfd, std::map<std::string, std::string>& args_map){
   while (1) {
     char buffer[128];    
     if (recv(clientfd, &buffer, sizeof(buffer), 0) <= 0) {
