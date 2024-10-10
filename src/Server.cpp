@@ -26,8 +26,8 @@ int main(int argc, char **argv) {
   }
 
   int port = 6379;
-  if (argv[0] == "--port")
-      port = std::stoi(std::string(argv[1]));
+  if (argv[1] == "--port")
+      port = std::stoi(std::string(argv[2]));
   // Flush after every std::cout / std::cerr
   std::cout << std::unitbuf;
   std::cerr << std::unitbuf;
