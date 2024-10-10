@@ -40,6 +40,7 @@ class SocketManagement {
                 master_addr.sin_addr.s_addr = INADDR_ANY;
             }
             master_addr.sin_port = std::stoi(dest_port);
+            return master_addr;
         }
 
     public:

@@ -5,7 +5,7 @@
 #include "simple_data_parser_dec.h"
 
 bool detect_wrong_char_in_substring(const std::string& str){
-    if (str.find('\r\n') != std::string::npos)
+    if (str.find("\r\n") != std::string::npos)
         return true;
     return false;
 };
