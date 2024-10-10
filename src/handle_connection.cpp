@@ -125,8 +125,8 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                     role = "slave";
                 std::string replication_id = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
                 int replication_offset = 0;
-                std::string str = "role:"+role + "\n"+ "master_replid"+replication_id + 
-                    "\n" + "master_repl_offset"+ std::to_string(replication_offset);
+                std::string str = "role:"+role + "\n"+ "master_replid:"+replication_id + 
+                    "\n" + "master_repl_offset:"+ std::to_string(replication_offset);
                 res = parse_encode_bulk_string(str);
             }
         }
