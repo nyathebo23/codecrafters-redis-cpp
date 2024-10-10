@@ -22,7 +22,7 @@
 #include <netdb.h>
 
 std::map<std::string, std::string> dict_data;
-
+//enum RedisCommand { ECHO = "echo", PING = "ping", SET = "set", GET = "get", CONFIG = "config", KEYS = "keys", INFO = "info"};
 // Fonction à exécuter
 void erase_key(const std::string& key) {
     dict_data.erase(key);
@@ -115,6 +115,12 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                 auto keys_values = get_keys_values_from_file(args_map["--dir"] + "/" + args_map["--dbfilename"]);
                 auto keys = keys_values.first;
                 res = parse_encode_array(keys);
+            }
+        }
+        else if (cmd == "info"){
+            std::string param = std::any_cast<std::string>(vals[1]);
+            if (param == "replication"){
+                res = parse_encode_bulk_string("role:master");
             }
         }
         if (!res.empty())
