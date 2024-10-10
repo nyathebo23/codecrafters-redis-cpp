@@ -18,6 +18,10 @@ class SocketManagement {
 
         void execute_after_delay(int delay, const std::string& key);
 
+        sockaddr_in get_addr_from_params_datas(std::string master_raw_data);
+
+        void handle_connection();
+
     public:
         SocketManagement(short family, int type, std::map<std::string, std::string> extra);
         int get_server_fd() const;
@@ -27,10 +31,8 @@ class SocketManagement {
         int listen(int connection_backlog);
 
         int send_message_to_server(sockaddr_in dest_address, std::string msg);
-        
-        void check_incoming_clients_connections();
 
-        void handle_connection();
+        void check_incoming_clients_connections();
 
 };
 

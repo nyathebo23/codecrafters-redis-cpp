@@ -28,7 +28,7 @@ class SocketManagement {
 
         void execute_after_delay(int delay, const std::string& key) {
             std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-            erase_key(key);
+            this->erase_key(key);
         }
 
         sockaddr_in get_addr_from_params_datas(std::string master_raw_data){
@@ -80,7 +80,7 @@ class SocketManagement {
                             std::transform(param.begin(), param.end(), param.begin(), ::tolower);
                             if (param == "px"){
                                 const int duration = std::stoi(std::any_cast<std::string>(vals[4]));
-                                std::thread t(execute_after_delay, duration, key);
+                                std::thread t(this->execute_after_delay, duration, key);
                                 t.detach();
                             }
                         }
