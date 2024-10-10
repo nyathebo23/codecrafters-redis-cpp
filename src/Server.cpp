@@ -26,20 +26,20 @@ int main(int argc, char **argv) {
   }
   // // Since the tester restarts your program quite often, setting SO_REUSEADDR
   // // ensures that we don't run into 'Address already in use' errors
-  int reuse = 2;
+  int reuse = 1;
   if (setsockopt(master_server_socket.get_server_fd(), SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
     std::cerr << "setsockopt failed\n";
     return 1;
   }
   
   if (master_server_socket.socket_bind() != 0) {
-    std::cerr << "Failed to bind to port \n";
+    std::cerr << "Failed master to bind to port \n";
     return 1;
   }
   
   int connection_backlog = 5;
   if (master_server_socket.socket_listen(connection_backlog) != 0) {
-    std::cerr << "listen failed\n";
+    std::cerr << "listen master failed\n";
     return 1;
   }
   
@@ -60,12 +60,12 @@ int main(int argc, char **argv) {
   }
   
   if (slave_server_socket.socket_bind() != 0) {
-    std::cerr << "Failed to bind to port \n";
+    std::cerr << "Failed slave to bind to port \n";
     return 1;
   }
   
   if (slave_server_socket.socket_listen(connection_backlog) != 0) {
-    std::cerr << "listen failed\n";
+    std::cerr << "listen slave failed\n";
     return 1;
   }
   
