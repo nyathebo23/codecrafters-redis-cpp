@@ -162,7 +162,8 @@ void SocketManagement::send_handshake(){
     std::vector<std::any> data;
     data.push_back(std::string("PING"));
     std::string msg = parse_encode_array(data);
-    this->send_message_to_server(this->get_addr_from_params_datas(this->extra_args["--replicaof"]), msg);
+    if (this->send_message_to_server(this->get_addr_from_params_datas(this->extra_args["--replicaof"]), msg) > 0)
+        std::cout << "okokokokokokokokokkokook";
 }
 
 int SocketManagement::get_server_fd() const{
