@@ -2,7 +2,9 @@
 #include <string>
 #include <thread>
 #include <map>
+#include <algorithm>
 #include <sys/socket.h>
+#include <arpa/inet.h>
 #include <netdb.h>
 #include <unistd.h>
 #include "encode/array_parser_enc.h"
@@ -41,51 +43,6 @@ class SocketManagement {
             }
             master_addr.sin_port = std::stoi(dest_port);
             return master_addr;
-        }
-
-    public:
-        
-        SocketManagement(short family, int type, std::map<std::string, std::string> extra) {
-           server_fd = socket(family, type, 0); 
-           server_addr.sin_family = family;
-           server_addr.sin_addr.s_addr = INADDR_ANY;
-           extra_args = extra;
-           int port = 6379;
-           if (extra_args.count("--port") != 0){
-                port = std::stoi(extra_args["--port"])
-           }
-           server_addr.sin_port = htons(port);
-        }
-
-        int get_server_fd() const{
-            return server_fd;
-        }
-
-        int bind() {
-            return bind(server_fd, (struct sockaddr *) &server_addr, sizeof(server_addr));
-        }
-
-        int listen(int connection_backlog){
-            return listen(server_fd, connection_backlog);
-        }
-
-        void check_incoming_clients_connections(){
-            sockaddr_in client_addr;
-            int client_addr_len = sizeof(client_addr);
-            std::cout << "Waiting for a client to connect...\n";
-            while (1){
-                client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
-                std::cout << "Client connected\n";
-                std::thread connection(handle_connection);
-                connection.detach();
-            }
-            close(server_fd);
-        }
-
-        int send_message_to_server(sockaddr_in dest_address, std::string msg){
-            if (connect(server_fd, (struct sockaddr*)&dest_address, sizeof(dest_address)) < 0)
-                return -1;
-            return send(server_fd, msg.c_str(), msg.length(), 0);
         }
 
         void handle_connection(){
@@ -194,4 +151,51 @@ class SocketManagement {
             }
         }
 
+
+    public:
+        
+        SocketManagement(short family, int type, std::map<std::string, std::string> extra) {
+           server_fd = socket(family, type, 0); 
+           server_addr.sin_family = family;
+           server_addr.sin_addr.s_addr = INADDR_ANY;
+           extra_args = extra;
+           int port = 6379;
+           if (extra_args.count("--port") != 0){
+                port = std::stoi(extra_args["--port"]);
+           }
+           server_addr.sin_port = htons(port);
+        }
+
+        int get_server_fd() const{
+            return server_fd;
+        }
+
+        int bind() {
+            return bind(server_fd, (struct sockaddr *) &server_addr, sizeof(server_addr));
+        }
+
+        int listen(int connection_backlog){
+            return listen(server_fd, connection_backlog);
+        }
+
+        void check_incoming_clients_connections(){
+            sockaddr_in client_addr;
+            int client_addr_len = sizeof(client_addr);
+            std::cout << "Waiting for a client to connect...\n";
+            while (1){
+                client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
+                std::cout << "Client connected\n";
+                std::thread connection(this->handle_connection);
+                connection.detach();
+            }
+            close(server_fd);
+        }
+
+        int send_message_to_server(sockaddr_in dest_address, std::string msg){
+            if (connect(server_fd, (struct sockaddr*)&dest_address, sizeof(dest_address)) < 0)
+                return -1;
+            return send(server_fd, msg.c_str(), msg.length(), 0);
+        }
+
+        
 };
