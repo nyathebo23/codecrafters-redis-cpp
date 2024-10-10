@@ -151,10 +151,10 @@ SocketManagement::SocketManagement(short family, int type, std::map<std::string,
     server_addr.sin_family = family;
     server_addr.sin_addr.s_addr = INADDR_ANY;
     extra_args = extra;
-    int port = 6379;
-    if (extra_args.count("--port") != 0){
-        port = std::stoi(extra_args["--port"]);
-    }
+    int port = 6380;
+    // if (extra_args.count("--port") != 0){
+    //     port = std::stoi(extra_args["--port"]);
+    // }
     server_addr.sin_port = htons(port);
 }
 
