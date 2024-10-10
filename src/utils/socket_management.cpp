@@ -72,7 +72,7 @@ class SocketManagement {
                     }
                     else if (cmd == "set"){
                         if (vals.size() > 2){
-                        const std::string key = std::any_cast<std::string>(vals[1]);
+                        std::string key = std::any_cast<std::string>(vals[1]);
                         dict_data[key] = std::any_cast<std::string>(vals[2]);
                         res = parse_encode_simple_string("OK");
                         if (vals.size() == 5 && vals[3].type() == typeid(std::string)){
@@ -80,7 +80,7 @@ class SocketManagement {
                             std::transform(param.begin(), param.end(), param.begin(), ::tolower);
                             if (param == "px"){
                                 const int duration = std::stoi(std::any_cast<std::string>(vals[4]));
-                                std::thread t([this]() {execute_after_delay(duration, key);});
+                                std::thread t([this, &duration, &key]() {execute_after_delay(duration, key);});
                                 t.detach();
                             }
                         }
