@@ -153,18 +153,14 @@ SocketManagement::SocketManagement(short family, int type, std::map<std::string,
         port = std::stoi(extra_args["--port"]);
     }
     server_addr.sin_port = htons(port);
-    std::cout << port;
-    if (extra_args.count("--replicaof") != 0){
-        send_handshake();
-    }
 }
 
-void SocketManagement::send_handshake(){
+void SocketManagement::send_handshake(int master_fd){
     std::vector<std::any> data;
     data.push_back(std::string("PING"));
     std::string msg = parse_encode_array(data);
-    sockaddr_in adress = this->get_addr_from_params_datas(this->extra_args["--replicaof"]);
-    if (this->send_message_to_server(adress, msg) > 0)
+    sockaddr_in dest_address = this->get_addr_from_params_datas(this->extra_args["--replicaof"]);
+    if (this->send_message_to_server(master_fd, dest_address, msg) > 0)
         std::cout << "okokokokokokokokokkokook";
 }
 
@@ -193,10 +189,10 @@ void SocketManagement::check_incoming_clients_connections(){
     close(server_fd);
 }
 
-int SocketManagement::send_message_to_server(sockaddr_in dest_address, std::string msg){
-    if (connect(server_fd, (struct sockaddr*)&dest_address, sizeof(dest_address)) < 0){
+int SocketManagement::send_message_to_server(int dest_fd, sockaddr_in dest_address, std::string msg){
+    if (connect(dest_fd, (struct sockaddr*)&dest_address, sizeof(dest_address)) < 0){
         return -1;
     }
     std::cout << "okokokokokokokokokkokook";
-    return send(server_fd, msg.c_str(), msg.length(), 0);
+    return send(dest_fd, msg.c_str(), msg.length(), 0);
 }

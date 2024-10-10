@@ -20,8 +20,6 @@ class SocketManagement {
 
         void handle_connection();
 
-        void send_handshake();
-
     public:
         SocketManagement(short family, int type, std::map<std::string, std::string> extra);
 
@@ -33,9 +31,12 @@ class SocketManagement {
 
         int socket_listen(int connection_backlog);
 
-        int send_message_to_server(sockaddr_in dest_address, std::string msg);
+        int send_message_to_server(int dest_fd, sockaddr_in dest_address, std::string msg);
 
         void check_incoming_clients_connections();
+
+        void send_handshake(int master_fd);
+
 
 };
 
