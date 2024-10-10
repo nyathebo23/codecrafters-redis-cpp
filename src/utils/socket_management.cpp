@@ -153,7 +153,7 @@ SocketManagement::SocketManagement(short family, int type, std::map<std::string,
         port = std::stoi(extra_args["--port"]);
     }
     server_addr.sin_port = htons(port);
-
+    std::cout << port;
     if (extra_args.count("--replicaof") != 0){
         send_handshake();
     }
