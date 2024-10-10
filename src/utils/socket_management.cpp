@@ -171,11 +171,11 @@ class SocketManagement {
         }
 
         int bind() {
-            return bind(server_fd, (struct sockaddr *) &server_addr, sizeof(server_addr));
+            return std::bind(server_fd, (struct sockaddr *) &server_addr, sizeof(server_addr));
         }
 
         int listen(int connection_backlog){
-            return listen(server_fd, connection_backlog);
+            return std::listen(server_fd, connection_backlog);
         }
 
         void check_incoming_clients_connections(){
