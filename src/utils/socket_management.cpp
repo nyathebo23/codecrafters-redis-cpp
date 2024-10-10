@@ -193,8 +193,9 @@ void SocketManagement::check_incoming_clients_connections(){
 }
 
 int SocketManagement::send_message_to_server(sockaddr_in dest_address, std::string msg){
-    if (connect(server_fd, (struct sockaddr*)&dest_address, sizeof(dest_address)) < 0)
+    if (connect(server_fd, (struct sockaddr*)&dest_address, sizeof(dest_address)) < 0){
         return -1;
-    std::cout << "okokokokokokokokokkokook";
+        std::cout << "okokokokokokokokokkokook";
+    }
     return send(server_fd, msg.c_str(), msg.length(), 0);
 }
