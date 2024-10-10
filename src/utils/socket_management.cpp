@@ -175,7 +175,7 @@ void SocketManagement::check_incoming_clients_connections(){
     int client_addr_len = sizeof(client_addr);
     std::cout << "Waiting for a client to connect...\n";
     while (1){
-        client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
+        int client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
         std::cout << "Client connected\n";
         std::thread connection([this](){handle_connection();});
         connection.detach();
