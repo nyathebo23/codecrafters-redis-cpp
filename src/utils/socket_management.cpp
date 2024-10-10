@@ -163,7 +163,7 @@ int SocketManagement::get_server_fd() const{
 }
 
 int SocketManagement::socket_bind() {
-    return bind(server_fd, (struct sockaddr *) &server_addr, sizeof(server_addr));
+    return bind(server_fd, (struct sockaddr_in *) &server_addr, sizeof(server_addr));
 }
 
 int SocketManagement::socket_listen(int connection_backlog){
@@ -175,8 +175,7 @@ void SocketManagement::check_incoming_clients_connections(){
     int client_addr_len = sizeof(client_addr);
     std::cout << "Waiting for a client to connect..." + std::to_string(ntohs(server_addr.sin_port)) + "\n";
     while (1){
-        client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
-        std::cout << client_fd;
+        client_fd = accept(server_fd, (struct sockaddr_in *) &client_addr, (socklen_t *) &client_addr_len); 
         std::cout << "Client connected\n";
         std::thread connection([this](){handle_connection();});
         connection.detach();
