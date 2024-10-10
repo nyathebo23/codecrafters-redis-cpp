@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
      args_map[std::string(argv[i])] = std::string(argv[i+1]);
   }
   std::map<std::string, std::string> args_map2;
-  args_map2["--port"] = 6379;
+  args_map2["--port"] = "6379";
 
   SocketManagement master_server_socket(AF_INET, SOCK_STREAM, args_map2);
 
