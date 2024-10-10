@@ -151,10 +151,10 @@ SocketManagement::SocketManagement(short family, int type, std::map<std::string,
     server_addr.sin_family = family;
     server_addr.sin_addr.s_addr = INADDR_ANY;
     extra_args = extra;
-    int port = 6380;
-    // if (extra_args.count("--port") != 0){
-    //     port = std::stoi(extra_args["--port"]);
-    // }
+    int port = 6379;
+    if (extra_args.count("--port") != 0){
+        port = std::stoi(extra_args["--port"]);
+    }
     server_addr.sin_port = htons(port);
 }
 
@@ -173,9 +173,9 @@ int SocketManagement::socket_listen(int connection_backlog){
 void SocketManagement::check_incoming_clients_connections(){
     sockaddr_in client_addr;
     int client_addr_len = sizeof(client_addr);
-    std::cout << "Waiting for a client to connect...\n";
+    std::cout << "Waiting for a client to connect..." + std::to_string(server_fd) + "\n";
     while (1){
-        client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
+        client_fd = accept(this->server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
         std::cout << "Client connected\n";
         std::thread connection([this](){handle_connection();});
         connection.detach();
