@@ -18,7 +18,7 @@
 
 
 void SocketManagement::erase_key(const std::string& key) {
-    dict_data.erase(key);
+    this->dict_data.erase(key);
 }
 
 void SocketManagement::execute_after_delay(int delay, const std::string& key) {
@@ -43,8 +43,8 @@ sockaddr_in SocketManagement::get_addr_from_params_datas(std::string master_raw_
 void SocketManagement::handle_connection(){
     while (1) {
         char buffer[128];    
-        if (recv(client_fd, &buffer, sizeof(buffer), 0) <= 0) {
-        close(client_fd);
+        if (recv(this->client_fd, &buffer, sizeof(buffer), 0) <= 0) {
+        close(this->client_fd);
         return;
         }
         std::string data(buffer);
@@ -68,7 +68,7 @@ void SocketManagement::handle_connection(){
             else if (cmd == "set"){
                 if (vals.size() > 2){
                 std::string key = std::any_cast<std::string>(vals[1]);
-                dict_data[key] = std::any_cast<std::string>(vals[2]);
+                this->dict_data[key] = std::any_cast<std::string>(vals[2]);
                 res = parse_encode_simple_string("OK");
                 if (vals.size() == 5 && vals[3].type() == typeid(std::string)){
                     std::string param = std::any_cast<std::string>(vals[3]);
@@ -84,16 +84,16 @@ void SocketManagement::handle_connection(){
             else if (cmd == "get"){
                 if (vals.size() == 2 && vals[1].type() == typeid(std::string)){
                     std::string key = std::any_cast<std::string>(vals[1]);
-                    auto keys_values = get_keys_values_from_file(extra_args["--dir"] + "/" + extra_args["--dbfilename"]);
+                    auto keys_values = get_keys_values_from_file(this->extra_args["--dir"] + "/" + this->extra_args["--dbfilename"]);
                     int index = 0, size = keys_values.first.size();
                     while (index < size && std::any_cast<std::string>(keys_values.first[index]) != key){
                         index++;
                     }
                     if (index >= size || size == 0){
-                        if (dict_data.count(key) == 0)
+                        if (this->dict_data.count(key) == 0)
                             res = "$-1\r\n";
                         else 
-                            res = parse_encode_bulk_string(dict_data[key]);
+                            res = parse_encode_bulk_string(this->dict_data[key]);
                     }
                     else
                         res = parse_encode_bulk_string(std::any_cast<std::string>(keys_values.second[index]));
@@ -105,11 +105,11 @@ void SocketManagement::handle_connection(){
             if (cmd2 == "get"){
                 std::string key = std::any_cast<std::string>(vals[2]);
                 if (key == "dir"){
-                    std::vector<std::any> values = {key, extra_args["--dir"]};
+                    std::vector<std::any> values = {key, this->extra_args["--dir"]};
                     res = parse_encode_array(values);
                 }
                 else if (key == "dbfilename"){
-                    std::vector<std::any> values = {key, extra_args["--dbfilename"]};
+                    std::vector<std::any> values = {key, this->extra_args["--dbfilename"]};
                     res = parse_encode_array(values);          
                 }
             }
@@ -118,7 +118,7 @@ void SocketManagement::handle_connection(){
                 std::string param = std::any_cast<std::string>(vals[1]);
                 //std::transform(param.begin(), param.end(), param.begin(), ::tolower);
                 if (param == "*"){
-                    auto keys_values = get_keys_values_from_file(extra_args["--dir"] + "/" + extra_args["--dbfilename"]);
+                    auto keys_values = get_keys_values_from_file(this->extra_args["--dir"] + "/" + this->extra_args["--dbfilename"]);
                     auto keys = keys_values.first;
                     res = parse_encode_array(keys);
                 }
@@ -127,10 +127,10 @@ void SocketManagement::handle_connection(){
                 std::string param = std::any_cast<std::string>(vals[1]);
                 if (param == "replication"){
                     std::string role = "master";
-                    if (extra_args.count("--replicaof") != 0){
+                    if (this->extra_args.count("--replicaof") != 0){
                         role = "slave";
                         std::string msg = parse_encode_bulk_string(std::string("PING"));
-                        this->send_message_to_server(this->get_addr_from_params_datas(extra_args["--replicaof"]), msg);
+                        this->send_message_to_server(this->get_addr_from_params_datas(this->extra_args["--replicaof"]), msg);
                     }
                         
                     std::string replication_id = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
@@ -141,7 +141,7 @@ void SocketManagement::handle_connection(){
                 }
             }
             if (!res.empty())
-                send(client_fd, res.c_str(), res.length(), 0);
+                send(this->client_fd, res.c_str(), res.length(), 0);
         }
     }
 }
@@ -177,7 +177,7 @@ void SocketManagement::check_incoming_clients_connections(){
     while (1){
         client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
         std::cout << "Client connected\n";
-        std::thread connection([this, &client_fd, &dict_data, &extra_args](){handle_connection();});
+        std::thread connection([this](){handle_connection();});
         connection.detach();
     }
     close(server_fd);
