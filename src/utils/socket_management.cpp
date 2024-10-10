@@ -129,7 +129,7 @@ void SocketManagement::handle_connection(){
                     std::string role = "master";
                     if (this->extra_args.count("--replicaof") != 0){
                         role = "slave";
-                        std::string msg = parse_encode_bulk_string(std::string("PING"));
+                        std::string msg = parse_encode_array([std::string("PING")]);
                         this->send_message_to_server(this->get_addr_from_params_datas(this->extra_args["--replicaof"]), msg);
                     }
                         
