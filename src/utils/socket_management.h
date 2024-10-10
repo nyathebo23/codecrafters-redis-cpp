@@ -18,13 +18,16 @@ class SocketManagement {
 
         void execute_after_delay(int delay, const std::string& key);
 
-        sockaddr_in get_addr_from_params_datas(std::string master_raw_data);
-
         void handle_connection();
+
+        void send_handshake();
 
     public:
         SocketManagement(short family, int type, std::map<std::string, std::string> extra);
+
         int get_server_fd() const;
+
+        sockaddr_in get_addr_from_params_datas(std::string master_raw_data);
 
         int socket_bind();
 

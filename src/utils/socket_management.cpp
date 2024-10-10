@@ -129,12 +129,7 @@ void SocketManagement::handle_connection(){
                     std::string role = "master";
                     if (this->extra_args.count("--replicaof") != 0){
                         role = "slave";
-                        std::vector<std::any> data;
-                        data.push_back(std::string("PING"));
-                        std::string msg = parse_encode_array(data);
-                        this->send_message_to_server(this->get_addr_from_params_datas(this->extra_args["--replicaof"]), msg);
                     }
-                        
                     std::string replication_id = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
                     int replication_offset = 0;
                     std::string str = "role:"+role + "\n"+ "master_replid:"+replication_id + 
@@ -158,6 +153,16 @@ SocketManagement::SocketManagement(short family, int type, std::map<std::string,
         port = std::stoi(extra_args["--port"]);
     }
     server_addr.sin_port = htons(port);
+    if (extra_args.count("--replicaof") != 0){
+        send_handshake();
+    }
+}
+
+void SocketManagement::send_handshake(){
+    std::vector<std::any> data;
+    data.push_back(std::string("PING"));
+    std::string msg = parse_encode_array(data);
+    this->send_message_to_server(this->get_addr_from_params_datas(this->extra_args["--replicaof"]), msg);
 }
 
 int SocketManagement::get_server_fd() const{

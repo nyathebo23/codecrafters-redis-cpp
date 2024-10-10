@@ -43,7 +43,10 @@ int main(int argc, char **argv) {
     return 1;
   }
   
-  socket_management.check_incoming_clients_connections();
-
+  //socket_management.check_incoming_clients_connections();
+  if (args_map.count("--replicaof") != 0){
+      socket_management.send_message_to_server()
+  }
+  
   return 0;
 }
