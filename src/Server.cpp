@@ -13,7 +13,6 @@ int main(int argc, char **argv) {
      args_map[std::string(argv[i])] = std::string(argv[i+1]);
   }
   std::map<std::string, std::string> args_map2;
-  args_map2["--port"] = "6379";
 
   SocketManagement master_server_socket(AF_INET, SOCK_STREAM, args_map2);
 
@@ -27,7 +26,7 @@ int main(int argc, char **argv) {
   }
   // // Since the tester restarts your program quite often, setting SO_REUSEADDR
   // // ensures that we don't run into 'Address already in use' errors
-  int reuse = 1;
+  int reuse = 2;
   if (setsockopt(master_server_socket.get_server_fd(), SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
     std::cerr << "setsockopt failed\n";
     return 1;
