@@ -12,38 +12,65 @@ int main(int argc, char **argv) {
   for (int i = 1; i < argc-1; i+=2){
      args_map[std::string(argv[i])] = std::string(argv[i+1]);
   }
+  std::map<std::string, std::string> args_map2;
+  args_map2["--port"] = 6379;
 
-  SocketManagement socket_management(AF_INET, SOCK_STREAM, args_map);
+  SocketManagement master_server_socket(AF_INET, SOCK_STREAM, args_map2);
 
   // Flush after every std::cout / std::cerr
   std::cout << std::unitbuf;
   std::cerr << std::unitbuf;
 
-
-  if (socket_management.get_server_fd() < 0) {
-   std::cerr << "Failed to create server socket\n";
+  if (master_server_socket.get_server_fd() < 0) {
+   std::cerr << "Failed to create master server socket\n";
    return 1;
   }
   // // Since the tester restarts your program quite often, setting SO_REUSEADDR
   // // ensures that we don't run into 'Address already in use' errors
   int reuse = 1;
-  if (setsockopt(socket_management.get_server_fd(), SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
+  if (setsockopt(master_server_socket.get_server_fd(), SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
     std::cerr << "setsockopt failed\n";
     return 1;
   }
   
-  if (socket_management.socket_bind() != 0) {
+  if (master_server_socket.socket_bind() != 0) {
     std::cerr << "Failed to bind to port \n";
     return 1;
   }
   
   int connection_backlog = 5;
-  if (socket_management.socket_listen(connection_backlog) != 0) {
+  if (master_server_socket.socket_listen(connection_backlog) != 0) {
     std::cerr << "listen failed\n";
     return 1;
   }
   
-  socket_management.check_incoming_clients_connections();
+  master_server_socket.check_incoming_clients_connections();
   
+  SocketManagement slave_server_socket(AF_INET, SOCK_STREAM, args_map);
+
+  if (slave_server_socket.get_server_fd() < 0) {
+   std::cerr << "Failed to create slave server socket\n";
+   return 1;
+  }
+  // // Since the tester restarts your program quite often, setting SO_REUSEADDR
+  // // ensures that we don't run into 'Address already in use' errors
+  int reuse = 1;
+  if (setsockopt(slave_server_socket.get_server_fd(), SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
+    std::cerr << "setsockopt failed\n";
+    return 1;
+  }
+  
+  if (slave_server_socket.socket_bind() != 0) {
+    std::cerr << "Failed to bind to port \n";
+    return 1;
+  }
+  
+  if (slave_server_socket.socket_listen(connection_backlog) != 0) {
+    std::cerr << "listen failed\n";
+    return 1;
+  }
+  
+  slave_server_socket.check_incoming_clients_connections();
+
   return 0;
 }
