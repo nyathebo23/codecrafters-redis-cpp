@@ -1,6 +1,9 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 #include "utils/socket_management.h"
 
 
