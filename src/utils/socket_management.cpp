@@ -13,6 +13,7 @@
 #include "decode/array_parser_dec.h"
 #include "decode/small_aggregate_parser_dec.h"
 #include "process_rdbfile_datas.h"
+#include "socket_management.h"
 
 class SocketManagement {
     private:
