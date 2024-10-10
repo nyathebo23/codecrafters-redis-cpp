@@ -80,7 +80,7 @@ class SocketManagement {
                             std::transform(param.begin(), param.end(), param.begin(), ::tolower);
                             if (param == "px"){
                                 const int duration = std::stoi(std::any_cast<std::string>(vals[4]));
-                                std::thread t(this->execute_after_delay, duration, key);
+                                std::thread t([this]() {execute_after_delay(duration, key);});
                                 t.detach();
                             }
                         }
@@ -151,9 +151,7 @@ class SocketManagement {
             }
         }
 
-
-    public:
-        
+    public:        
         SocketManagement(short family, int type, std::map<std::string, std::string> extra) {
            server_fd = socket(family, type, 0); 
            server_addr.sin_family = family;
@@ -170,12 +168,12 @@ class SocketManagement {
             return server_fd;
         }
 
-        int bind() {
-            return socket::bind(server_fd, (struct sockaddr *) &server_addr, sizeof(server_addr));
+        int socket_bind() {
+            return bind(server_fd, (struct sockaddr *) &server_addr, sizeof(server_addr));
         }
 
-        int listen(int connection_backlog){
-            return socket::listen(server_fd, connection_backlog);
+        int socket_listen(int connection_backlog){
+            return listen(server_fd, connection_backlog);
         }
 
         void check_incoming_clients_connections(){
@@ -185,7 +183,7 @@ class SocketManagement {
             while (1){
                 client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
                 std::cout << "Client connected\n";
-                std::thread connection(this->handle_connection);
+                std::thread connection([this](){handle_connection();});
                 connection.detach();
             }
             close(server_fd);

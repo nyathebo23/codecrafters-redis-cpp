@@ -26,9 +26,9 @@ class SocketManagement {
         SocketManagement(short family, int type, std::map<std::string, std::string> extra);
         int get_server_fd() const;
 
-        int bind();
+        int socket_bind();
 
-        int listen(int connection_backlog);
+        int socket_listen(int connection_backlog);
 
         int send_message_to_server(sockaddr_in dest_address, std::string msg);
 

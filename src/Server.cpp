@@ -35,13 +35,13 @@ int main(int argc, char **argv) {
     return 1;
   }
   
-  if (socket_management.bind() != 0) {
+  if (socket_management.socket_bind() != 0) {
     std::cerr << "Failed to bind to port \n";
     return 1;
   }
   
   int connection_backlog = 5;
-  if (socket_management.listen(connection_backlog) != 0) {
+  if (socket_management.socket_listen(connection_backlog) != 0) {
     std::cerr << "listen failed\n";
     return 1;
   }
