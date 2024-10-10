@@ -123,6 +123,10 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                 std::string role = "master";
                 if (args_map.count("--replicaof") != 0)
                     role = "slave";
+                std::string replication_id = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
+                std::string replication_offset = 0;
+                std::string str = "role:"+role + "\n"+ "master_replid"+replication_id + 
+                    "\n" + "master_repl_offset"+replication_offset;
                 res = parse_encode_bulk_string("role:"+role);
             }
         }
