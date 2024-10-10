@@ -6,7 +6,6 @@
 #include <cmath>
 #include "small_aggregate_parser_dec.h"
 #include "simple_data_parser_dec.h"
-#include "map_parser_dec.h"
 #include "array_parser_dec.h"
 
 void printArray(std::vector<std::any> arr);

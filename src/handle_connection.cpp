@@ -91,9 +91,6 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
                 }
                 else
                     res = parse_encode_bulk_string(std::any_cast<std::string>(keys_values.second[index]));
-
-           
-                   
             }
         }
         else if (cmd == "config"){
