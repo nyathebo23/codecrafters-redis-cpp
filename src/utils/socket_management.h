@@ -1,5 +1,5 @@
-#ifndef SOCKET_MANAGEMENT_H
-#define SOCKET_MANAGEMENT_H
+#ifndef SOCKETMANAGEMENT_H
+#define SOCKETMANAGEMENT_H
 
 #include <string>
 #include <thread>

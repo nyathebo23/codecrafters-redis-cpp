@@ -1,4 +1,3 @@
-#include <iostream>
 #include "utils/socket_management.h"
 
 
