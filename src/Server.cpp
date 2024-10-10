@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
   }
   
   if (slave_server_socket.socket_bind() != 0) {
-    std::cerr << "Failed slave to bind to port" +  + std::to_string(slave_server_socket.get_server_fd()) + +  "\n";
+    std::cerr << "Failed slave to bind to port" +  std::to_string(slave_server_socket.get_server_fd()) +  "\n";
     return 1;
   }
   
