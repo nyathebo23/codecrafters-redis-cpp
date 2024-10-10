@@ -120,7 +120,10 @@ void handle_connection(const int& clientfd, std::map<std::string, std::string> a
         else if (cmd == "info"){
             std::string param = std::any_cast<std::string>(vals[1]);
             if (param == "replication"){
-                res = parse_encode_bulk_string("role:master");
+                std::string role = "master";
+                if (args_map.count("--replicaof") != 0)
+                    role = "slave";
+                res = parse_encode_bulk_string("role:"+role);
             }
         }
         if (!res.empty())
