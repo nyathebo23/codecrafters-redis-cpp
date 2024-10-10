@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
   }
   // // Since the tester restarts your program quite often, setting SO_REUSEADDR
   // // ensures that we don't run into 'Address already in use' errors
-  int reuse = 1;
+
   if (setsockopt(slave_server_socket.get_server_fd(), SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
     std::cerr << "setsockopt failed\n";
     return 1;
