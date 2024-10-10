@@ -148,7 +148,7 @@ SocketManagement::SocketManagement(short family, int type, std::map<std::string,
     server_addr.sin_family = family;
     server_addr.sin_addr.s_addr = INADDR_ANY;
     extra_args = extra;
-    int port = 6379;
+    int port = 6381;
     if (extra_args.count("--port") != 0){
         port = std::stoi(extra_args["--port"]);
     }
