@@ -45,31 +45,7 @@ int main(int argc, char **argv) {
   
   master_server_socket.check_incoming_clients_connections();
   
-  SocketManagement slave_server_socket(AF_INET, SOCK_STREAM, args_map);
-
-  if (slave_server_socket.get_server_fd() < 0) {
-   std::cerr << "Failed to create slave server socket\n";
-   return 1;
-  }
-  // // Since the tester restarts your program quite often, setting SO_REUSEADDR
-  // // ensures that we don't run into 'Address already in use' errors
-
-  if (setsockopt(slave_server_socket.get_server_fd(), SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)) < 0) {
-    std::cerr << "setsockopt failed\n";
-    return 1;
-  }
-  
-  if (slave_server_socket.socket_bind() != 0) {
-    std::cerr << "Failed slave to bind to port" +  std::to_string(slave_server_socket.get_server_fd()) +  "\n";
-    return 1;
-  }
-  
-  if (slave_server_socket.socket_listen(connection_backlog) != 0) {
-    std::cerr << "listen slave failed\n";
-    return 1;
-  }
-  
-  slave_server_socket.check_incoming_clients_connections();
+ 
 
   return 0;
 }
