@@ -237,7 +237,7 @@ int SocketManagement::send_handshake_to_master(int port){
         std::cout << "Connect to master failed";
         return -1;
     }
-    std::vector<std::any> ping = {"PING"};
+    std::vector<std::any> ping = {std::string("PING")};
     if(send_receive_msg_by_command(parse_encode_array(ping), "PONG") < 0)
         return -1;
 
