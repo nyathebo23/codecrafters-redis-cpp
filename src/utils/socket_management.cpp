@@ -163,9 +163,13 @@ void SocketManagement::handle_connection(int& clientfd){
                     std::string file_content_str = "524544495330303131fa0972656469732d76657205372e322e30fa0a72656469732d62697473c040fa056374696d65c26d08bc65fa08757365642d6d656dc2b0c41000fa08616f662d62617365c000fff06e3bfec0ff5aa2";
                     std::vector<unsigned char> bytes = string_to_binary(file_content_str);
                     const size_t size = bytes.size();
+                    std::string prefix = "$"+ std::to_string(size)+"\r\n";
+                    const prefix_size = prefix.size();
+                    unsigned char prefix_data[prefix_size];
                     unsigned char data[size];
+
                     memcpy(data, bytes.data(), size);
-                    if (send(clientfd, data, size, 0) < 0)
+                    if (send(clientfd, prefix.c_str() + data, size + prefix_size, 0) < 0)
                         std::cout <<  "send msg failed";
                 }
             }
