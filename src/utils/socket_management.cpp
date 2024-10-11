@@ -210,7 +210,8 @@ int SocketManagement::send_receive_msg_by_command(std::string tosend, std::strin
     }
     std::string data(buffer);
     std::string data_decoded = parse_decode_simple_string(data).first;
-    if (data_decoded != toreceive){
+    if ((tosend.substr(0, 5) != "PSYNC" && data_decoded != toreceive) || 
+        (tosend.substr(0, 5) == "PSYNC" && data_decoded.substr(0, 10) != "FULLRESYNC")){
         std::cout << "Bad message receive to " + tosend + " which is " + data_decoded;
         return -1;
     }
@@ -236,23 +237,20 @@ int SocketManagement::send_handshake_to_master(int port){
         std::cout << "Connect to master failed";
         return -1;
     }
-    std::vector<std::any> ping;
-    ping.push_back(std::string("PING"));
-    std::string pingmsg = parse_encode_array(ping);
-    if(send_receive_msg_by_command(pingmsg, "PONG") < 0)
+    std::vector<std::any> ping = {"PING"};
+    if(send_receive_msg_by_command(parse_encode_array(ping), "PONG") < 0)
         return -1;
 
-    std::vector<std::any> replconf_msg1, replconf_msg2;
-    replconf_msg1.push_back(std::string("REPLCONF"));
-    replconf_msg1.push_back(std::string("listening-port"));
-    replconf_msg1.push_back(std::to_string(port));
+    std::vector<std::any> replconf_msg1 = {std::string("REPLCONF"), std::string("listening-port"), std::to_string(port)}; 
     if(send_receive_msg_by_command(parse_encode_array(replconf_msg1), "OK") < 0)
         return -1;
     
-    replconf_msg2.push_back(std::string("REPLCONF"));
-    replconf_msg2.push_back(std::string("capa"));
-    replconf_msg2.push_back(std::string("psync2"));
+    std::vector<std::any> replconf_msg2 = {std::string("REPLCONF"), std::string("capa"), std::string("psync2")};
     if(send_receive_msg_by_command(parse_encode_array(replconf_msg2), "OK") < 0)
+        return -1;
+
+    std::vector<std::any> psync_msg = {std::string("PSYNC"), std::string("?"), std::string("-1")};
+    if(send_receive_msg_by_command(parse_encode_array(psync_msg), "FULLRESYNC <REPL_ID> 0") < 0)
         return -1;
     return 1;
 }
