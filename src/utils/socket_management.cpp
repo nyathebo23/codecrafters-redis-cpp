@@ -286,7 +286,7 @@ void SocketManagement::process_command(std::string data) {
     }
     catch(std::bad_variant_access e){
         auto arr = std::get<std::string>(arr_resp.first);
-        std::vector<std::string> vals = {arr.first};
+        std::vector<std::string> vals = {arr};
         std::cout << vals[0];
         if (vals[0].type() == typeid(std::string)){
             std::string cmd = std::any_cast<std::string>(vals[0]);
