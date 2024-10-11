@@ -142,8 +142,14 @@ void SocketManagement::handle_connection(){
                 }
             }
             if (!res.empty()){
-                std::cout <<  data + std::to_string(vals.size());
-                send(client_fd, res.c_str(), res.length(), 0);
+                std::cout <<  res + std::to_string(vals.size());
+                try {
+                    send(client_fd, res.c_str(), res.length(), 0);
+                }
+                catch(std::exception e){
+                    std::cout << e.what();
+                }
+                
             }
                 
         }
