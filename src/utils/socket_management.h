@@ -43,7 +43,7 @@ class SocketManagement {
 
         void check_incoming_clients_connections();
 
-        void retrieve_commands_from_master();
+        void retrieve_commands_from_master(int& serverfd);
 
         
 
