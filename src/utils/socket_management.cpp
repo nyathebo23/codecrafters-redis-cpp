@@ -48,7 +48,6 @@ void SocketManagement::handle_connection(int& clientfd){
             close(clientfd);
             return;
         }
-        
         std::string data(buffer);
         ArrayResp arr_resp = parse_decode_array(data);
         auto arr = std::get<ArrayAndInd>(arr_resp.first);
@@ -143,7 +142,7 @@ void SocketManagement::handle_connection(int& clientfd){
             }
             if (!res.empty()){
                 //std::cout <<  "azertyuiiopqsddfghj\n";
-                if (send(clientfd, res.c_str(), res.length(), 0) < 0)
+                if (send(clientfd, res.c_str(), res.length(), 0) = 0)
                     std::cout <<  "send msg failed\n";
             }
                 

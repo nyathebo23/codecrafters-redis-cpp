@@ -19,6 +19,7 @@ class SocketManagement {
 
         void execute_after_delay(int delay, const std::string& key);
 
+        void handle_connection(int &clientfd);
 
     public:
         SocketManagement(short family, int type, std::map<std::string, std::string> extra);
@@ -35,7 +36,7 @@ class SocketManagement {
 
         void check_incoming_clients_connections();
 
-        void handle_connection(int &clientfd);
+        
 
 
 };
