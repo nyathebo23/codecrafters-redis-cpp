@@ -232,28 +232,26 @@ void SocketManagement::check_incoming_clients_connections(){
 }
 
 int SocketManagement::send_handshake_to_master(int port){
-    std::vector<std::any> data;
-    data.push_back(std::string("PING"));
-    std::string msg = parse_encode_array(data);
     if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
         std::cout << "Connect to master failed";
         return -1;
     }
-    if(send_receive_msg_by_command(std::string("PING"), std::string("PONG")))
+    std::vector<std::any> ping;
+    ping.push_back(std::string("PING"));
+    std::string pingmsg = parse_encode_array(ping);
+    if(send_receive_msg_by_command(pingmsg, std::string("PONG")))
         return -1;
 
     std::vector<std::any> replconf_msg1, replconf_msg2;
     replconf_msg1.push_back(std::string("REPLCONF"));
     replconf_msg1.push_back(std::string("listening-port"));
     replconf_msg1.push_back(std::string("6380"));
-    
     if(send_receive_msg_by_command(parse_encode_array(replconf_msg1), "OK") < 0)
         return -1;
     
     replconf_msg1.push_back(std::string("REPLCONF"));
     replconf_msg1.push_back(std::string("capa"));
     replconf_msg1.push_back(std::string("psync2"));
-
     if(send_receive_msg_by_command(parse_encode_array(replconf_msg2), "OK") < 0)
         return -1;
     return 1;
