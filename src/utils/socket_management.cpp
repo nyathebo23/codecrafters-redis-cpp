@@ -233,8 +233,8 @@ void SocketManagement::check_incoming_clients_connections(){
   close(server_fd);
 }
 
-void SocketManagement::check_incoming_master_connections(int &masterfd){
-    std::thread connection([this](int& fd){retrieve_commands_from_master(fd);}, masterfd);
+void SocketManagement::check_incoming_master_connections(const int& masterfd){
+    std::thread connection([this](const int& fd){retrieve_commands_from_master(fd);}, masterfd);
     connection.detach();
 }
 

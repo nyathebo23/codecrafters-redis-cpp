@@ -41,7 +41,7 @@ class SocketManagement {
 
         int send_handshake_to_master(int port);
 
-        void check_incoming_master_connections(int &masterfd);
+        void check_incoming_master_connections(const int &masterfd);
 
         void check_incoming_clients_connections();
 
