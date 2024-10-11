@@ -270,14 +270,13 @@ void SocketManagement::process_command(std::string data) {
 }
 
 void SocketManagement::retrieve_commands_from_master() {
-
     while (1){
+        std::cout << "azertyuiohggfgf";
         char buffer[128];    
         if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
             close(server_fd);
             break;
         } 
-        std::cout << "azertyuiohggfgf";
         std::string data(buffer);
         int pos = 0;
         int end = data.find("*", 1);
@@ -288,8 +287,6 @@ void SocketManagement::retrieve_commands_from_master() {
         }
         process_command(data.substr(pos));
     }
-    
-
 };
 
 
