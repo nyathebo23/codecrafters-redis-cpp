@@ -56,8 +56,7 @@ int main(int argc, char **argv) {
     return 1;
   }
   
-  socket_management.check_incoming_clients_connections();
-
+  socket_management.send_handshake_to_master(6380);
 
   return 0;
 }

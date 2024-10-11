@@ -21,6 +21,8 @@ class SocketManagement {
 
         void handle_connection(int &clientfd);
 
+        int send_receive_msg_by_command(std::string tosend, std::string toreceive);
+
     public:
         SocketManagement(short family, int type, std::map<std::string, std::string> extra);
 
@@ -32,7 +34,7 @@ class SocketManagement {
 
         int socket_listen(int connection_backlog);
 
-        int send_message_to_server(std::string msg);
+        int send_handshake_to_master(int port);
 
         void check_incoming_clients_connections();
 

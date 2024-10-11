@@ -13,6 +13,7 @@
 #include "decode/array_parser_dec.h"
 #include "decode/small_aggregate_parser_dec.h"
 #include "process_rdbfile_datas.h"
+#include "decode/simple_data_parser_dec.h"
 #include "socket_management.h"
 
 
@@ -139,6 +140,12 @@ void SocketManagement::handle_connection(int& clientfd){
                     res = parse_encode_bulk_string(str);
                 }
             }
+            else if (cmd == "replconf"){
+                std::string param = std::any_cast<std::string>(vals[1]);
+                if (param == "listening-port" || param == "capa" && vals.size() == 3){
+                    res = parse_encode_simple_string(std::string("OK"));
+                }
+            }
             if (!res.empty()){
                 //std::cout <<  "azertyuiiopqsddfghj\n";
                 if (send(clientfd, res.c_str(), res.length(), 0) < 0)
@@ -186,6 +193,26 @@ int SocketManagement::socket_listen(int connection_backlog){
     return listen(server_fd, connection_backlog);
 }
 
+int SocketManagement::send_receive_msg_by_command(std::string tosend, std::string toreceive){
+    if (send(server_fd, tosend.c_str(), tosend.length(), 0) < 0){
+        std::cout << "Send "+ tosend + " handshake failed";
+        close(server_fd)
+        return -1;
+    }
+    char buffer[128];    
+    if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
+        close(server_fd);
+        return -1;
+    }
+    std::string data(buffer);
+    std::string data_decoded = parse_decode_simple_string(data);
+    if (data_decoded != toreceive){
+        std::cout << "Bad message receive to "+tosend;
+        return -1;
+    }
+};
+
+
 void SocketManagement::check_incoming_clients_connections(){
   struct sockaddr_in client_addr;
   int client_addr_len = sizeof(client_addr);
@@ -199,12 +226,30 @@ void SocketManagement::check_incoming_clients_connections(){
   close(server_fd);
 }
 
-int SocketManagement::send_message_to_server(std::string msg){
+int SocketManagement::send_handshake_to_master(int port){
     std::vector<std::any> data;
-    data.push_back(msg);
-    std::string handshake = parse_encode_array(data);
+    data.push_back(std::string("PING"));
+    std::string msg = parse_encode_array(data);
     if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
+        std::cout << "Connect to master failed"
         return -1;
     }
-    return send(server_fd, handshake.c_str(), handshake.length(), 0);
+    if(send_receive_msg_by_command(std::string("PING"), std::string("PONG")))
+        return -1;
+
+    std::vector<std::any> replconf_msg1, replconf_msg2;
+    replconf_msg1.push_back(std::string("REPLCONF"));
+    replconf_msg1.push_back(std::string("listening-port"));
+    replconf_msg1.push_back(std::string("6380"));
+    
+    if(send_receive_msg_by_command(parse_encode_array(replconf_msg1), "OK") < 0)
+        return -1;
+    
+    replconf_msg1.push_back(std::string("REPLCONF"));
+    replconf_msg1.push_back(std::string("capa"));
+    replconf_msg1.push_back(std::string("psync2"));
+
+    if(send_receive_msg_by_command(parse_encode_array(replconf_msg2), "OK") < 0)
+        return -1;
+    return 1;
 }
