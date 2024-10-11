@@ -50,10 +50,10 @@ void SocketManagement::handle_connection(){
         }
         
         std::string data(buffer);
-        ArrayResp arresp = parse_decode_array(data);
-        auto arr = std::get<ArrayAndInd>(arresp.first);
+        ArrayResp arr_resp = parse_decode_array(data);
+        auto arr = std::get<ArrayAndInd>(arr_resp.first);
         auto vals = arr.first;
-        std::cout << data + std::to_string(vals.size());
+
         if (vals[0].type() == typeid(std::string)){
             std::string cmd = std::any_cast<std::string>(vals[0]);
             std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
@@ -66,6 +66,7 @@ void SocketManagement::handle_connection(){
             else if (cmd == "ping"){
                 if (vals.size() == 1){
                     res = parse_encode_bulk_string("PONG");
+                    std::cout <<  data + std::to_string(vals.size());
                 }
             }
             else if (cmd == "set"){
