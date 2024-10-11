@@ -170,7 +170,14 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
     return std::make_pair(keys, values);
 }
 
-
+std::vector<unsigned char> string_to_binary(std::string str){
+    std::vector<unsigned char> bytes;
+    int len = str.length();
+    for (int i = 0; i < len; i+=2){
+        bytes.push_back(static_cast<unsigned char>(std::stoi(str.substr(i, 2))));
+    }
+    return bytes;
+} 
 
 // int main(int argc, char **argv) {
 //     std::vector<std::any> str = get_keys_values_from_file("rdbfile.rdb");
