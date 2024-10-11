@@ -273,7 +273,7 @@ void SocketManagement::retrieve_commands_from_master() {
     while (1){
         std::cout << "azertyuiohggfgf";
         char buffer[128];    
-        recv(server_fd, &buffer, sizeof(buffer), 0)
+        recv(server_fd, &buffer, sizeof(buffer), 0);
         // if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
         //     close(server_fd);
         //     break;
