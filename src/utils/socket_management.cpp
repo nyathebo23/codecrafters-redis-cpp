@@ -147,7 +147,8 @@ void SocketManagement::handle_connection(int& clientfd){
                 }
             }
             else if (cmd == "psync"){
-                std::string param1, param2 = std::any_cast<std::string>(vals[1]), std::any_cast<std::string>(vals[2]);
+                std::string param1 = std::any_cast<std::string>(vals[1]);
+                std::string param2 = std::any_cast<std::string>(vals[2]);
                 if (param1 == "?" && param2 == "-1"){
                     std::string replication_id = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
                     res = parse_encode_simple_string("FULLRESYNC " + replication_id + " 0");
