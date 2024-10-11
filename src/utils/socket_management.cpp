@@ -143,13 +143,7 @@ void SocketManagement::handle_connection(){
             }
             if (!res.empty()){
                 std::cout <<  res + std::to_string(vals.size());
-                try {
-                    send(client_fd, res.c_str(), res.length(), 0);
-                }
-                catch(std::exception e){
-                    std::cout << e.what();
-                }
-                
+                send(client_fd, res.c_str(), res.length(), 0);
             }
                 
         }
@@ -200,7 +194,7 @@ void SocketManagement::check_incoming_clients_connections(){
     while (1){
         client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
         std::cout << "Client connected\n";
-        std::thread connection([this](){handle_connection();});
+        std::thread connection(handle_connection());
         connection.detach();
     }
     close(server_fd);
