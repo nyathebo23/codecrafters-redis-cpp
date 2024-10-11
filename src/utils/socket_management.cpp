@@ -286,28 +286,8 @@ void SocketManagement::process_command(std::string data) {
     }
     catch(std::bad_variant_access e){
         auto arr = std::get<std::string>(arr_resp.first);
-        std::vector<std::string> vals = {arr};
-        std::cout << vals[0];
-        if (vals[0].type() == typeid(std::string)){
-            std::string cmd = std::any_cast<std::string>(vals[0]);
-            std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
-            std::string res;                
-            if (cmd == "set"){
-                if (vals.size() > 2){
-                    std::string key = std::any_cast<std::string>(vals[1]);
-                    this->dict_data[key] = std::any_cast<std::string>(vals[2]);
-                    if (vals.size() == 5 && vals[3].type() == typeid(std::string)){
-                        std::string param = std::any_cast<std::string>(vals[3]);
-                        std::transform(param.begin(), param.end(), param.begin(), ::tolower);
-                        if (param == "px"){
-                            const int duration = std::stoi(std::any_cast<std::string>(vals[4]));
-                            std::thread t([this, &duration, &key]() {execute_after_delay(duration, key);});
-                            t.detach();
-                        }
-                    }
-                }
-            }
-        }        
+        std::cout << arr + " " + data;
+      
     }
 
 }
