@@ -249,9 +249,9 @@ int SocketManagement::send_handshake_to_master(int port){
     if(send_receive_msg_by_command(parse_encode_array(replconf_msg1), "OK") < 0)
         return -1;
     
-    replconf_msg1.push_back(std::string("REPLCONF"));
-    replconf_msg1.push_back(std::string("capa"));
-    replconf_msg1.push_back(std::string("psync2"));
+    replconf_msg2.push_back(std::string("REPLCONF"));
+    replconf_msg2.push_back(std::string("capa"));
+    replconf_msg2.push_back(std::string("psync2"));
     if(send_receive_msg_by_command(parse_encode_array(replconf_msg2), "OK") < 0)
         return -1;
     return 1;
