@@ -210,11 +210,10 @@ int SocketManagement::send_receive_msg_by_command(std::string tosend, std::strin
     }
     std::string data(buffer);
     std::string data_decoded = parse_decode_simple_string(data).first;
-    if ((tosend.substr(0, 9) != "*3\r\nPSYNC" && data_decoded != toreceive) || 
-        (tosend.substr(0, 9) == "*3\r\nPSYNC" && data_decoded.substr(0, 10) != "FULLRESYNC")){
-        std::cout << "Bad message receive to " + tosend + " which is " + data_decoded;
-        return -1;
-    }
+    // if (data_decoded != toreceive){
+    //     std::cout << "Bad message receive to " + tosend + " which is " + data_decoded;
+    //     return -1;
+    // }
     return 1;
 };
 
