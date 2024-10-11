@@ -171,8 +171,11 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
 }
 
 std::vector<unsigned char> string_to_binary(std::string str){
-    std::vector<unsigned char> bytes;
+    
     int len = str.length();
+    int str_binary_len = len / 2;
+    std::string prefix = "$" + std::to_string(str_binary_len) + "\r\n"; 
+    std::vector<unsigned char> bytes(prefix.begin(), prefix.end());
     for (int i = 0; i < len; i+=2){
         bytes.push_back(static_cast<unsigned char>(std::stoi(str.substr(i, 2), nullptr, 16)));
     }
