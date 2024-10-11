@@ -45,7 +45,7 @@ void SocketManagement::handle_connection(){
     while (1) {
         char buffer[128];    
         if (recv(client_fd, &buffer, sizeof(buffer), 0) <= 0) {
-            close(client_fd);
+            //close(client_fd);
             return;
         }
         

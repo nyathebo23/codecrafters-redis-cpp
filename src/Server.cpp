@@ -5,9 +5,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#include <thread>
 #include <map>
-#include <vector>
 #include "utils/socket_management.h"
 
 
