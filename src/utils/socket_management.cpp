@@ -200,7 +200,7 @@ int SocketManagement::socket_listen(int connection_backlog){
 int SocketManagement::send_receive_msg_by_command(std::string tosend, std::string toreceive){
     if (send(server_fd, tosend.c_str(), tosend.length(), 0) < 0){
         std::cout << "Send "+ tosend + " handshake failed";
-        close(server_fd)
+        close(server_fd);
         return -1;
     }
     char buffer[128];    
@@ -209,11 +209,12 @@ int SocketManagement::send_receive_msg_by_command(std::string tosend, std::strin
         return -1;
     }
     std::string data(buffer);
-    std::string data_decoded = parse_decode_simple_string(data);
+    std::string data_decoded = parse_decode_simple_string(data).first;
     if (data_decoded != toreceive){
         std::cout << "Bad message receive to "+tosend;
         return -1;
     }
+    return 1;
 };
 
 
@@ -235,7 +236,7 @@ int SocketManagement::send_handshake_to_master(int port){
     data.push_back(std::string("PING"));
     std::string msg = parse_encode_array(data);
     if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
-        std::cout << "Connect to master failed"
+        std::cout << "Connect to master failed";
         return -1;
     }
     if(send_receive_msg_by_command(std::string("PING"), std::string("PONG")))
