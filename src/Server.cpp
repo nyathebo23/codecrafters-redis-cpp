@@ -7,25 +7,29 @@
 #include <netdb.h>
 #include <thread>
 #include <map>
+#include <vector>
 #include "utils/socket_management.h"
 
 
 int main(int argc, char **argv) {
   std::map<std::string, std::string> args_map;
   for (int i = 1; i < argc-1; i+=2){
-     args_map[std::string(argv[i])] = std::string(argv[i+1]);
+     args_map[std::string(argv[i]).substr(2)] = std::string(argv[i+1]);
   }
 
   std::map<std::string, std::string> args_map_master;
-  if (args_map.count("--replicaof") != 0)
-      args_map_master["--port"] = args_map["--replicaof"].substr(args_map["--replicaof"].find_first_of(" ")+1);
+  if (args_map.count("replicaof") != 0){
+      args_map_master["host"] = args_map["replicaof"].substr(0, args_map["replicaof"].find_first_of(" "));
+      args_map_master["port"] = args_map["replicaof"].substr(args_map["replicaof"].find_last_of(" ")+1);
+  }
   //std::string dest_port = master_raw_data.substr(master_raw_data.find_first_of(" ")+1);
 
   SocketManagement master_socket_management(AF_INET, SOCK_STREAM, args_map_master);
-
+  std::vector<std::string> data;
+  data.push_back(std::string("PING"));
+  master_socket_management.send_message_to_server()
 
   SocketManagement socket_management(AF_INET, SOCK_STREAM, args_map);
-  socket_management.send_handshake(master_socket_management.get_server_fd());
 
 
   // Flush after every std::cout / std::cerr

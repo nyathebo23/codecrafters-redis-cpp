@@ -26,19 +26,19 @@ void SocketManagement::execute_after_delay(int delay, const std::string& key) {
     this->erase_key(key);
 }
 
-sockaddr_in SocketManagement::get_addr_from_params_datas(std::string master_raw_data){
-    std::string dest_ip = master_raw_data.substr(0, master_raw_data.find_first_of(" "));
-    std::string dest_port = master_raw_data.substr(master_raw_data.find_first_of(" ")+1);
-    sockaddr_in master_addr;
-    master_addr.sin_family = server_addr.sin_family;
-    if (dest_ip == "localhost")
-        master_addr.sin_addr.s_addr = INADDR_ANY;
-    else {
-        master_addr.sin_addr.s_addr = INADDR_ANY;
-    }
-    master_addr.sin_port = std::stoi(dest_port);
-    return master_addr;
-}
+// sockaddr_in SocketManagement::get_addr_from_params_datas(std::string master_raw_data){
+//     std::string dest_ip = master_raw_data.substr(0, master_raw_data.find_first_of(" "));
+//     std::string dest_port = master_raw_data.substr(master_raw_data.find_first_of(" ")+1);
+//     sockaddr_in master_addr;
+//     master_addr.sin_family = server_addr.sin_family;
+//     if (dest_ip == "localhost")
+//         master_addr.sin_addr.s_addr = INADDR_ANY;
+//     else {
+//         master_addr.sin_addr.s_addr = INADDR_ANY;
+//     }
+//     master_addr.sin_port = std::stoi(dest_port);
+//     return master_addr;
+// }
 
 void SocketManagement::handle_connection(){
     while (1) {
@@ -84,7 +84,7 @@ void SocketManagement::handle_connection(){
             else if (cmd == "get"){
                 if (vals.size() == 2 && vals[1].type() == typeid(std::string)){
                     std::string key = std::any_cast<std::string>(vals[1]);
-                    auto keys_values = get_keys_values_from_file(this->extra_args["--dir"] + "/" + this->extra_args["--dbfilename"]);
+                    auto keys_values = get_keys_values_from_file(this->extra_args["dir"] + "/" + this->extra_args["dbfilename"]);
                     int index = 0, size = keys_values.first.size();
                     while (index < size && std::any_cast<std::string>(keys_values.first[index]) != key){
                         index++;
@@ -105,11 +105,11 @@ void SocketManagement::handle_connection(){
             if (cmd2 == "get"){
                 std::string key = std::any_cast<std::string>(vals[2]);
                 if (key == "dir"){
-                    std::vector<std::any> values = {key, this->extra_args["--dir"]};
+                    std::vector<std::any> values = {key, this->extra_args["dir"]};
                     res = parse_encode_array(values);
                 }
                 else if (key == "dbfilename"){
-                    std::vector<std::any> values = {key, this->extra_args["--dbfilename"]};
+                    std::vector<std::any> values = {key, this->extra_args["dbfilename"]};
                     res = parse_encode_array(values);          
                 }
             }
@@ -118,7 +118,7 @@ void SocketManagement::handle_connection(){
                 std::string param = std::any_cast<std::string>(vals[1]);
                 //std::transform(param.begin(), param.end(), param.begin(), ::tolower);
                 if (param == "*"){
-                    auto keys_values = get_keys_values_from_file(this->extra_args["--dir"] + "/" + this->extra_args["--dbfilename"]);
+                    auto keys_values = get_keys_values_from_file(this->extra_args["dir"] + "/" + this->extra_args["dbfilename"]);
                     auto keys = keys_values.first;
                     res = parse_encode_array(keys);
                 }
@@ -127,7 +127,7 @@ void SocketManagement::handle_connection(){
                 std::string param = std::any_cast<std::string>(vals[1]);
                 if (param == "replication"){
                     std::string role = "master";
-                    if (this->extra_args.count("--replicaof") != 0){
+                    if (this->extra_args.count("replicaof") != 0){
                         role = "slave";
                     }
                     std::string replication_id = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
@@ -148,21 +148,25 @@ SocketManagement::SocketManagement(short family, int type, std::map<std::string,
     server_addr.sin_family = family;
     server_addr.sin_addr.s_addr = INADDR_ANY;
     extra_args = extra;
-    int port = 6381;
-    if (extra_args.count("--port") != 0){
-        port = std::stoi(extra_args["--port"]);
+    if (extra_args.count("host") != 0){
+        std::string ip_address = extra_args["host"] == "localhost" ? "127.0.0.1" : extra_args["host"];
+        inet_pton(AF_INET, ip_address.c_str(), &(this->server_addr.sin_addr));
+    }
+    int port = 6379;
+    if (extra_args.count("port") != 0){
+        port = std::stoi(extra_args["port"]);
     }
     server_addr.sin_port = htons(port);
 }
 
-void SocketManagement::send_handshake(int master_fd){
-    std::vector<std::any> data;
-    data.push_back(std::string("PING"));
-    std::string msg = parse_encode_array(data);
-    sockaddr_in dest_address = this->get_addr_from_params_datas(this->extra_args["--replicaof"]);
-    if (this->send_message_to_server(master_fd, dest_address, msg) > 0)
-        std::cout << "okokokokokokokokokkokook";
-}
+// void SocketManagement::send_handshake(int master_fd){
+//     std::vector<std::any> data;
+//     data.push_back(std::string("PING"));
+//     std::string msg = parse_encode_array(data);
+//     sockaddr_in dest_address = this->get_addr_from_params_datas(this->extra_args["replicaof"]);
+//     if (this->send_message_to_server(master_fd, dest_address, msg) > 0)
+//         std::cout << "okokokokokokokokokkokook";
+// }
 
 int SocketManagement::get_server_fd() const{
     return server_fd;
@@ -189,10 +193,13 @@ void SocketManagement::check_incoming_clients_connections(){
     close(server_fd);
 }
 
-int SocketManagement::send_message_to_server(int dest_fd, sockaddr_in dest_address, std::string msg){
-    if (connect(dest_fd, (struct sockaddr*)&dest_address, sizeof(dest_address)) < 0){
+int SocketManagement::send_message_to_server(std::string msg){
+    std::vector<std::string> data;
+    data.push_back(msg);
+    std::string handshake = parse_encode_array(data);
+    if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
         return -1;
     }
     std::cout << "okokokokokokokokokkokook";
-    return send(dest_fd, msg.c_str(), msg.length(), 0);
+    return send(server_fd, handshake.c_str(), handshake.length(), 0);
 }

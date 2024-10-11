@@ -5,6 +5,7 @@
 #include <thread>
 #include <map>
 #include <arpa/inet.h>
+#include <sys/socket.h>
 
 class SocketManagement {
     private:
@@ -25,17 +26,17 @@ class SocketManagement {
 
         int get_server_fd() const;
 
-        sockaddr_in get_addr_from_params_datas(std::string master_raw_data);
+        //sockaddr_in get_addr_from_params_datas(std::string master_raw_data);
 
         int socket_bind();
 
         int socket_listen(int connection_backlog);
 
-        int send_message_to_server(int dest_fd, sockaddr_in dest_address, std::string msg);
+        int send_message_to_server(std::string msg);
 
         void check_incoming_clients_connections();
 
-        void send_handshake(int master_fd);
+        //void send_handshake(int master_fd);
 
 
 };
