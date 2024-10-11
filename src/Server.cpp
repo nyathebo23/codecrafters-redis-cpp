@@ -24,8 +24,7 @@ int main(int argc, char **argv) {
   }
 
   SocketManagement master_socket_management(AF_INET, SOCK_STREAM, args_map_master);
-  if (args_map.count("replicaof") != 0)
-      master_socket_management.send_handshake_to_master(ntohs(socket_management.get_server_addr().sin_port));
+
   //std::string dest_port = master_raw_data.substr(master_raw_data.find_first_of(" ")+1);
 
 
@@ -58,7 +57,10 @@ int main(int argc, char **argv) {
     return 1;
   }
   
-  socket_management.check_incoming_master_connections(master_socket_management.get_server_fd());
+  if (args_map.count("replicaof") != 0){
+      master_socket_management.send_handshake_to_master(ntohs(socket_management.get_server_addr().sin_port));
+      socket_management.check_incoming_master_connections(master_socket_management.get_server_fd());
+  }
   socket_management.check_incoming_clients_connections();
 
   return 0;
