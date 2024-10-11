@@ -302,7 +302,7 @@ void SocketManagement::retrieve_commands_from_master() {
         //     pos = end;
         //     end = data.find("*", pos+1);
         // }
-        process_command(data.substr(pos));
+        process_command(data);
     }
     
 
