@@ -41,13 +41,14 @@ void SocketManagement::execute_after_delay(int delay, const std::string& key) {
 // }
 
 void SocketManagement::handle_connection(){
+    std::cout << "okokokokokokokokokokokokk";
     while (1) {
         char buffer[128];    
         if (recv(client_fd, &buffer, sizeof(buffer), 0) <= 0) {
-            std::cout << "okokokokokokokokokokokokk";
             close(client_fd);
             return;
         }
+        std::cout << "azertyuiophjk";
         std::string data(buffer);
         ArrayResp arresp = parse_decode_array(data);
         auto arr = std::get<ArrayAndInd>(arresp.first);
