@@ -19,7 +19,7 @@ class SocketManagement {
 
         void execute_after_delay(int delay, const std::string& key);
 
-        static void handle_connection();
+        void handle_connection();
 
     public:
         SocketManagement(short family, int type, std::map<std::string, std::string> extra);
