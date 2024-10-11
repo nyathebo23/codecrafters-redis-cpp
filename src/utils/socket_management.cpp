@@ -315,6 +315,6 @@ int SocketManagement::send_handshake_to_master(int port){
     if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
             std::cout << "azertyuiohggfgf";
     }    
-    retrieve_commands_from_master();
+    //retrieve_commands_from_master();
     return 1;
 }
