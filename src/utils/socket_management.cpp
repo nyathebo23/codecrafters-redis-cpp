@@ -295,7 +295,7 @@ void SocketManagement::retrieve_commands_from_master() {
             break;
         }    
         std::string data(buffer);
-        // int pos = 0;
+        int pos = 0;
         // int end = data.find("*", 1);
         // while (end != std::string::npos){
         //     process_command(data.substr(pos, end-pos));
