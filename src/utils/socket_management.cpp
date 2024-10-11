@@ -275,14 +275,17 @@ void SocketManagement::retrieve_commands_from_master() {
     while (1){
         char buffer[128];    
         if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
-            close(server_fd);
-            break;
+            // close(server_fd);
+            // break;
+            if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
+                std::cout << "Connect to master failed";
+                //return -1;
+            }
         }    
         if (!isfilesent){
             isfilesent = true;
             continue;
         }
-
         std::string data(buffer);
         int pos = 0;
         int end = data.find("*", 1);
