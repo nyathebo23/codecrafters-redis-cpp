@@ -2,6 +2,7 @@
 #include <string>
 #include <cstring>
 #include <thread>
+#include <variant>
 #include <map>
 #include <algorithm>
 #include <sys/socket.h>
@@ -258,31 +259,55 @@ void SocketManagement::check_incoming_clients_connections(){
 void SocketManagement::process_command(std::string data) {
 
     ArrayResp arr_resp = parse_decode_array(data);
-    auto arr = std::get<ArrayAndInd>(arr_resp.first);
-    auto vals = arr.first;
-    if (vals[0].type() == typeid(std::string)){
-        std::string cmd = std::any_cast<std::string>(vals[0]);
-        std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
-        std::string res;                
-        if (cmd == "set"){
-            // for (int replica_fd: replicas_fd) {
-            //     if (send(replica_fd, data.c_str(), data.length(), 0) <= 0)
-            //         std::cout <<  "replica send msg failed";                
-            // }
-            if (vals.size() > 2){
-                std::string key = std::any_cast<std::string>(vals[1]);
-                this->dict_data[key] = std::any_cast<std::string>(vals[2]);
-                if (vals.size() == 5 && vals[3].type() == typeid(std::string)){
-                    std::string param = std::any_cast<std::string>(vals[3]);
-                    std::transform(param.begin(), param.end(), param.begin(), ::tolower);
-                    if (param == "px"){
-                        const int duration = std::stoi(std::any_cast<std::string>(vals[4]));
-                        std::thread t([this, &duration, &key]() {execute_after_delay(duration, key);});
-                        t.detach();
+    try {
+        auto arr = std::get<ArrayAndInd>(arr_resp.first);
+        auto vals = arr.first;
+        if (vals[0].type() == typeid(std::string)){
+            std::string cmd = std::any_cast<std::string>(vals[0]);
+            std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
+            std::string res;                
+            if (cmd == "set"){
+                if (vals.size() > 2){
+                    std::string key = std::any_cast<std::string>(vals[1]);
+                    this->dict_data[key] = std::any_cast<std::string>(vals[2]);
+                    if (vals.size() == 5 && vals[3].type() == typeid(std::string)){
+                        std::string param = std::any_cast<std::string>(vals[3]);
+                        std::transform(param.begin(), param.end(), param.begin(), ::tolower);
+                        if (param == "px"){
+                            const int duration = std::stoi(std::any_cast<std::string>(vals[4]));
+                            std::thread t([this, &duration, &key]() {execute_after_delay(duration, key);});
+                            t.detach();
+                        }
                     }
                 }
             }
         }
+
+    }
+    catch(std::bad_variant_access e){
+        auto arr = std::get<std::string>(arr_resp.first);
+        std::vector<std::string> vals = {arr.first};
+        std::cout << vals[0];
+        if (vals[0].type() == typeid(std::string)){
+            std::string cmd = std::any_cast<std::string>(vals[0]);
+            std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
+            std::string res;                
+            if (cmd == "set"){
+                if (vals.size() > 2){
+                    std::string key = std::any_cast<std::string>(vals[1]);
+                    this->dict_data[key] = std::any_cast<std::string>(vals[2]);
+                    if (vals.size() == 5 && vals[3].type() == typeid(std::string)){
+                        std::string param = std::any_cast<std::string>(vals[3]);
+                        std::transform(param.begin(), param.end(), param.begin(), ::tolower);
+                        if (param == "px"){
+                            const int duration = std::stoi(std::any_cast<std::string>(vals[4]));
+                            std::thread t([this, &duration, &key]() {execute_after_delay(duration, key);});
+                            t.detach();
+                        }
+                    }
+                }
+            }
+        }        
     }
 
 }
@@ -302,7 +327,7 @@ void SocketManagement::retrieve_commands_from_master() {
         //     pos = end;
         //     end = data.find("*", pos+1);
         // }
-        process_command(data);
+        process_command(data.substr(pos));
     }
     
 
