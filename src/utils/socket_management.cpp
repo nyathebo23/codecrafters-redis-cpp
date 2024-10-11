@@ -172,7 +172,7 @@ void SocketManagement::handle_connection(int& clientfd){
                     if (send(clientfd, data, size, 0) <= 0)
                         std::cout <<  "send msg failed";
                     else
-                        replicas_fd.push_back(clientfd)
+                        replicas_fd.push_back(clientfd);
                 }
             }
                 
