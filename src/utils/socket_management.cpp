@@ -315,7 +315,7 @@ int SocketManagement::send_handshake_to_master(int port){
     if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
             std::cout << "azertyuiohggfgf";
     }    
-    std::thread connection([this](int &serverfd){retrieve_commands_from_master(serverfd);}, server_fd);
+    std::thread connection([this](int serverfd){retrieve_commands_from_master(serverfd);}, server_fd);
     connection.detach();
     return 1;
 }
