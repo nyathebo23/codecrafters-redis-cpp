@@ -25,9 +25,7 @@ int main(int argc, char **argv) {
   //std::string dest_port = master_raw_data.substr(master_raw_data.find_first_of(" ")+1);
 
   SocketManagement master_socket_management(AF_INET, SOCK_STREAM, args_map_master);
-  std::vector<std::string> data;
-  data.push_back(std::string("PING"));
-  master_socket_management.send_message_to_server()
+  master_socket_management.send_message_to_server(std::string("PING"));
 
   SocketManagement socket_management(AF_INET, SOCK_STREAM, args_map);
 
