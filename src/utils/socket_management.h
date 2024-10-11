@@ -4,6 +4,7 @@
 #include <string>
 #include <thread>
 #include <map>
+#include <vector>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
