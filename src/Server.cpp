@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
 
   SocketManagement socket_management(AF_INET, SOCK_STREAM, args_map);
 
-  master_socket_management.send_handshake_to_master(socket_management.get_server_addr().sin_port);
+  master_socket_management.send_handshake_to_master(ntohs(socket_management.get_server_addr().sin_port));
 
   // Flush after every std::cout / std::cerr
   std::cout << std::unitbuf;
