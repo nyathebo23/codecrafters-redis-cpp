@@ -293,6 +293,11 @@ void SocketManagement::process_command(std::string data) {
 }
 
 void SocketManagement::retrieve_commands_from_master() {
+    char buffer[128];
+    if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
+        close(server_fd);
+        break;
+    }    
     while (1){
         char buffer[128];    
         if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
@@ -301,12 +306,12 @@ void SocketManagement::retrieve_commands_from_master() {
         }    
         std::string data(buffer);
         int pos = 0;
-        // int end = data.find("*", 1);
-        // while (end != std::string::npos){
-        //     process_command(data.substr(pos, end-pos));
-        //     pos = end;
-        //     end = data.find("*", pos+1);
-        // }
+        int end = data.find("*", 1);
+        while (end != std::string::npos){
+            process_command(data.substr(pos, end-pos));
+            pos = end;
+            end = data.find("*", pos+1);
+        }
         process_command(data.substr(pos));
     }
     
