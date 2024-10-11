@@ -277,10 +277,7 @@ void SocketManagement::retrieve_commands_from_master() {
         if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
             // close(server_fd);
             // break;
-            if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
-                std::cout << "Connect to master failed";
-                //return -1;
-            }
+            std::cout << "azertyuiohggfgf";
         }    
         if (!isfilesent){
             isfilesent = true;
