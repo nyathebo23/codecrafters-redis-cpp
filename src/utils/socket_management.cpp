@@ -41,18 +41,19 @@ void SocketManagement::execute_after_delay(int delay, const std::string& key) {
 // }
 
 void SocketManagement::handle_connection(){
-    std::cout << "okokokokokokokokokokokokk";
+    std::cout << "okokokokokokokokokokokokk\n";
     while (1) {
         char buffer[128];    
         if (recv(client_fd, &buffer, sizeof(buffer), 0) <= 0) {
             close(client_fd);
             return;
         }
-        std::cout << "azertyuiophjk";
+        
         std::string data(buffer);
         ArrayResp arresp = parse_decode_array(data);
         auto arr = std::get<ArrayAndInd>(arresp.first);
         auto vals = arr.first;
+        std::cout << data;
         if (vals[0].type() == typeid(std::string)){
             std::string cmd = std::any_cast<std::string>(vals[0]);
             std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
