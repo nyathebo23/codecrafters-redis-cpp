@@ -40,11 +40,11 @@ void SocketManagement::execute_after_delay(int delay, const std::string& key) {
 //     return master_addr;
 // }
 
-void SocketManagement::handle_connection(int &clientfd){
+void SocketManagement::handle_connection(){
     while (1) {
         char buffer[128];    
-        if (recv(clientfd, &buffer, sizeof(buffer), 0) <= 0) {
-        close(clientfd);
+        if (recv(client_fd, &buffer, sizeof(buffer), 0) <= 0) {
+        close(client_fd);
         return;
         }
         std::string data(buffer);
@@ -138,7 +138,7 @@ void SocketManagement::handle_connection(int &clientfd){
                 }
             }
             if (!res.empty())
-                send(clientfd, res.c_str(), res.length(), 0);
+                send(client_fd, res.c_str(), res.length(), 0);
         }
     }
 }
@@ -185,9 +185,9 @@ void SocketManagement::check_incoming_clients_connections(){
     int client_addr_len = sizeof(client_addr);
     std::cout << "Waiting for a client to connect...\n";
     while (1){
-        int client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
+        client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
         std::cout << "Client connected\n";
-        std::thread connection([this, &client_fd](){handle_connection(client_fd);});
+        std::thread connection([this](){handle_connection();});
         connection.detach();
     }
     close(server_fd);
