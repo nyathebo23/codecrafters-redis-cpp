@@ -45,7 +45,7 @@ class SocketManagement {
 
         void check_incoming_clients_connections();
 
-        void retrieve_commands_from_master(int& serverfd);
+        void retrieve_commands_from_master(const int& serverfd);
 
         
 

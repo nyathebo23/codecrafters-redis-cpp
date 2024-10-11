@@ -274,7 +274,7 @@ void SocketManagement::process_command(std::string data) {
 
 }
 
-void SocketManagement::retrieve_commands_from_master(int& serverfd) {
+void SocketManagement::retrieve_commands_from_master(const int& serverfd) {
 
     while (1){
         char buffer[128];    
