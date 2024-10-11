@@ -233,6 +233,11 @@ void SocketManagement::check_incoming_clients_connections(){
   close(server_fd);
 }
 
+void SocketManagement::check_incoming_master_connections(int &masterfd){
+    std::thread connection([this](int& fd){retrieve_commands_from_master(fd);}, masterfd);
+    connection.detach();
+}
+
 void SocketManagement::process_command(std::string data) {
 
     ArrayResp arr_resp = parse_decode_array(data);
@@ -315,7 +320,6 @@ int SocketManagement::send_handshake_to_master(int port){
     if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
             std::cout << "azertyuiohggfgf";
     }    
-    std::thread connection([this](int serverfd){retrieve_commands_from_master(serverfd);}, server_fd);
-    connection.detach();
+    
     return 1;
 }
