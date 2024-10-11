@@ -57,16 +57,7 @@ int main(int argc, char **argv) {
   }
   
   socket_management.check_incoming_clients_connections();
-  struct sockaddr_in client_addr;
-  int client_addr_len = sizeof(client_addr);
-  std::cout << "Waiting for a client to connect...\n";
-  while (1){
-      int clientfd = accept(socket_management.get_server_fd(), (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
-      std::cout << "Client connected\n";
-      std::thread connection([socket_management, &clientfd](){socket_management.handle_connection(clientfd);});
-      connection.detach();
-  }
-  close(socket_management.get_server_fd());
+
 
   return 0;
 }
