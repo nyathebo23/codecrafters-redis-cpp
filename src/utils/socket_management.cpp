@@ -256,6 +256,7 @@ void SocketManagement::check_incoming_clients_connections(){
 }
 
 void SocketManagement::process_command(std::string data) {
+    std::cout << data;
     ArrayResp arr_resp = parse_decode_array(data);
     auto arr = std::get<ArrayAndInd>(arr_resp.first);
     auto vals = arr.first;
