@@ -28,6 +28,7 @@ class SocketManagement {
 
         int get_server_fd() const;
 
+        struct sockaddr_in get_server_addr() const;
         //sockaddr_in get_addr_from_params_datas(std::string master_raw_data);
 
         int socket_bind();

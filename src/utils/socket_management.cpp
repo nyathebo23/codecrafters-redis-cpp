@@ -185,6 +185,10 @@ int SocketManagement::get_server_fd() const{
     return server_fd;
 }
 
+struct sockaddr_in SocketManagement::get_server_addr() const {
+    return server_addr;
+}
+
 int SocketManagement::socket_bind() {
     return bind(server_fd, (struct sockaddr *) &server_addr, sizeof(server_addr));
 }

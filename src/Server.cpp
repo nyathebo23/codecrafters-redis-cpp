@@ -23,10 +23,10 @@ int main(int argc, char **argv) {
   //std::string dest_port = master_raw_data.substr(master_raw_data.find_first_of(" ")+1);
 
   SocketManagement master_socket_management(AF_INET, SOCK_STREAM, args_map_master);
-  master_socket_management.send_message_to_server(std::string("PING"));
 
   SocketManagement socket_management(AF_INET, SOCK_STREAM, args_map);
 
+  master_socket_management.send_handshake_to_master(socket_management.get_server_addr().sin_port);
 
   // Flush after every std::cout / std::cerr
   std::cout << std::unitbuf;
@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
     return 1;
   }
   
-  socket_management.send_handshake_to_master(6380);
+  socket_management.check_incoming_clients_connections();
 
   return 0;
 }
