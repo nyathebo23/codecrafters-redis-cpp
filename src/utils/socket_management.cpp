@@ -142,8 +142,8 @@ void SocketManagement::handle_connection(){
                 }
             }
             if (!res.empty()){
-                std::cout <<  res + std::to_string(vals.size());
-                send(client_fd, res.c_str(), res.length(), 0);
+                if (send(client_fd, res.c_str(), res.length(), 0) < 0)
+                    std::cout <<  "azertyuiiopqsddfghj\n";
             }
                 
         }
