@@ -44,8 +44,9 @@ void SocketManagement::handle_connection(){
     while (1) {
         char buffer[128];    
         if (recv(client_fd, &buffer, sizeof(buffer), 0) <= 0) {
-        close(client_fd);
-        return;
+            std::cout << "okokokokokokokokokokokokk";
+            close(client_fd);
+            return;
         }
         std::string data(buffer);
         ArrayResp arresp = parse_decode_array(data);
@@ -62,7 +63,7 @@ void SocketManagement::handle_connection(){
             }
             else if (cmd == "ping"){
                 if (vals.size() == 1){
-                res = parse_encode_bulk_string("PONG");
+                    res = parse_encode_bulk_string("PONG");
                 }
             }
             else if (cmd == "set"){
