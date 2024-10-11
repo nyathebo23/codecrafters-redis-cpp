@@ -15,6 +15,8 @@ int main(int argc, char **argv) {
      args_map[std::string(argv[i]).substr(2)] = std::string(argv[i+1]);
   }
 
+  SocketManagement socket_management(AF_INET, SOCK_STREAM, args_map);
+
   std::map<std::string, std::string> args_map_master;
   if (args_map.count("replicaof") != 0){
       args_map_master["host"] = args_map["replicaof"].substr(0, args_map["replicaof"].find_first_of(" "));
@@ -24,7 +26,6 @@ int main(int argc, char **argv) {
   }
   //std::string dest_port = master_raw_data.substr(master_raw_data.find_first_of(" ")+1);
 
-  SocketManagement socket_management(AF_INET, SOCK_STREAM, args_map);
 
 
   // Flush after every std::cout / std::cerr
