@@ -25,9 +25,6 @@ int main(int argc, char **argv) {
 
   SocketManagement master_socket_management(AF_INET, SOCK_STREAM, args_map_master);
 
-  //std::string dest_port = master_raw_data.substr(master_raw_data.find_first_of(" ")+1);
-
-
 
   // Flush after every std::cout / std::cerr
   std::cout << std::unitbuf;
