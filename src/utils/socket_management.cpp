@@ -142,7 +142,7 @@ void SocketManagement::handle_connection(int& clientfd){
             }
             if (!res.empty()){
                 //std::cout <<  "azertyuiiopqsddfghj\n";
-                if (send(clientfd, res.c_str(), res.length(), 0) = 0)
+                if (send(clientfd, res.c_str(), res.length(), 0) == 0)
                     std::cout <<  "send msg failed\n";
             }
                 
