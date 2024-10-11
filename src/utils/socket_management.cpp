@@ -270,10 +270,7 @@ void SocketManagement::process_command(std::string data) {
 }
 
 void SocketManagement::retrieve_commands_from_master() {
-    if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
-        std::cout << "Connect to master failed";
-        return;
-    }
+
     while (1){
         std::cout << "azertyuiohggfgf";
         char buffer[128];    
@@ -319,5 +316,7 @@ int SocketManagement::send_handshake_to_master(int port){
     if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
             std::cout << "azertyuiohggfgf";
     }    
+    std::thread connection([this](){retrieve_commands_from_master();});
+    connection.detach();
     return 1;
 }
