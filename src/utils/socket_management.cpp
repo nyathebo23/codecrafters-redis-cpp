@@ -194,7 +194,7 @@ void SocketManagement::check_incoming_clients_connections(){
 }
 
 int SocketManagement::send_message_to_server(std::string msg){
-    std::vector<std::string> data;
+    std::vector<std::any> data;
     data.push_back(msg);
     std::string handshake = parse_encode_array(data);
     if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
