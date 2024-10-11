@@ -296,7 +296,6 @@ void SocketManagement::retrieve_commands_from_master() {
     char buffer[128];
     if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
         close(server_fd);
-        break;
     }    
     while (1){
         char buffer[128];    
