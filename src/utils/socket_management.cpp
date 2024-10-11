@@ -269,12 +269,11 @@ void SocketManagement::process_command(std::string data) {
 
 }
 
-void SocketManagement::retrieve_commands_from_master() {
+void SocketManagement::retrieve_commands_from_master(int& serverfd) {
 
     while (1){
-        std::cout << "azertyuiohggfgf";
         char buffer[128];    
-        recv(server_fd, &buffer, sizeof(buffer), 0);
+        recv(serverfd, &buffer, sizeof(buffer), 0);
         // if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
         //     close(server_fd);
         //     break;
@@ -316,7 +315,7 @@ int SocketManagement::send_handshake_to_master(int port){
     if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
             std::cout << "azertyuiohggfgf";
     }    
-    std::thread connection([this](){retrieve_commands_from_master();});
+    std::thread connection([this](int &serverfd){retrieve_commands_from_master(serverfd);}, server_fd);
     connection.detach();
     return 1;
 }
