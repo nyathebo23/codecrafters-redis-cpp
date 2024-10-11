@@ -53,7 +53,7 @@ void SocketManagement::handle_connection(){
         ArrayResp arresp = parse_decode_array(data);
         auto arr = std::get<ArrayAndInd>(arresp.first);
         auto vals = arr.first;
-        std::cout << data;
+        std::cout << data + std::to_string(vals.size());
         if (vals[0].type() == typeid(std::string)){
             std::string cmd = std::any_cast<std::string>(vals[0]);
             std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
