@@ -200,6 +200,5 @@ int SocketManagement::send_message_to_server(std::string msg){
     if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
         return -1;
     }
-    std::cout << "okokokokokokokokokkokook";
     return send(server_fd, handshake.c_str(), handshake.length(), 0);
 }
