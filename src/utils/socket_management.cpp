@@ -45,7 +45,7 @@ void SocketManagement::handle_connection(){
     while (1) {
         char buffer[128];    
         if (recv(client_fd, &buffer, sizeof(buffer), 0) <= 0) {
-            //close(client_fd);
+            close(client_fd);
             return;
         }
         
@@ -142,6 +142,7 @@ void SocketManagement::handle_connection(){
                 }
             }
             if (!res.empty()){
+                std::cout <<  "azertyuiiopqsddfghj\n";
                 if (send(client_fd, res.c_str(), res.length(), 0) < 0)
                     std::cout <<  "azertyuiiopqsddfghj\n";
             }
@@ -157,7 +158,7 @@ SocketManagement::SocketManagement(short family, int type, std::map<std::string,
     extra_args = extra;
     if (extra_args.count("host") != 0){
         std::string ip_address = extra_args["host"] == "localhost" ? "127.0.0.1" : extra_args["host"];
-        inet_pton(AF_INET, ip_address.c_str(), &(this->server_addr.sin_addr));
+        inet_pton(family, ip_address.c_str(), &(this->server_addr.sin_addr));
     }
     int port = 6379;
     if (extra_args.count("port") != 0){
