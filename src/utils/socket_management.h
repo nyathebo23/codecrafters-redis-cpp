@@ -10,7 +10,7 @@
 class SocketManagement {
     private:
         int server_fd;
-        int client_fd;
+        //int client_fd;
         struct sockaddr_in server_addr;
         std::map<std::string, std::string> extra_args;
         std::map<std::string, std::string> dict_data;
@@ -19,7 +19,7 @@ class SocketManagement {
 
         void execute_after_delay(int delay, const std::string& key);
 
-        void handle_connection();
+        void handle_connection(int &clientfd);
 
     public:
         SocketManagement(short family, int type, std::map<std::string, std::string> extra);
