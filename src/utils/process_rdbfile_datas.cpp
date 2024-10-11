@@ -174,7 +174,7 @@ std::vector<unsigned char> string_to_binary(std::string str){
     std::vector<unsigned char> bytes;
     int len = str.length();
     for (int i = 0; i < len; i+=2){
-        bytes.push_back(static_cast<unsigned char>(std::stoi(str.substr(i, 2))));
+        bytes.push_back(static_cast<unsigned char>(std::stoi(str.substr(i, 2)), nullptr, 16));
     }
     return bytes;
 } 
