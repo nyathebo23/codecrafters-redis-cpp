@@ -70,19 +70,23 @@ void SocketManagement::handle_connection(int& clientfd){
                 }
             }
             else if (cmd == "set"){
-                if (vals.size() > 2){
-                std::string key = std::any_cast<std::string>(vals[1]);
-                this->dict_data[key] = std::any_cast<std::string>(vals[2]);
-                res = parse_encode_simple_string("OK");
-                if (vals.size() == 5 && vals[3].type() == typeid(std::string)){
-                    std::string param = std::any_cast<std::string>(vals[3]);
-                    std::transform(param.begin(), param.end(), param.begin(), ::tolower);
-                    if (param == "px"){
-                        const int duration = std::stoi(std::any_cast<std::string>(vals[4]));
-                        std::thread t([this, &duration, &key]() {execute_after_delay(duration, key);});
-                        t.detach();
-                    }
+                for (int replica_fd: replicas_fd) {
+                    if (send(replica_fd, data.c_str(), data.length(), 0) <= 0)
+                        std::cout <<  "replica send msg failed";                
                 }
+                if (vals.size() > 2){
+                    std::string key = std::any_cast<std::string>(vals[1]);
+                    this->dict_data[key] = std::any_cast<std::string>(vals[2]);
+                    res = parse_encode_simple_string("OK");
+                    if (vals.size() == 5 && vals[3].type() == typeid(std::string)){
+                        std::string param = std::any_cast<std::string>(vals[3]);
+                        std::transform(param.begin(), param.end(), param.begin(), ::tolower);
+                        if (param == "px"){
+                            const int duration = std::stoi(std::any_cast<std::string>(vals[4]));
+                            std::thread t([this, &duration, &key]() {execute_after_delay(duration, key);});
+                            t.detach();
+                        }
+                    }
                 }
             }
             else if (cmd == "get"){
@@ -157,7 +161,7 @@ void SocketManagement::handle_connection(int& clientfd){
             }
             if (!res.empty()){
                 //std::cout <<  "azertyuiiopqsddfghj\n";
-                if (send(clientfd, res.c_str(), res.length(), 0) < 0)
+                if (send(clientfd, res.c_str(), res.length(), 0) <= 0)
                     std::cout <<  "send msg failed";
                 if (cmd == "psync"){                                        
                     std::string file_content_str = "524544495330303131fa0972656469732d76657205372e322e30fa0a72656469732d62697473c040fa056374696d65c26d08bc65fa08757365642d6d656dc2b0c41000fa08616f662d62617365c000fff06e3bfec0ff5aa2";
@@ -165,8 +169,10 @@ void SocketManagement::handle_connection(int& clientfd){
                     const size_t size = bytes.size();
                     unsigned char data[size];
                     memcpy(data, bytes.data(), size);
-                    if (send(clientfd, data, size, 0) < 0)
+                    if (send(clientfd, data, size, 0) <= 0)
                         std::cout <<  "send msg failed";
+                    else
+                        replicas_fd.push_back(clientfd)
                 }
             }
                 

@@ -14,6 +14,7 @@ class SocketManagement {
         struct sockaddr_in server_addr;
         std::map<std::string, std::string> extra_args;
         std::map<std::string, std::string> dict_data;
+        std::vector<int> replicas_fd;
 
         void erase_key(const std::string& key);
 
