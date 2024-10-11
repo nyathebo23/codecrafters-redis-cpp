@@ -329,6 +329,6 @@ int SocketManagement::send_handshake_to_master(int port){
     std::vector<std::any> psync_msg = {std::string("PSYNC"), std::string("?"), std::string("-1")};
     if(send_receive_msg_by_command(parse_encode_array(psync_msg), "FULLRESYNC <REPL_ID> 0") < 0)
         return -1;
-    master_socket_management.retrieve_commands_from_master();
+    retrieve_commands_from_master();
     return 1;
 }
