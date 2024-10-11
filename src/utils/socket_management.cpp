@@ -41,7 +41,7 @@ void SocketManagement::execute_after_delay(int delay, const std::string& key) {
 // }
 
 void SocketManagement::handle_connection(){
-    std::cout << "okokokokokokokokokokokokk\n";
+    
     while (1) {
         char buffer[128];    
         if (recv(client_fd, &buffer, sizeof(buffer), 0) <= 0) {
@@ -60,7 +60,7 @@ void SocketManagement::handle_connection(){
             std::string res;
             if (cmd == "echo"){
                 if (vals.size() == 2 && vals[1].type() == typeid(std::string)){
-                res = parse_encode_bulk_string(std::any_cast<std::string>(vals[1]));
+                    res = parse_encode_bulk_string(std::any_cast<std::string>(vals[1]));
                 }
             }
             else if (cmd == "ping"){
@@ -141,8 +141,11 @@ void SocketManagement::handle_connection(){
                     res = parse_encode_bulk_string(str);
                 }
             }
-            if (!res.empty())
+            if (!res.empty()){
+                std::cout <<  data + std::to_string(vals.size());
                 send(client_fd, res.c_str(), res.length(), 0);
+            }
+                
         }
     }
 }
