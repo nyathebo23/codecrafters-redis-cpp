@@ -8,7 +8,7 @@
 #include "simple_data_parser_dec.h"
 #include "array_parser_dec.h"
 
-void printArray(std::vector<std::any> arr);
+//void printArray(std::vector<std::any> arr);
 
 ArrayResp parse_decode_array(const std::string& msg){
     int end_symbol_pos = msg.find("\r\n");

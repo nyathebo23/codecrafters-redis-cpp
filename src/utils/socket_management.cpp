@@ -255,6 +255,60 @@ void SocketManagement::check_incoming_clients_connections(){
   close(server_fd);
 }
 
+void SocketManagement::process_command(std::string data) {
+    ArrayResp arr_resp = parse_decode_array(data);
+    auto arr = std::get<ArrayAndInd>(arr_resp.first);
+    auto vals = arr.first;
+    if (vals[0].type() == typeid(std::string)){
+        std::string cmd = std::any_cast<std::string>(vals[0]);
+        std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
+        std::string res;                
+        if (cmd == "set"){
+            // for (int replica_fd: replicas_fd) {
+            //     if (send(replica_fd, data.c_str(), data.length(), 0) <= 0)
+            //         std::cout <<  "replica send msg failed";                
+            // }
+            if (vals.size() > 2){
+                std::string key = std::any_cast<std::string>(vals[1]);
+                this->dict_data[key] = std::any_cast<std::string>(vals[2]);
+                if (vals.size() == 5 && vals[3].type() == typeid(std::string)){
+                    std::string param = std::any_cast<std::string>(vals[3]);
+                    std::transform(param.begin(), param.end(), param.begin(), ::tolower);
+                    if (param == "px"){
+                        const int duration = std::stoi(std::any_cast<std::string>(vals[4]));
+                        std::thread t([this, &duration, &key]() {execute_after_delay(duration, key);});
+                        t.detach();
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+void SocketManagement::retrieve_commands_from_master() {
+    while (1){
+        char buffer[128];    
+        if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
+            close(server_fd);
+            break;
+        }    
+        std::string data(buffer);
+        int data_len = data.size();
+        int pos = 0;
+        int end = data.find("*", 1);
+        while (end != std::string::npos){
+            process_command(data.substr(pos, end-pos));
+            pos = end;
+            end = data.find("*", pos+1);
+        }
+        process_command(data.substr(pos));
+    }
+    
+
+};
+
+
 int SocketManagement::send_handshake_to_master(int port){
     if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
         std::cout << "Connect to master failed";
