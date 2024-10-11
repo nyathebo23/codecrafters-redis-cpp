@@ -189,16 +189,7 @@ int SocketManagement::socket_listen(int connection_backlog){
 }
 
 void SocketManagement::check_incoming_clients_connections(){
-    sockaddr_in client_addr;
-    int client_addr_len = sizeof(client_addr);
-    std::cout << "Waiting for a client to connect...\n";
-    while (1){
-        int clientfd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
-        std::cout << "Client connected\n";
-        std::thread connection([this, &clientfd](){handle_connection(clientfd);});
-        connection.detach();
-    }
-    close(server_fd);
+
 }
 
 int SocketManagement::send_message_to_server(std::string msg){
