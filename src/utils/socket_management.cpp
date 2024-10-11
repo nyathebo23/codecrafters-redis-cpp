@@ -211,7 +211,7 @@ int SocketManagement::send_receive_msg_by_command(std::string tosend, std::strin
     std::string data(buffer);
     std::string data_decoded = parse_decode_simple_string(data).first;
     if (data_decoded != toreceive){
-        std::cout << "Bad message receive to "+tosend;
+        std::cout << "Bad message receive to " + tosend + " which is " + data_decoded;
         return -1;
     }
     return 1;
@@ -239,13 +239,13 @@ int SocketManagement::send_handshake_to_master(int port){
     std::vector<std::any> ping;
     ping.push_back(std::string("PING"));
     std::string pingmsg = parse_encode_array(ping);
-    if(send_receive_msg_by_command(pingmsg, std::string("PONG")) < 0)
+    if(send_receive_msg_by_command(pingmsg, "PONG") < 0)
         return -1;
 
     std::vector<std::any> replconf_msg1, replconf_msg2;
     replconf_msg1.push_back(std::string("REPLCONF"));
     replconf_msg1.push_back(std::string("listening-port"));
-    replconf_msg1.push_back(std::string("6380"));
+    replconf_msg1.push_back(std::to_string(port));
     if(send_receive_msg_by_command(parse_encode_array(replconf_msg1), "OK") < 0)
         return -1;
     
