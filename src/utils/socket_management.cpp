@@ -29,20 +29,6 @@ void SocketManagement::execute_after_delay(int delay, const std::string& key) {
     this->erase_key(key);
 }
 
-// sockaddr_in SocketManagement::get_addr_from_params_datas(std::string master_raw_data){
-//     std::string dest_ip = master_raw_data.substr(0, master_raw_data.find_first_of(" "));
-//     std::string dest_port = master_raw_data.substr(master_raw_data.find_first_of(" ")+1);
-//     sockaddr_in master_addr;
-//     master_addr.sin_family = server_addr.sin_family;
-//     if (dest_ip == "localhost")
-//         master_addr.sin_addr.s_addr = INADDR_ANY;
-//     else {
-//         master_addr.sin_addr.s_addr = INADDR_ANY;
-//     }
-//     master_addr.sin_port = std::stoi(dest_port);
-//     return master_addr;
-// }
-
 void SocketManagement::handle_connection(int& clientfd){
     
     while (1) {
@@ -197,15 +183,6 @@ SocketManagement::SocketManagement(short family, int type, std::map<std::string,
     server_addr.sin_port = htons(port);
 }
 
-// void SocketManagement::send_handshake(int master_fd){
-//     std::vector<std::any> data;
-//     data.push_back(std::string("PING"));
-//     std::string msg = parse_encode_array(data);
-//     sockaddr_in dest_address = this->get_addr_from_params_datas(this->extra_args["replicaof"]);
-//     if (this->send_message_to_server(master_fd, dest_address, msg) > 0)
-//         std::cout << "okokokokokokokokokkokook";
-// }
-
 int SocketManagement::get_server_fd() const{
     return server_fd;
 }
@@ -295,6 +272,7 @@ void SocketManagement::process_command(std::string data) {
 void SocketManagement::retrieve_commands_from_master() {
     char buffer[128];
     if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
+        std::cout << buffer;
         close(server_fd);
     }    
     while (1){
