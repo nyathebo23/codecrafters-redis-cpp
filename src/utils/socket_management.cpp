@@ -198,7 +198,7 @@ int SocketManagement::socket_listen(int connection_backlog){
 }
 
 int SocketManagement::send_receive_msg_by_command(std::string tosend, std::string toreceive){
-    if (send(server_fd, tosend.c_str(), tosend.length(), 0) < 0){
+    if (send(server_fd, tosend.c_str(), tosend.length(), 0) <= 0){
         std::cout << "Send "+ tosend + " handshake failed";
         close(server_fd);
         return -1;
@@ -239,7 +239,7 @@ int SocketManagement::send_handshake_to_master(int port){
     std::vector<std::any> ping;
     ping.push_back(std::string("PING"));
     std::string pingmsg = parse_encode_array(ping);
-    if(send_receive_msg_by_command(pingmsg, std::string("PONG")))
+    if(send_receive_msg_by_command(pingmsg, std::string("PONG")) < 0)
         return -1;
 
     std::vector<std::any> replconf_msg1, replconf_msg2;
