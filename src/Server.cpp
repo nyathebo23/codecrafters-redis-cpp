@@ -20,6 +20,8 @@ int main(int argc, char **argv) {
       args_map_master["host"] = args_map["replicaof"].substr(0, args_map["replicaof"].find_first_of(" "));
       args_map_master["port"] = args_map["replicaof"].substr(args_map["replicaof"].find_last_of(" ")+1);
   }
+  else
+      args_map_master["port"] = args_map["port"];
   //std::string dest_port = master_raw_data.substr(master_raw_data.find_first_of(" ")+1);
 
   SocketManagement master_socket_management(AF_INET, SOCK_STREAM, args_map_master);
