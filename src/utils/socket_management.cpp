@@ -271,18 +271,13 @@ void SocketManagement::process_command(std::string data) {
 
 void SocketManagement::retrieve_commands_from_master() {
 
-    bool isfilesent = false;
     while (1){
         char buffer[128];    
         if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
-            // close(server_fd);
-            // break;
-            std::cout << "azertyuiohggfgf";
-        }    
-        if (!isfilesent){
-            isfilesent = true;
-            continue;
-        }
+            close(server_fd);
+            break;
+        } 
+        std::cout << "azertyuiohggfgf";
         std::string data(buffer);
         int pos = 0;
         int end = data.find("*", 1);
@@ -318,6 +313,10 @@ int SocketManagement::send_handshake_to_master(int port){
     std::vector<std::any> psync_msg = {std::string("PSYNC"), std::string("?"), std::string("-1")};
     if(send_receive_msg_by_command(parse_encode_array(psync_msg), "FULLRESYNC <REPL_ID> 0") < 0)
         return -1;
+    char buffer[128];
+    if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
+            std::cout << "azertyuiohggfgf";
+    }    
     retrieve_commands_from_master();
     return 1;
 }
