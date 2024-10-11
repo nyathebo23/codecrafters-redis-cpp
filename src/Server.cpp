@@ -23,8 +23,8 @@ int main(int argc, char **argv) {
       args_map_master["port"] = args_map["replicaof"].substr(args_map["replicaof"].find_last_of(" ")+1);
       SocketManagement master_socket_management(AF_INET, SOCK_STREAM, args_map_master);
       master_socket_management.send_handshake_to_master(ntohs(socket_management.get_server_addr().sin_port));
-      SocketManagement master_socket_management2(AF_INET, SOCK_STREAM, args_map_master);
-      master_socket_management2.retrieve_commands_from_master();
+      // SocketManagement master_socket_management2(AF_INET, SOCK_STREAM, args_map_master);
+      // master_socket_management2.retrieve_commands_from_master();
   }
   //std::string dest_port = master_raw_data.substr(master_raw_data.find_first_of(" ")+1);
 
