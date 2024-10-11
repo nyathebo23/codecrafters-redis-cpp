@@ -256,7 +256,7 @@ void SocketManagement::check_incoming_clients_connections(){
 }
 
 void SocketManagement::process_command(std::string data) {
-    std::cout << data;
+
     ArrayResp arr_resp = parse_decode_array(data);
     auto arr = std::get<ArrayAndInd>(arr_resp.first);
     auto vals = arr.first;
@@ -295,14 +295,13 @@ void SocketManagement::retrieve_commands_from_master() {
             break;
         }    
         std::string data(buffer);
-        int data_len = data.size();
-        int pos = 0;
-        int end = data.find("*", 1);
-        while (end != std::string::npos){
-            process_command(data.substr(pos, end-pos));
-            pos = end;
-            end = data.find("*", pos+1);
-        }
+        // int pos = 0;
+        // int end = data.find("*", 1);
+        // while (end != std::string::npos){
+        //     process_command(data.substr(pos, end-pos));
+        //     pos = end;
+        //     end = data.find("*", pos+1);
+        // }
         process_command(data.substr(pos));
     }
     
