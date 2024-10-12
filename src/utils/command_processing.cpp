@@ -111,11 +111,11 @@ void CommandProcessing::config(std::vector<std::string> extras, int dest_fd, std
     if (extras[0] == "get"){
         std::string key = extras[1];
         if (key == "dir"){
-            std::vector<any> values = {key, args_map["dir"]};
+            std::vector<std::any> values = {key, args_map["dir"]};
             resp = parse_encode_array(values);
         }
         else if (key == "dbfilename"){
-            std::vector<any> values = {key, args_map["dbfilename"]};
+            std::vector<std::any> values = {key, args_map["dbfilename"]};
             resp = parse_encode_array(values);          
         }
         send_data(resp, dest_fd);
@@ -128,7 +128,7 @@ void CommandProcessing::info(std::vector<std::string> extras, int dest_fd, std::
         std::string replication_id = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
         int replication_offset = 0;
         std::string str = "role:"+role + "\n"+ "master_replid:"+replication_id + 
-            "\n" + "master_repl_offset:"+ to_string(replication_offset);
+            "\n" + "master_repl_offset:"+ std::to_string(replication_offset);
         std::string resp = parse_encode_bulk_string(str);
         send_data(resp, dest_fd);
     }  
@@ -139,7 +139,7 @@ void CommandProcessing::replconf(std::vector<std::string> extras, int dest_fd){
         std::string resp = parse_encode_simple_string(std::string("OK"));
         send_data(resp, dest_fd);
     } else if (extras[0] == "getack" && extras[1] == "*"){
-        std::std::std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::string("0")};
+        std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::string("0")};
         std::string resp = parse_encode_array(rep);
         send_data(resp, dest_fd);
     }
