@@ -6,16 +6,16 @@
 
 class SlaveSocketManagement : public SocketManagement {
     private:
-        void process_command(std::string data, const int& fd);
+        void process_command(std::string data, int fd);
 
     public:
         SlaveSocketManagement(short family, int type, std::map<std::string, std::string> extra);
 
-        void execute_command(std::string buffer_data, const int& clientfd) override;
+        void execute_command(std::string buffer_data, int clientfd) override;
 
-        void check_incoming_master_connections(const int &masterfd);
+        void check_incoming_master_connections(const int& masterfd);
 
-        void retrieve_commands_from_master(const int& serverfd);
+        void retrieve_commands_from_master(int serverfd);
 
 };
 

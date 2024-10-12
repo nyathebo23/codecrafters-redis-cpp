@@ -23,7 +23,7 @@
 
 
 void SlaveSocketManagement::check_incoming_master_connections(const int& masterfd){
-    std::thread connection([this](const int& fd){retrieve_commands_from_master(fd);}, masterfd);
+    std::thread connection([this](int fd){retrieve_commands_from_master(fd);}, masterfd);
     connection.detach();
 }
 
@@ -32,7 +32,7 @@ SlaveSocketManagement::SlaveSocketManagement(short family, int type, std::map<st
 } ;
 
 
-void SlaveSocketManagement::execute_command(std::string buffer_data, const int& clientfd) {
+void SlaveSocketManagement::execute_command(std::string buffer_data, int clientfd) {
     auto command_elts = this->get_command_array_from_rawdata(buffer_data);
     std::string cmd = command_elts.first;
     std::vector<std::string> extra_params = command_elts.second;
@@ -61,21 +61,18 @@ void SlaveSocketManagement::execute_command(std::string buffer_data, const int& 
 
 }
 
-void SlaveSocketManagement::process_command(std::string data, const int& fd) {
+void SlaveSocketManagement::process_command(std::string data, int fd) {
     auto command_elts = this->get_command_array_from_rawdata(data);
     std::string cmd = command_elts.first;
     std::vector<std::string> extra_params = command_elts.second;
     if (cmd == "set"){
         command_processing.set_without_send(extra_params);
     } else if (cmd == "replconf"){
-        //command_processing.replconf(extra_params, fd);
-        std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::string("0")};
-        std::string resp = parse_encode_array(rep);
-        command_processing.send_data(resp, fd);
+        command_processing.replconf(extra_params, fd);
     }
 }
 
-void SlaveSocketManagement::retrieve_commands_from_master(const int& serverfd) {
+void SlaveSocketManagement::retrieve_commands_from_master(int serverfd) {
     while (1){
         char buffer[128]; 
         recv(serverfd, &buffer, sizeof(buffer), 0);   

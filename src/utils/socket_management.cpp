@@ -24,11 +24,11 @@
 
 
 
-void SocketManagement::execute_command(std::string buffer_data, const int& clientfd) {
+void SocketManagement::execute_command(std::string buffer_data, int clientfd) {
             
 };
 
-void SocketManagement::handle_connection(const int& clientfd){
+void SocketManagement::handle_connection(int clientfd){
     while (1) {
         char buffer[128];    
         if (recv(clientfd, &buffer, sizeof(buffer), 0) <= 0) {
