@@ -14,6 +14,9 @@
 #include "command_processing.h"
 #include "decode/small_aggregate_parser_dec.h"
 #include "process_rdbfile_datas.h"
+#include "encode/array_parser_enc.h"
+#include "encode/simple_data_parser_enc.h"
+#include "encode/small_aggregate_parser_enc.h"
 #include "decode/simple_data_parser_dec.h"
 
 
