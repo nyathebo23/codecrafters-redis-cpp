@@ -5,8 +5,6 @@
 #include <thread>
 #include <map>
 #include <vector>
-#include <arpa/inet.h>
-#include <sys/socket.h>
 
 
 class CommandProcessing {
@@ -28,8 +26,5 @@ class CommandProcessing {
         void psync(std::vector<std::string> extras, int dest_fd, std::vector<int>& replicas_fd);
         void config(std::vector<std::string> extras, int dest_fd, std::map<std::string, std::string> args_map);
 };
-
-
-
 
 #endif

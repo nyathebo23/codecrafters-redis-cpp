@@ -6,6 +6,7 @@
 #include <variant>
 #include <map>
 #include <algorithm>
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
