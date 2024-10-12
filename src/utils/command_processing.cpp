@@ -31,7 +31,7 @@ void CommandProcessing::execute_after_delay(int delay, const std::string& key) {
 bool CommandProcessing::send_data(std::string data, int dest_fd){
     if (!data.empty()){
         if (send(dest_fd, data.c_str(), data.length(), 0) <= 0){
-            cout <<  "send data failed";
+            std::cout <<  "send data failed";
             return false;
         }
         return true;      
@@ -59,7 +59,7 @@ bool CommandProcessing::set_without_send(std::vector<std::string> extras){
             std::string param = extras[2];
             if (param == "px"){
                 const int duration = stoi(extras[3]);
-                thread t([this, &duration, &key]() {execute_after_delay(duration, key);});
+                std::thread t([this, &duration, &key]() {execute_after_delay(duration, key);});
                 t.detach();
                 return true;
             }
