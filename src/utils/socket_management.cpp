@@ -278,11 +278,7 @@ void SocketManagement::retrieve_commands_from_master(const int& serverfd) {
 
     while (1){
         char buffer[128];    
-        //recv(serverfd, &buffer, sizeof(buffer), 0);
-        if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
-            close(server_fd);
-            break;
-        } 
+        recv(serverfd, &buffer, sizeof(buffer), 0);
         std::string data(buffer);
         int pos = 0;
         int end = data.find("*", 1);
