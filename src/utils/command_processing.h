@@ -25,9 +25,9 @@ class CommandProcessing {
         void keys(std::vector<std::string> extras, const int& dest_fd, std::string filepath);
         void info(std::vector<std::string> extras, const int& dest_fd, std::string role);
         void replconf(std::vector<std::string> extras, const int& dest_fd);
-        void psync(std::vector<std::string> extras, const int& dest_fd, vector<int>& replicas_fd);
-        void config(vector<string> extras, const int& dest_fd, std::map<std::string, std::string> args_map);
-}
+        void psync(std::vector<std::string> extras, const int& dest_fd, std::vector<int>& replicas_fd);
+        void config(std::vector<std::string> extras, const int& dest_fd, std::map<std::string, std::string> args_map);
+};
 
 
 
