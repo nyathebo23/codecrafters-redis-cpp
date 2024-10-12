@@ -20,6 +20,14 @@
 #include "command_processing.h"
 
 
+
+
+
+
+// void SocketManagement::execute_command(std::string buffer_data, const int& clientfd) {
+            
+// };
+
 void SocketManagement::handle_connection(const int& clientfd){
     while (1) {
         char buffer[128];    
@@ -63,10 +71,6 @@ SocketManagement::SocketManagement(short family, int type, std::map<std::string,
     }
     server_addr.sin_port = htons(port);
 }
-
-virtual void SocketManagement::execute_command(std::string buffer_data, const int& clientfd) {
-            
-};
 
 int SocketManagement::get_server_fd() const{
     return server_fd;
