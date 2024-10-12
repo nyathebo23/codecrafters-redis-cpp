@@ -6,7 +6,7 @@
 
 class SlaveSocketManagement : public SocketManagement {
     private:
-        void process_command(std::string data);
+        void process_command(std::string data, const int& fd);
 
     public:
         SlaveSocketManagement(short family, int type, std::map<std::string, std::string> extra);
