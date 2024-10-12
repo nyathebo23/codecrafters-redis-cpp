@@ -24,9 +24,9 @@
 
 
 
-// void SocketManagement::execute_command(std::string buffer_data, const int& clientfd) {
+void SocketManagement::execute_command(std::string buffer_data, const int& clientfd) {
             
-// };
+};
 
 void SocketManagement::handle_connection(const int& clientfd){
     while (1) {
