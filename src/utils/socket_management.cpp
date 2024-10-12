@@ -47,7 +47,7 @@ std::pair<std::string, std::vector<std::string>> SocketManagement::get_command_a
     std::string cmd = std::any_cast<std::string>(command[0]);
     std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
     std::vector<std::string> array_cmd;
-    for (int i = 1; i < array_cmd.size(); i++){
+    for (int i = 1; i < command.size(); i++){
         std::string param = std::any_cast<std::string>(command[i]);
         std::transform(param.begin(), param.end(), param.begin(), ::tolower);
         array_cmd.push_back(param);

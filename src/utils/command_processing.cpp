@@ -138,7 +138,6 @@ void CommandProcessing::info(vector<string> extras, const int& dest_fd, string r
 }
 
 void CommandProcessing::replconf(vector<string> extras, const int& dest_fd){
-    std::cout << extras[0];
     if (extras[0] == "listening-port" || extras[0] == "capa" && extras.size() > 1){
         string resp = parse_encode_simple_string(string("OK"));
         send_data(resp, dest_fd);
