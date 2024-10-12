@@ -18,8 +18,6 @@
 #include "decode/simple_data_parser_dec.h"
 #include "command_processing.h"
 
-using namespace std;
-
 
 void CommandProcessing::erase_key(const std::string& key) {
     this->dict_table.erase(key);
@@ -30,7 +28,7 @@ void CommandProcessing::execute_after_delay(int delay, const std::string& key) {
     this->erase_key(key);
 }
 
-bool CommandProcessing::send_data(string data, int dest_fd){
+bool CommandProcessing::send_data(std::string data, int dest_fd){
     if (!data.empty()){
         if (send(dest_fd, data.c_str(), data.length(), 0) <= 0){
             cout <<  "send data failed";
@@ -41,24 +39,24 @@ bool CommandProcessing::send_data(string data, int dest_fd){
     return false;
 }
 
-void CommandProcessing::echo(vector<string> extras, int dest_fd){
+void CommandProcessing::echo(std::vector<std::string> extras, int dest_fd){
     if (extras.size() == 1){
-        string resp = parse_encode_bulk_string(extras[0]);
+        std::string resp = parse_encode_bulk_string(extras[0]);
         send_data(resp, dest_fd);
     }
 }
 
 void CommandProcessing::ping(int dest_fd){
-    string resp = parse_encode_bulk_string(std::string("PONG"));
+    std::string resp = parse_encode_bulk_string(std::string("PONG"));
     send_data(resp, dest_fd);
 }
 
-bool CommandProcessing::set_without_send(vector<string> extras){
+bool CommandProcessing::set_without_send(std::vector<std::string> extras){
     if (extras.size() > 1){
-        string key = extras[0];
+        std::string key = extras[0];
         this->dict_table[key] = extras[1];
         if (extras.size() == 4){
-            string param = extras[2];
+            std::string param = extras[2];
             if (param == "px"){
                 const int duration = stoi(extras[3]);
                 thread t([this, &duration, &key]() {execute_after_delay(duration, key);});
@@ -70,23 +68,23 @@ bool CommandProcessing::set_without_send(vector<string> extras){
     return false;
 }
 
-void CommandProcessing::set(vector<string> extras, int dest_fd){
+void CommandProcessing::set(std::vector<std::string> extras, int dest_fd){
     if (this->set_without_send(extras)){
-        string resp = parse_encode_simple_string("OK");
+        std::string resp = parse_encode_simple_string("OK");
         send_data(resp, dest_fd);
     }
 }
 
-void CommandProcessing::keys(vector<string> extras, int dest_fd, string filepath) {
+void CommandProcessing::keys(std::vector<std::string> extras, int dest_fd, std::string filepath) {
     if (extras.size() == 1 && extras[0] == "*"){
         auto keys_values = get_keys_values_from_file(filepath);
         auto keys = keys_values.first;
-        string resp = parse_encode_array(keys);
+        std::string resp = parse_encode_array(keys);
         send_data(resp, dest_fd);
     }
 }
 
-void CommandProcessing::get(vector<string> extras, int dest_fd, string filepath){
+void CommandProcessing::get(std::vector<std::string> extras, int dest_fd, std::string filepath){
     if (extras.size() == 1){
         std::string key = extras[0];
         auto keys_values = get_keys_values_from_file(filepath);
@@ -108,16 +106,16 @@ void CommandProcessing::get(vector<string> extras, int dest_fd, string filepath)
     
 }
 
-void CommandProcessing::config(vector<string> extras, int dest_fd, std::map<std::string, std::string> args_map){
-    string resp;
+void CommandProcessing::config(std::vector<std::string> extras, int dest_fd, std::map<std::string, std::string> args_map){
+    std::string resp;
     if (extras[0] == "get"){
-        string key = extras[1];
+        std::string key = extras[1];
         if (key == "dir"){
-            vector<any> values = {key, args_map["dir"]};
+            std::vector<any> values = {key, args_map["dir"]};
             resp = parse_encode_array(values);
         }
         else if (key == "dbfilename"){
-            vector<any> values = {key, args_map["dbfilename"]};
+            std::vector<any> values = {key, args_map["dbfilename"]};
             resp = parse_encode_array(values);          
         }
         send_data(resp, dest_fd);
@@ -125,34 +123,34 @@ void CommandProcessing::config(vector<string> extras, int dest_fd, std::map<std:
     
 }
 
-void CommandProcessing::info(vector<string> extras, int dest_fd, string role){
+void CommandProcessing::info(std::vector<std::string> extras, int dest_fd, std::string role){
     if (extras[0] == "replication"){
-        string replication_id = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
+        std::string replication_id = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
         int replication_offset = 0;
-        string str = "role:"+role + "\n"+ "master_replid:"+replication_id + 
+        std::string str = "role:"+role + "\n"+ "master_replid:"+replication_id + 
             "\n" + "master_repl_offset:"+ to_string(replication_offset);
-        string resp = parse_encode_bulk_string(str);
+        std::string resp = parse_encode_bulk_string(str);
         send_data(resp, dest_fd);
     }  
 }
 
-void CommandProcessing::replconf(vector<string> extras, int dest_fd){
+void CommandProcessing::replconf(std::vector<std::string> extras, int dest_fd){
     if (extras[0] == "listening-port" || extras[0] == "capa" && extras.size() > 1){
-        string resp = parse_encode_simple_string(string("OK"));
+        std::string resp = parse_encode_simple_string(std::string("OK"));
         send_data(resp, dest_fd);
     } else if (extras[0] == "getack" && extras[1] == "*"){
-        std::vector<std::any> rep = {string("REPLCONF"), string("ACK"), string("0")};
-        string resp = parse_encode_array(rep);
+        std::std::std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::string("0")};
+        std::string resp = parse_encode_array(rep);
         send_data(resp, dest_fd);
     }
 }
 
-void CommandProcessing::psync(vector<string> extras, int dest_fd, vector<int>& replicas_fd){
+void CommandProcessing::psync(std::vector<std::string> extras, int dest_fd, std::vector<int>& replicas_fd){
     if (extras[0] == "?" && extras[1] == "-1"){
-        string replication_id = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
-        string resp = parse_encode_simple_string("FULLRESYNC " + replication_id + " 0");
-        string file_content_str = "524544495330303131fa0972656469732d76657205372e322e30fa0a72656469732d62697473c040fa056374696d65c26d08bc65fa08757365642d6d656dc2b0c41000fa08616f662d62617365c000fff06e3bfec0ff5aa2";
-        vector<unsigned char> bytes = string_to_binary(file_content_str);
+        std::string replication_id = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
+        std::string resp = parse_encode_simple_string("FULLRESYNC " + replication_id + " 0");
+        std::string file_content_str = "524544495330303131fa0972656469732d76657205372e322e30fa0a72656469732d62697473c040fa056374696d65c26d08bc65fa08757365642d6d656dc2b0c41000fa08616f662d62617365c000fff06e3bfec0ff5aa2";
+        std::vector<unsigned char> bytes = string_to_binary(file_content_str);
         const size_t size = bytes.size();
         unsigned char data[size];
         memcpy(data, bytes.data(), size);
