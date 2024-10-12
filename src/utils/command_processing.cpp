@@ -92,7 +92,7 @@ void CommandProcessing::get(std::vector<std::string> extras, int dest_fd, std::s
         while (index < size && std::any_cast<std::string>(keys_values.first[index]) != key){
             index++;
         }
-        string resp;
+        std::string resp;
         if (index >= size || size == 0){
             if (this->dict_table.count(key) == 0)
                 resp = "$-1\r\n";
