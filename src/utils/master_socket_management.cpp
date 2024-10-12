@@ -34,6 +34,12 @@ int MasterSocketManagement::send_receive_msg_by_command(std::string tosend, std:
     return 1;
 };
 
+MasterSocketManagement::MasterSocketManagement(short family, int type, std::map<std::string, std::string> extra)
+: SocketManagement(family, type, extra){
+    
+};
+
+
 
 void SlaveSocketManagement::execute_command(std::string buffer_data, const int& clientfd) override {
     if (cmd == "echo"){

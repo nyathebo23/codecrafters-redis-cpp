@@ -21,6 +21,12 @@ void SlaveSocketManagement::check_incoming_master_connections(const int& masterf
     connection.detach();
 }
 
+SlaveSocketManagement::SlaveSocketManagement(short family, int type, std::map<std::string, std::string> extra) 
+: SocketManagement(family, type, extra){
+
+} ;
+
+
 void SlaveSocketManagement::execute_command(std::string buffer_data, const int& clientfd) override {
     auto command_elts = this->get_command_array_from_rawdata(buffer_data);
     std::string cmd = command_elts.first;

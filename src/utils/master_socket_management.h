@@ -12,6 +12,8 @@ class MasterSocketManagement : public SocketManagement {
     public:
         std::vector<int> replicas_fd;
         int send_handshake_to_master(int port);
+        MasterSocketManagement(short family, int type, std::map<std::string, std::string> extra);
+
  
 };
 
