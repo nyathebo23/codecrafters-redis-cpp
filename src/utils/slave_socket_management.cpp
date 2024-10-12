@@ -58,18 +58,17 @@ void SlaveSocketManagement::execute_command(std::string buffer_data, const int& 
     else if (cmd == "info"){
         command_processing.info(extra_params, clientfd, "slave");
     }
-    else if (cmd == "replconf"){
-        command_processing.replconf(extra_params, clientfd);
-    }
+
 }
 
 void SlaveSocketManagement::process_command(std::string data) {
-    ArrayResp arr_resp = parse_decode_array(data);
     auto command_elts = this->get_command_array_from_rawdata(data);
     std::string cmd = command_elts.first;
     std::vector<std::string> extra_params = command_elts.second;
     if (cmd == "set"){
         command_processing.set_without_send(extra_params);
+    } else if (cmd == "replconf"){
+        command_processing.replconf(extra_params, clientfd);
     }
 }
 
