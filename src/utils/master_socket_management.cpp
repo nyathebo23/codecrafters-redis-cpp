@@ -12,6 +12,9 @@
 #include "master_socket_management.h"
 #include "socket_management.h"
 #include "command_processing.h"
+#include "decode/small_aggregate_parser_dec.h"
+#include "process_rdbfile_datas.h"
+#include "decode/simple_data_parser_dec.h"
 
 
 int MasterSocketManagement::send_receive_msg_by_command(std::string tosend, std::string toreceive){
@@ -36,12 +39,15 @@ int MasterSocketManagement::send_receive_msg_by_command(std::string tosend, std:
 
 MasterSocketManagement::MasterSocketManagement(short family, int type, std::map<std::string, std::string> extra)
 : SocketManagement(family, type, extra){
-    
+
 };
 
 
 
-void SlaveSocketManagement::execute_command(std::string buffer_data, const int& clientfd) override {
+void MasterSocketManagement::execute_command(std::string buffer_data, const int& clientfd) override {
+    auto command_elts = this->get_command_array_from_rawdata(buffer_data);
+    std::string cmd = command_elts.first;
+    std::vector<std::string> extra_params = command_elts.second;
     if (cmd == "echo"){
         command_processing.echo(extra_params, clientfd);
     }

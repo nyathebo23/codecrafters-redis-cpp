@@ -12,6 +12,9 @@
 #include <unistd.h>
 #include "slave_socket_management.h"
 #include "decode/array_parser_dec.h"
+#include "decode/small_aggregate_parser_dec.h"
+#include "process_rdbfile_datas.h"
+#include "decode/simple_data_parser_dec.h"
 #include "command_processing.h"
 #include "socket_management.h"
 
