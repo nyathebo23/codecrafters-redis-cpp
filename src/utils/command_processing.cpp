@@ -142,7 +142,8 @@ void CommandProcessing::replconf(vector<string> extras, const int& dest_fd){
         string resp = parse_encode_simple_string(string("OK"));
         send_data(resp, dest_fd);
     } else if (extras[0] == "getack" && extras[1] == "*"){
-        string resp = parse_encode_simple_string(string("REPLCONF ACK 0"));
+        std::vector<std::any> rep = {"REPLCONF", "ACK", "0"};
+        string resp = parse_encode_array(rep);
         send_data(resp, dest_fd);
     }
 }
