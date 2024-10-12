@@ -31,8 +31,8 @@ void CommandProcessing::execute_after_delay(int delay, const std::string& key) {
 }
 
 bool CommandProcessing::send_data(string data, const int& dest_fd){
-    if (!res.empty()){
-        if (send(dest_fd, resp.c_str(), resp.length(), 0) <= 0){
+    if (!data.empty()){
+        if (send(dest_fd, data.c_str(), data.length(), 0) <= 0){
             cout <<  "send data failed";
             return false;
         }
@@ -42,7 +42,7 @@ bool CommandProcessing::send_data(string data, const int& dest_fd){
 }
 
 void CommandProcessing::echo(vector<string> extras, const int& dest_fd){
-    if (extras.size == 1){
+    if (extras.size() == 1){
         string resp = parse_encode_bulk_string(extras[0]);
         send_data(resp, dest_fd);
     }
@@ -97,10 +97,10 @@ void CommandProcessing::get(vector<string> extras, const int& dest_fd, string fi
         }
         string resp;
         if (index >= size || size == 0){
-            if (this->dict_data.count(key) == 0)
+            if (this->dict_table.count(key) == 0)
                 resp = "$-1\r\n";
             else 
-                resp = parse_encode_bulk_string(this->dict_data[key]);
+                resp = parse_encode_bulk_string(this->dict_table[key]);
         }
         else
             resp = parse_encode_bulk_string(std::any_cast<std::string>(keys_values.second[index]));
@@ -140,7 +140,7 @@ void CommandProcessing::info(vector<string> extras, const int& dest_fd, string r
 void CommandProcessing::replconf(vector<string> extras, const int& dest_fd){
     if (extras[0] == "listening-port" || extras[0] == "capa" && extras.size() > 1){
         string resp = parse_encode_simple_string(string("OK"));
-        send_data(resp, dest_fd)
+        send_data(resp, dest_fd);
     } else if (extras[0] == "getack" && extras[1] == "*"){
         string resp = parse_encode_simple_string(string("REPLCONF ACK 0"));
         send_data(resp, dest_fd);
@@ -157,7 +157,7 @@ void CommandProcessing::psync(vector<string> extras, const int& dest_fd, vector<
         unsigned char data[size];
         memcpy(data, bytes.data(), size);
         if (send_data(resp, dest_fd))
-            if (send_data(data, dest_fd));
+            if (send(dest_fd, data, size, 0) > 0);
                 replicas_fd.push_back(dest_fd);
     }   
 }
