@@ -71,7 +71,7 @@ void SlaveSocketManagement::process_command(std::string data, const int& fd) {
         //command_processing.replconf(extra_params, fd);
         std::vector<std::any> rep = {"REPLCONF", "ACK", "0"};
         string resp = parse_encode_array(rep);
-        command_processing.send_data(resp, dest_fd);
+        command_processing.send_data(resp, fd);
     }
 }
 
