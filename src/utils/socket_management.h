@@ -7,6 +7,7 @@
 #include <vector>
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include "command_processing.h"
 
 class SocketManagement {
     protected:
