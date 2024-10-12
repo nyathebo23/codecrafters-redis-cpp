@@ -2,7 +2,6 @@
 #define COMMAND_PROCESSING_H
 
 #include <string>
-#include <thread>
 #include <map>
 #include <vector>
 
