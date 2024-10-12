@@ -42,7 +42,7 @@ void SlaveSocketManagement::execute_command(std::string buffer_data, const int& 
         command_processing.echo(extra_params, clientfd);
     }
     else if (cmd == "ping"){
-        command_processing.ping(extra_params, clientfd);
+        command_processing.ping(clientfd);
     }
     else if (cmd == "set"){
         command_processing.set(extra_params, clientfd);
@@ -66,7 +66,7 @@ void SlaveSocketManagement::execute_command(std::string buffer_data, const int& 
 
 void SlaveSocketManagement::process_command(std::string data) {
     ArrayResp arr_resp = parse_decode_array(data);
-    auto command_elts = this->get_command_array_from_rawdata(buffer_data);
+    auto command_elts = this->get_command_array_from_rawdata(data);
     std::string cmd = command_elts.first;
     std::vector<std::string> extra_params = command_elts.second;
     if (cmd == "set"){
