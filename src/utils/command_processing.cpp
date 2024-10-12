@@ -59,7 +59,6 @@ bool CommandProcessing::set_without_send(vector<string> extras){
         this->dict_table[key] = extras[1];
         if (extras.size() == 4){
             string param = extras[2];
-            transform(param.begin(), param.end(), param.begin(), ::tolower);
             if (param == "px"){
                 const int duration = stoi(extras[3]);
                 thread t([this, &duration, &key]() {execute_after_delay(duration, key);});
