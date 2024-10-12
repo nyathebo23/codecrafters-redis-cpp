@@ -60,7 +60,7 @@ void SlaveSocketManagement::execute_command(std::string buffer_data, const int& 
         command_processing.info(extra_params, clientfd, "slave");
     }
     else if (cmd == "replconf"){
-        command_processing.replconf(extra_params, clientfd)
+        command_processing.replconf(extra_params, clientfd);
     }
 }
 
