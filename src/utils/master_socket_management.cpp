@@ -55,7 +55,7 @@ void MasterSocketManagement::execute_command(std::string buffer_data, const int&
         command_processing.echo(extra_params, clientfd);
     }
     else if (cmd == "ping"){
-        command_processing.ping(extra_params, clientfd);
+        command_processing.ping(clientfd);
     }
     else if (cmd == "set"){
         for (int replica_fd: this->replicas_fd) {
@@ -77,10 +77,10 @@ void MasterSocketManagement::execute_command(std::string buffer_data, const int&
         command_processing.info(extra_params, clientfd, "master");
     }
     else if (cmd == "replconf"){
-        command_processing.replconf(extra_params, clienfd)
+        command_processing.replconf(extra_params, clientfd)
     }
     else if (cmd == "psync"){
-        command_processing.psync(extra_params, clienfd, replicas_fd)
+        command_processing.psync(extra_params, clientfd, replicas_fd)
     }
 }
 
