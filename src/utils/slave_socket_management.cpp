@@ -69,7 +69,7 @@ void SlaveSocketManagement::process_command(std::string data, const int& fd) {
         command_processing.set_without_send(extra_params);
     } else if (cmd == "replconf"){
         //command_processing.replconf(extra_params, fd);
-        std::vector<std::any> rep = {"REPLCONF", "ACK", "0"};
+        std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::string("0")};
         std::string resp = parse_encode_array(rep);
         command_processing.send_data(resp, fd);
     }
