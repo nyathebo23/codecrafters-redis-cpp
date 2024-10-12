@@ -68,6 +68,7 @@ void SlaveSocketManagement::process_command(std::string data, const int& fd) {
     if (cmd == "set"){
         command_processing.set_without_send(extra_params);
     } else if (cmd == "replconf"){
+        std::cout << extra_params[0];
         command_processing.replconf(extra_params, fd);
     }
 }
