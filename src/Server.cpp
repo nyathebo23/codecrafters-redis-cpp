@@ -6,7 +6,8 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <map>
-#include "utils/socket_management.h"
+#include "utils/master_socket_management.h"
+#include "utils/slave_socket_management.h"
 
 
 int main(int argc, char **argv) {
@@ -15,7 +16,7 @@ int main(int argc, char **argv) {
      args_map[std::string(argv[i]).substr(2)] = std::string(argv[i+1]);
   }
 
-  SocketManagement socket_management(AF_INET, SOCK_STREAM, args_map);
+  SlaveSocketManagement socket_management(AF_INET, SOCK_STREAM, args_map);
 
   std::map<std::string, std::string> args_map_master;
   if (args_map.count("replicaof") != 0){
@@ -23,7 +24,7 @@ int main(int argc, char **argv) {
       args_map_master["port"] = args_map["replicaof"].substr(args_map["replicaof"].find_last_of(" ")+1);
   }
 
-  SocketManagement master_socket_management(AF_INET, SOCK_STREAM, args_map_master);
+  MasterSocketManagement master_socket_management(AF_INET, SOCK_STREAM, args_map_master);
 
 
   // Flush after every std::cout / std::cerr

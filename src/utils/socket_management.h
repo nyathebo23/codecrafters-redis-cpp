@@ -9,25 +9,24 @@
 #include <sys/socket.h>
 
 class SocketManagement {
-    private:
+    protected:
         int server_fd;
         //int client_fd;
         struct sockaddr_in server_addr;
         std::map<std::string, std::string> extra_args;
         std::map<std::string, std::string> dict_data;
-        std::vector<int> replicas_fd;
-
-        void erase_key(const std::string& key);
-
-        void execute_after_delay(int delay, const std::string& key);
+        //std::vector<int> replicas_fd;
 
         void handle_connection(int &clientfd);
 
-        void process_command(std::string data);
-
-        int send_receive_msg_by_command(std::string tosend, std::string toreceive);
+        std::pair<std::string, std::vector<std::string>> get_command_array_from_rawdata(std::string data);
 
     public:
+
+        CommandProcessing command_processing;
+
+        virtual void execute_command(std::string buffer_data, const int& clientfd);
+
         SocketManagement(short family, int type, std::map<std::string, std::string> extra);
 
         int get_server_fd() const;
@@ -39,17 +38,9 @@ class SocketManagement {
 
         int socket_listen(int connection_backlog);
 
-        int send_handshake_to_master(int port);
-
-        void check_incoming_master_connections(const int &masterfd);
-
         void check_incoming_clients_connections();
 
-        void retrieve_commands_from_master(const int& serverfd);
-
-        
-
-
 };
+
 
 #endif
