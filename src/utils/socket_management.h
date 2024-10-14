@@ -18,11 +18,11 @@ class SocketManagement {
         std::map<std::string, std::string> dict_data;
         //std::vector<int> replicas_fd;
 
-        void handle_connection(int clientfd);
-
         std::pair<std::string, std::vector<std::string>> get_command_array_from_rawdata(std::string data);
 
     public:
+        void handle_connection(int clientfd);
+        
         short socket_family;
 
         int socket_type;
