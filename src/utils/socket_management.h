@@ -43,7 +43,7 @@ class SocketManagement {
 
         int socket_listen(int connection_backlog);
 
-        void check_incoming_clients_connections(int fd);
+        void check_incoming_clients_connections(int& fd);
 
 };
 
