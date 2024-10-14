@@ -97,9 +97,9 @@ int SocketManagement::socket_listen(int connection_backlog){
 void SocketManagement::check_incoming_clients_connections(const int& masterfd){
   struct sockaddr_in client_addr;
   int client_addr_len = sizeof(client_addr);
-//   std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::string("0")};
-//   std::string resp = parse_encode_array(rep);
-//   command_processing.send_data(resp, masterfd);
+  std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::string("0")};
+  std::string resp = parse_encode_array(rep);
+  command_processing.send_data(resp, masterfd);
   if (masterfd > 0){
       std::thread connection([this](int master){handle_connection(master);}, masterfd);
       connection.detach();
