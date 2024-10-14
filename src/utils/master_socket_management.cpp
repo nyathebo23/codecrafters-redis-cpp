@@ -126,9 +126,9 @@ void MasterSocketManagement::process_command(std::string data, int fd) {
 }
 
 void MasterSocketManagement::retrieve_commands_from_master() {
-    if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
-        std::cout << "Connect to master failed";
-    }
+    // if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
+    //     std::cout << "Connect to master failed";
+    // }
     std::cout << "zertyuiop";
     while (1){
         char buffer[1024]; 
