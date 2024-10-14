@@ -36,28 +36,28 @@ void SlaveSocketManagement::execute_command(std::string buffer_data, const int& 
     std::vector<std::string> extra_params = command_elts.second;
 
     if (cmd == "echo"){
-        command_processing.echo(extra_params, clientfd);
+        CommandProcessing::echo(extra_params, clientfd);
     }
     else if (cmd == "ping"){
-        command_processing.ping(clientfd);
+        CommandProcessing::ping(clientfd);
     }
     else if (cmd == "set"){
-        command_processing.set_without_send(extra_params);
+        CommandProcessing::set_without_send(extra_params);
     }
     else if (cmd == "get"){
-        command_processing.get(extra_params, clientfd, extra_args["dir"] + "/" + extra_args["dbfilename"]);
+        CommandProcessing::get(extra_params, clientfd, extra_args["dir"] + "/" + extra_args["dbfilename"]);
     }
     else if (cmd == "config"){
-        command_processing.config(extra_params, clientfd, extra_args);
+        CommandProcessing::config(extra_params, clientfd, extra_args);
     }
     else if (cmd == "keys"){
-        command_processing.keys(extra_params, clientfd, extra_args["dir"] + "/" + extra_args["dbfilename"]);
+        CommandProcessing::keys(extra_params, clientfd, extra_args["dir"] + "/" + extra_args["dbfilename"]);
     }
     else if (cmd == "info"){
-        command_processing.info(extra_params, clientfd, "slave");
+        CommandProcessing::info(extra_params, clientfd, "slave");
     }
     else if (cmd == "replconf"){
-        command_processing.replconf(extra_params, clientfd);
+        CommandProcessing::replconf(extra_params, clientfd);
     }
 }
 

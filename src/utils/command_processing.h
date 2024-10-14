@@ -8,22 +8,22 @@
 
 class CommandProcessing {
     protected:
-        void erase_key(const std::string& key);
-        void execute_after_delay(int delay, const std::string& key);
+        static void erase_key(const std::string& key);
+        static void execute_after_delay(int delay, const std::string& key);
         
     public:
         
-        void echo(std::vector<std::string> extras, int dest_fd);
-        bool send_data(std::string data, int dest_fd);
-        void ping(int dest_fd);
-        void set(std::vector<std::string> extras, int dest_fd);
-        bool set_without_send(std::vector<std::string> extras);
-        void get(std::vector<std::string> extras, int dest_fd, std::string filepath);
-        void keys(std::vector<std::string> extras, int dest_fd, std::string filepath);
-        void info(std::vector<std::string> extras, int dest_fd, std::string role);
-        void replconf(std::vector<std::string> extras, int dest_fd);
-        void psync(std::vector<std::string> extras, int dest_fd, std::vector<int>& replicas_fd);
-        void config(std::vector<std::string> extras, int dest_fd, std::map<std::string, std::string> args_map);
+        static void echo(std::vector<std::string> extras, int dest_fd);
+        static bool send_data(std::string data, int dest_fd);
+        static void ping(int dest_fd);
+        static void set(std::vector<std::string> extras, int dest_fd);
+        static bool set_without_send(std::vector<std::string> extras);
+        static void get(std::vector<std::string> extras, int dest_fd, std::string filepath);
+        static void keys(std::vector<std::string> extras, int dest_fd, std::string filepath);
+        static void info(std::vector<std::string> extras, int dest_fd, std::string role);
+        static void replconf(std::vector<std::string> extras, int dest_fd);
+        static void psync(std::vector<std::string> extras, int dest_fd, std::vector<int>& replicas_fd);
+        static void config(std::vector<std::string> extras, int dest_fd, std::map<std::string, std::string> args_map);
 };
 
 #endif

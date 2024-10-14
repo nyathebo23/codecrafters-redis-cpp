@@ -52,35 +52,35 @@ void MasterSocketManagement::execute_command(std::string buffer_data, const int&
     std::string cmd = command_elts.first;
     std::vector<std::string> extra_params = command_elts.second;
     if (cmd == "echo"){
-        command_processing.echo(extra_params, clientfd);
+        CommandProcessing::echo(extra_params, clientfd);
     }
     else if (cmd == "ping"){
-        command_processing.ping(clientfd);
+        CommandProcessing::ping(clientfd);
     }
     else if (cmd == "set"){
         for (int replica_fd: this->replicas_fd) {
             if (send(replica_fd, buffer_data.c_str(), buffer_data.length(), 0) <= 0)
                 std::cout <<  "replica send msg failed";                
         }
-        command_processing.set(extra_params, clientfd);
+        CommandProcessing::set(extra_params, clientfd);
     }
     else if (cmd == "get"){
-        command_processing.get(extra_params, clientfd, extra_args["dir"] + "/" + extra_args["dbfilename"]);
+        CommandProcessing::get(extra_params, clientfd, extra_args["dir"] + "/" + extra_args["dbfilename"]);
     }
     else if (cmd == "config"){
-        command_processing.config(extra_params, clientfd, extra_args);
+        CommandProcessing::config(extra_params, clientfd, extra_args);
     }
     else if (cmd == "keys"){
-        command_processing.keys(extra_params, clientfd, extra_args["dir"] + "/" + extra_args["dbfilename"]);
+        CommandProcessing::keys(extra_params, clientfd, extra_args["dir"] + "/" + extra_args["dbfilename"]);
     }
     else if (cmd == "info"){
-        command_processing.info(extra_params, clientfd, "master");
+        CommandProcessing::info(extra_params, clientfd, "master");
     }
     else if (cmd == "replconf"){
-        command_processing.replconf(extra_params, clientfd);
+        CommandProcessing::replconf(extra_params, clientfd);
     }
     else if (cmd == "psync"){
-        command_processing.psync(extra_params, clientfd, replicas_fd);
+        CommandProcessing::psync(extra_params, clientfd, replicas_fd);
     }
 }
 
@@ -114,9 +114,9 @@ void MasterSocketManagement::process_command(std::string data, const int& fd) {
     std::string cmd = command_elts.first;
     std::vector<std::string> extra_params = command_elts.second;
     if (cmd == "set"){
-        command_processing.set_without_send(extra_params);
+        CommandProcessing::set_without_send(extra_params);
     } else if (cmd == "replconf"){
-        command_processing.replconf(extra_params, fd);
+        CommandProcessing::replconf(extra_params, fd);
     }
 }
 
