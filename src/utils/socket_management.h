@@ -22,7 +22,7 @@ class SocketManagement {
 
     public:
         void handle_connection(int clientfd);
-        
+
         short socket_family;
 
         int socket_type;
@@ -44,7 +44,7 @@ class SocketManagement {
 
         int socket_listen(int connection_backlog);
 
-        void check_incoming_clients_connections();
+        void check_incoming_clients_connections(int fd);
 
 };
 
