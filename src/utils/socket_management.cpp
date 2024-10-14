@@ -181,7 +181,7 @@ void SocketManagement::check_incoming_clients_connections(const int& masterfd){
       connection.detach();
   }
 
-  GlobalDatas::isRequestFromMaster = false;
+  //GlobalDatas::isRequestFromMaster = false;
   std::cout << "Waiting for a client to connect...\n";
   while (1){
       int client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
