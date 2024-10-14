@@ -151,7 +151,7 @@ void MasterSocketManagement::retrieve_commands_from_master() {
 
 void MasterSocketManagement::check_incoming_master_connections() {
     std::thread t([this] (){retrieve_commands_from_master();});
-    t.detach();
+    t.join();
 };
 
 
