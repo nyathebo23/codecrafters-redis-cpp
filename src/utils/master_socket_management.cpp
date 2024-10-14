@@ -110,7 +110,7 @@ int MasterSocketManagement::send_handshake_to_master(int port){
             std::cout << "Don't receive file";
     }
     else {
-       std::thread t([] () {retrieve_commands_from_master();});   
+       std::thread t([this] () {retrieve_commands_from_master();});   
        t.detach();
     }
     return 1;
@@ -130,16 +130,12 @@ void MasterSocketManagement::process_command(std::string data, int fd) {
 }
 
 void MasterSocketManagement::retrieve_commands_from_master() {
-    close(this->server_fd);
-    int newsocket = socket(socket_family, socket_type, 0);
-    if (connect(newsocket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
-        std::cout << "Connect to master failed";
-    }
-        std::cout << "zertyuiop";
+
+    std::cout << "zertyuiop";
 
     while (1){
         char buffer[128]; 
-        recv(newsocket, &buffer, sizeof(buffer), 0);
+        recv(server_fd, &buffer, sizeof(buffer), 0);
         // if (recv(newsocket, &buffer, sizeof(buffer), 0) <= 0)
         //     break;
         
@@ -152,7 +148,7 @@ void MasterSocketManagement::retrieve_commands_from_master() {
         //     pos = end;
         //     end = data.find("*", pos+1);
         // }
-        process_command(data, newsocket);
+        process_command(data, server_fd);
     }
 };
 
