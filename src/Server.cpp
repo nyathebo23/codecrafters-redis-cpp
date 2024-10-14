@@ -62,8 +62,6 @@ int main(int argc, char **argv) {
   }
 
   socket_management.check_incoming_clients_connections(master_socket_management.get_server_fd());
-  std::cout << GlobalDatas::get("foo");
-  std::cout << GlobalDatas::get("bar");
-  std::cout << GlobalDatas::get("baz");
+
   return 0;
 }
