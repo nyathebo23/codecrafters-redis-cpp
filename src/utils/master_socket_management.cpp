@@ -116,7 +116,18 @@ void MasterSocketManagement::send_handshake_to_master(int port){
     std::cout << data;
     process_command(data, server_fd);
     recv(server_fd, &buffer, sizeof(buffer), 0);
-
+    memset(buffer, 0, 256);
+    recv(server_fd, &buffer, sizeof(buffer), 0);
+    std::string data(buffer);
+    std::cout << data;
+    process_command(data, server_fd);
+    recv(server_fd, &buffer, sizeof(buffer), 0);
+    memset(buffer, 0, 256);
+    recv(server_fd, &buffer, sizeof(buffer), 0);
+    std::string data(buffer);
+    std::cout << data;
+    process_command(data, server_fd);
+    recv(server_fd, &buffer, sizeof(buffer), 0);
 }
 
 void MasterSocketManagement::process_command(std::string data, int fd) {
