@@ -169,17 +169,11 @@ int SocketManagement::socket_listen(int connection_backlog){
     return listen(server_fd, connection_backlog);
 }
 
-void SocketManagement::check_incoming_clients_connections(const int& masterfd){
+void SocketManagement::check_incoming_clients_connections(){
   struct sockaddr_in client_addr;
   int client_addr_len = sizeof(client_addr);
-
-  if (masterfd > 0){
-      GlobalDatas::isRequestFromMaster = true;
-      std::thread connection([this](int master){handle_connection(master);}, masterfd);
-      connection.join();
-  }
-
   GlobalDatas::isRequestFromMaster = false;
+
   std::cout << "Waiting for a client to connect...\n";
   while (1){
       int client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
@@ -190,5 +184,28 @@ void SocketManagement::check_incoming_clients_connections(const int& masterfd){
   close(server_fd);
 
 }
+
+void SocketManagement::check_incoming_master_connections(const int& masterfd){
+    std::thread connection([this](const int& fd){retrieve_commands_from_master(fd);}, masterfd);
+    connection.detach();
+}
+
+void SocketManagement::process_command(std::string data) {
+    auto command_elts = this->get_command_array_from_rawdata(data);
+    std::string cmd = command_elts.first;
+    std::vector<std::string> extra_params = command_elts.second;
+    if (cmd == "set")
+        CommandProcessing::set_without_send(extra_params);
+}
+
+void SocketManagement::retrieve_commands_from_master(const int& serverfd) {
+    while (1){
+        char buffer[128];    
+        if (recv(serverfd, &buffer, sizeof(buffer), 0) <= 0)
+            break;
+        std::string data(buffer);
+        process_command(data);
+    }
+};
 
 

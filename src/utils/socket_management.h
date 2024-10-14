@@ -23,6 +23,8 @@ class SocketManagement {
 
         int send_receive_msg_by_command(std::string tosend, std::string toreceive);
 
+        void process_command(std::string data);
+
     public:
         void handle_connection(const int& clientfd);
 
@@ -40,9 +42,13 @@ class SocketManagement {
 
         int socket_listen(int connection_backlog);
 
-        void check_incoming_clients_connections(const int& fd);
+        void check_incoming_clients_connections();
 
         void send_handshake_to_master(int port);
+
+        void check_incoming_master_connections(const int& fd);
+
+        void retrieve_commands_from_master(const int& serverfd)
 };
 
 #endif
