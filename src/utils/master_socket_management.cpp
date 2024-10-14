@@ -131,7 +131,7 @@ void MasterSocketManagement::retrieve_commands_from_master() {
         //     break;
         
         std::string data(buffer);
-        if (data.find('\r\n') != data.size() - 2)
+        if (data.find("\r\n") != data.size() - 2)
             continue;
 
         // int pos = 0;
