@@ -117,8 +117,9 @@ void MasterSocketManagement::process_command(std::string data, int fd) {
     auto command_elts = this->get_command_array_from_rawdata(data);
     std::string cmd = command_elts.first;
     std::vector<std::string> extra_params = command_elts.second;
+    std::cout << "zertyuiop";
+
     if (cmd == "set"){
-        std::cout << "zertyuiop";
         command_processing.set_without_send(extra_params);
     } else if (cmd == "replconf"){
         command_processing.replconf(extra_params, fd);
