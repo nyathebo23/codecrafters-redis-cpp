@@ -23,7 +23,7 @@
 
 
 void SocketManagement::handle_connection(const int& clientfd){
-    std::cout << GlobalDatas::isRequestFromMaster + " " + clientfd + " ";
+    std::cout << GlobalDatas::isRequestFromMaster << " " << clientfd << " ";
 
     while (1) {
         char buffer[256];  
