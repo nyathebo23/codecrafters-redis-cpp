@@ -94,7 +94,7 @@ void SocketManagement::check_incoming_clients_connections(const int& masterfd){
   struct sockaddr_in client_addr;
   int client_addr_len = sizeof(client_addr);
   if (masterfd > 0){
-      std::thread connection([this](int& clientfd){handle_connection(clientfd);}, masterfd);
+      std::thread connection([this, &masterfd](){handle_connection(masterfd);});
       connection.detach();
   }
   std::cout << "Waiting for a client to connect...\n";
