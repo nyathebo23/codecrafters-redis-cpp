@@ -6,6 +6,7 @@
 #include <map>
 #include <algorithm>
 #include <sys/socket.h>
+#include <sys/select.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <unistd.h>
@@ -25,11 +26,29 @@ void SocketManagement::execute_command(std::string buffer_data, const int& clien
 
 void SocketManagement::handle_connection(const int& clientfd){
     while (1) {
-        char buffer[128];    
-        if (recv(clientfd, &buffer, sizeof(buffer), 0) <= 0) {
-            close(clientfd);
-            break;
-        }
+        char buffer[128];  
+        fd_set read_fds;
+        FD_ZERO(&read_fds);
+        FD_SET(clientfd, &read_fds);
+
+        struct timeval timeout;
+        timeout.tv_sec = 5;  // Timeout de 5 secondes
+        timeout.tv_usec = 0;
+
+        int activity = select(clientfd + 1, &read_fds, nullptr, nullptr, &timeout);
+
+        if (activity > 0 && FD_ISSET(clientfd, &read_fds)) {
+            // Le socket est prêt à recevoir des données
+            recv(clientfd, buffer, sizeof(buffer), 0);
+        } else if (activity == 0) {
+            std::cerr << "Timeout: pas de données reçues sur le socket." << std::endl;
+        } else {
+            std::cerr << "Erreur dans select(): " << strerror(errno) << std::endl;
+        }  
+        // if (recv(clientfd, &buffer, sizeof(buffer), 0) <= 0) {
+        //     close(clientfd);
+        //     break;
+        // }
         std::string data(buffer);
         execute_command(data, clientfd);
     }
@@ -94,13 +113,7 @@ int SocketManagement::socket_listen(int connection_backlog){
 void SocketManagement::check_incoming_clients_connections(const int& masterfd){
   struct sockaddr_in client_addr;
   int client_addr_len = sizeof(client_addr);
-  int error = 0;
-  socklen_t len = sizeof(error);
-  int retval = getsockopt(masterfd, SOL_SOCKET, SO_ERROR, &error, &len);
-
-  if (retval != 0 || error != 0) {
-    std::cerr << "Erreur de socket : " << strerror(error) << std::endl;
-  }
+ 
   if (masterfd > 0){
       std::thread connection([this, &masterfd](){handle_connection(masterfd);});
       connection.detach();
