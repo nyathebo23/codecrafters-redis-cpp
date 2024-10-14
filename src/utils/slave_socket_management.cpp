@@ -24,8 +24,9 @@
 
 
 void SlaveSocketManagement::check_incoming_master_connections(const int& masterfd){
-    std::thread connection([this](int fd){retrieve_commands_from_master(fd);}, masterfd);
-    connection.join();
+    retrieve_commands_from_master(masterfd);
+    // std::thread connection([this](int fd){retrieve_commands_from_master(fd);}, masterfd);
+    // connection.join();
 }
 
 SlaveSocketManagement::SlaveSocketManagement(short family, int type, std::map<std::string, std::string> extra) 
