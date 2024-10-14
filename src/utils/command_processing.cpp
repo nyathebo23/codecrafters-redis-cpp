@@ -10,6 +10,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <unistd.h>
+#include <errno.h>
 #include "encode/array_parser_enc.h"
 #include "encode/simple_data_parser_enc.h"
 #include "encode/small_aggregate_parser_enc.h"
@@ -31,8 +32,9 @@ void CommandProcessing::execute_after_delay(int delay, const std::string& key) {
 
 bool CommandProcessing::send_data(std::string data, int dest_fd){
     if (!data.empty()){
-        if (send(dest_fd, data.c_str(), data.length(), 0) <= 0){
+        if (int s = send(dest_fd, data.c_str(), data.length(), 0) <= 0){
             std::cout <<  "send data failed";
+            std::strerror(errno);
             return false;
         }
         return true;      
