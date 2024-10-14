@@ -132,7 +132,7 @@ void MasterSocketManagement::retrieve_commands_from_master() {
         int r = recv(server_fd, &buffer, sizeof(buffer), 0);
         // if (recv(newsocket, &buffer, sizeof(buffer), 0) <= 0)
         //     break;
-        
+        std::cout << r;
         std::string data(buffer);
         if (data.find("\r\n") != data.size() - 2)
             continue;
@@ -147,5 +147,11 @@ void MasterSocketManagement::retrieve_commands_from_master() {
         process_command(data, server_fd);
     }
 };
+
+void MasterSocketManagement::check_incoming_master_connections() {
+    std::thread t([this] (){retrieve_commands_from_master();});
+    t.detach();
+};
+
 
 

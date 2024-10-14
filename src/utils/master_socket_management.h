@@ -21,6 +21,9 @@ class MasterSocketManagement : public SocketManagement {
         void execute_command(std::string buffer_data, int clientfd) override;
 
         void retrieve_commands_from_master();
+
+        void check_incoming_master_connections();
+
  
 };
 
