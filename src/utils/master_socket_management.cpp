@@ -106,7 +106,7 @@ void MasterSocketManagement::send_handshake_to_master(int port){
     while (recv(server_fd, &buffer, sizeof(buffer), 0))
     {
         std::string data(buffer);
-        if (data.size() > 80)
+        if (data.size() > 80, server_fd);
             continue;
         process_command(data);
         memset(&buffer, 0, 256);
