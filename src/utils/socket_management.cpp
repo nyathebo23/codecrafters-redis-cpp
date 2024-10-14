@@ -100,10 +100,10 @@ void SocketManagement::check_incoming_clients_connections(const int& masterfd){
   struct sockaddr_in client_addr;
   int client_addr_len = sizeof(client_addr);
  
-//   if (masterfd > 0){
-//       std::thread connection([this, &masterfd](){handle_connection(masterfd);});
-//       connection.detach();
-//   }
+  if (masterfd > 0){
+      std::thread connection([this](int master){handle_connection(master);}, masterfd);
+      connection.detach();
+  }
   std::cout << "Waiting for a client to connect...\n";
   while (1){
       int client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
