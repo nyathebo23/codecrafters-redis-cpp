@@ -106,7 +106,7 @@ void MasterSocketManagement::send_handshake_to_master(int port){
     if(send_receive_msg_by_command(parse_encode_array(psync_msg), "FULLRESYNC <REPL_ID> 0") < 0)
         std::cout << "PSYNC failed";
 
-    char buffer[128];
+    char buffer[1024];
     if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
             std::cout << "Don't receive file";
     }
