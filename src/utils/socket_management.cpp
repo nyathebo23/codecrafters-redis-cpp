@@ -28,7 +28,7 @@ void SocketManagement::handle_connection(int clientfd){
         char buffer[128];    
         if (recv(clientfd, &buffer, sizeof(buffer), 0) <= 0) {
             close(clientfd);
-            return;
+            break;
         }
         std::string data(buffer);
         execute_command(data, clientfd);
