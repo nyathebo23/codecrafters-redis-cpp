@@ -102,8 +102,9 @@ void MasterSocketManagement::send_handshake_to_master(int port){
     std::vector<std::any> psync_msg = {std::string("PSYNC"), std::string("?"), std::string("-1")};
     if(send_receive_msg_by_command(parse_encode_array(psync_msg), "FULLRESYNC <REPL_ID> 0") < 0)
         std::cout << "PSYNC failed";
-    char buffer[256];    
-    while (int r = recv(server_fd, &buffer, sizeof(buffer), 0)){
+    char buffer[256];  
+    int r = recv(server_fd, &buffer, sizeof(buffer), 0);  
+    while (r = recv(server_fd, &buffer, sizeof(buffer), 0)){
         std::cout << r;
         std::string data(buffer);
         if (data.find_last_of("\r\n") != data.size() - 2)
@@ -111,7 +112,8 @@ void MasterSocketManagement::send_handshake_to_master(int port){
         process_command(data, server_fd);
         memset(&buffer, 0, 256);
     }
-     
+    std::cout << r;
+
 
 }
 
