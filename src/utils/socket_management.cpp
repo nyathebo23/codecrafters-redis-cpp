@@ -90,12 +90,21 @@ int SocketManagement::socket_listen(int connection_backlog){
 }
 
 
+
 void SocketManagement::check_incoming_clients_connections(const int& masterfd){
   struct sockaddr_in client_addr;
   int client_addr_len = sizeof(client_addr);
+  int error = 0;
+  socklen_t len = sizeof(error);
+  int retval = getsockopt(masterfd, SOL_SOCKET, SO_ERROR, &error, &len);
+
+  if (retval != 0 || error != 0) {
+    std::cerr << "Erreur de socket : " << strerror(error) << std::endl;
+  }
   if (masterfd > 0){
       std::thread connection([this, &masterfd](){handle_connection(masterfd);});
-      connection.join();
+      connection.detach();
+
   }
   std::cout << "Waiting for a client to connect...\n";
   while (1){
