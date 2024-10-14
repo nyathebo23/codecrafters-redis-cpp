@@ -175,7 +175,7 @@ void SocketManagement::check_incoming_clients_connections(const int& masterfd){
   if (masterfd > 0){
       GlobalDatas::isRequestFromMaster = true;
       std::thread connection([this](int master){handle_connection(master);}, masterfd);
-      connection.detach();
+      connection.join();
   }
   GlobalDatas::isRequestFromMaster = false;
   std::cout << "Waiting for a client to connect...\n";
