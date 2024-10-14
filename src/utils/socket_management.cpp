@@ -41,10 +41,11 @@ void SocketManagement::handle_connection(const int& clientfd){
             CommandProcessing::ping(clientfd);
         }
         else if (cmd == "set"){
-            for (int replica_fd: this->replicas_fd) {
-                if (send(replica_fd, data.c_str(), data.length(), 0) <= 0)
-                    std::cout <<  "replica send msg failed";                
-            }
+            if (GlobalDatas::isMaster)
+                for (int replica_fd: this->replicas_fd) {
+                    if (send(replica_fd, data.c_str(), data.length(), 0) <= 0)
+                        std::cout <<  "replica send msg failed";                
+                }
             CommandProcessing::set(extra_params, clientfd);
         }
         else if (cmd == "get"){
@@ -171,9 +172,11 @@ void SocketManagement::check_incoming_clients_connections(const int& masterfd){
   std::string resp = parse_encode_array(rep);
   CommandProcessing::send_data(resp, masterfd);
   if (masterfd > 0){
+      GlobalDatas::isRequestFromMaster = true;
       std::thread connection([this](int master){handle_connection(master);}, masterfd);
       connection.detach();
   }
+  GlobalDatas::isRequestFromMaster = false;
   std::cout << "Waiting for a client to connect...\n";
   while (1){
       int client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 

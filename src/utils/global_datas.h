@@ -10,6 +10,8 @@ class GlobalDatas {
     public:
         static bool isMaster;
 
+        static bool isRequestFromMaster;
+
         static std::map<std::string, std::string> dict_table;
 
         static void set(std::string key, std::string value);

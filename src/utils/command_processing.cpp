@@ -32,7 +32,7 @@ void CommandProcessing::execute_after_delay(int delay, const std::string& key) {
 }
 
 bool CommandProcessing::send_data(std::string data, int dest_fd){
-    if (!data.empty()){
+    if (!data.empty() && GlobalDatas::isRequestFromMaster){
         if (int s = send(dest_fd, data.c_str(), data.length(), 0) <= 0){
             std::cout <<  "send data failed";
             std::strerror(errno);
