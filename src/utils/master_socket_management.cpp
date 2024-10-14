@@ -104,6 +104,7 @@ void MasterSocketManagement::send_handshake_to_master(int port){
         std::cout << "PSYNC failed";
     char buffer[256];  
     int r = recv(server_fd, &buffer, sizeof(buffer), 0);  
+    connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr));
     while (r = recv(server_fd, &buffer, sizeof(buffer), 0)){
         std::cout << r;
         std::string data(buffer);
