@@ -135,7 +135,7 @@ void MasterSocketManagement::retrieve_commands_from_master() {
 
     while (1){
         char buffer[128]; 
-
+        recv(newsocket, &buffer, sizeof(buffer), 0);
         if (recv(newsocket, &buffer, sizeof(buffer), 0) <= 0)
             break;
         std::string data(buffer);
