@@ -177,18 +177,12 @@ void SocketManagement::check_incoming_clients_connections(const int& masterfd){
       GlobalDatas::isRequestFromMaster = true;
       std::thread connection([this](int master){handle_connection(master);}, masterfd);
       connection.join();
-      while (1)
-      {
-        int client_fd = accept(masterfd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
-        std::thread connection2([this](int clientfd){handle_connection(clientfd);}, client_fd);
-        connection2.detach();
-      }
   }
 
   GlobalDatas::isRequestFromMaster = false;
   std::cout << "Waiting for a client to connect...\n";
   while (1){
-      int client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
+      int client_fd = accept(masterfd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
       std::cout << "Client connected " +std::to_string(client_fd)+  " \n";
       std::thread connection([this](int clientfd){handle_connection(clientfd);}, client_fd);
       connection.detach();
