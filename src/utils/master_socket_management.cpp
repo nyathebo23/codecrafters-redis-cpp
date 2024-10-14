@@ -134,7 +134,7 @@ void MasterSocketManagement::send_handshake_to_master(int port){
     //     close(server_fd);
     // };
 
-    retrieve_commands_from_master();
+    check_incoming_master_connections();
 
 }
 
