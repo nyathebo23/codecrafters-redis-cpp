@@ -23,7 +23,7 @@ void SocketManagement::execute_command(std::string buffer_data, int& clientfd) {
     
 };
 
-void SocketManagement::handle_connection(int& clientfd){
+void SocketManagement::handle_connection(const int& clientfd){
     while (1) {
         char buffer[128];    
         if (recv(clientfd, &buffer, sizeof(buffer), 0) <= 0) {
@@ -90,7 +90,7 @@ int SocketManagement::socket_listen(int connection_backlog){
 }
 
 
-void SocketManagement::check_incoming_clients_connections(int& masterfd){
+void SocketManagement::check_incoming_clients_connections(const int& masterfd){
   struct sockaddr_in client_addr;
   int client_addr_len = sizeof(client_addr);
   if (masterfd > 0){
