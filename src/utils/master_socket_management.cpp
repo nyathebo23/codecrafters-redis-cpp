@@ -110,10 +110,6 @@ void MasterSocketManagement::send_handshake_to_master(int port){
     if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
             std::cout << "Don't receive file";
     }
-    else {
-       std::thread t([this] () {retrieve_commands_from_master();});   
-       t.detach();
-    }
 }
 
 void MasterSocketManagement::process_command(std::string data, int fd) {
@@ -121,10 +117,10 @@ void MasterSocketManagement::process_command(std::string data, int fd) {
     auto command_elts = this->get_command_array_from_rawdata(data);
     std::string cmd = command_elts.first;
     std::vector<std::string> extra_params = command_elts.second;
-    
     if (cmd == "set"){
         command_processing.set_without_send(extra_params);
     } else if (cmd == "replconf"){
+        std::cout << "zertyuiop";
         command_processing.replconf(extra_params, fd);
     }
 }
@@ -132,15 +128,14 @@ void MasterSocketManagement::process_command(std::string data, int fd) {
 void MasterSocketManagement::retrieve_commands_from_master() {
 
     std::cout << "zertyuiop";
-
     while (1){
         char buffer[128]; 
-        recv(server_fd, &buffer, sizeof(buffer), 0);
+        int r = recv(server_fd, &buffer, sizeof(buffer), 0);
         // if (recv(newsocket, &buffer, sizeof(buffer), 0) <= 0)
         //     break;
         
         std::string data(buffer);
-        std::cout << data;
+        std::cout << r;
         // int pos = 0;
         // int end = data.find("*", 1);
         // while (end != std::string::npos){
