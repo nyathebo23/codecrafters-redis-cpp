@@ -116,10 +116,11 @@ int MasterSocketManagement::send_handshake_to_master(int port){
 }
 
 void MasterSocketManagement::process_command(std::string data, int fd) {
+    std::cout << "zertyuiop";
     auto command_elts = this->get_command_array_from_rawdata(data);
     std::string cmd = command_elts.first;
     std::vector<std::string> extra_params = command_elts.second;
-    std::cout << "zertyuiop";
+    
     if (cmd == "set"){
         command_processing.set_without_send(extra_params);
     } else if (cmd == "replconf"){
