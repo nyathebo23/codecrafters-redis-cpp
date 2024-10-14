@@ -138,7 +138,7 @@ void MasterSocketManagement::process_command(std::string data, int fd) {
     std::string cmd = command_elts.first;
     std::vector<std::string> extra_params = command_elts.second;
     if (cmd == "set"){
-        std::cout << extra_params;
+        std::cout << extra_params[0] << " " << extra_params[1];
         command_processing.set_without_send(extra_params);
     } else if (cmd == "replconf"){
         command_processing.replconf(extra_params, fd);
