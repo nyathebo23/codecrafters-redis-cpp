@@ -157,9 +157,12 @@ void MasterSocketManagement::retrieve_commands_from_master() {
 
     char buffer[256]; 
     while (true){
-        recv(server_fd, &buffer, sizeof(buffer), 0);
+        int r = recv(server_fd, &buffer, sizeof(buffer), 0);
         // if (recv(newsocket, &buffer, sizeof(buffer), 0) <= 0)
         //     break;
+        if (r <= 0)
+            std::strerror(errno);
+
         std::string data(buffer);
         memset(buffer, 0, 256);
 
