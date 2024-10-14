@@ -114,7 +114,7 @@ void MasterSocketManagement::send_handshake_to_master(int port){
     // std::cout << data0;
     // process_command(data0, server_fd);
     // memset(buffer, 0, 256);
-
+    
     if (recv(server_fd, &buffer, sizeof(buffer), 0)){
         std::string data(buffer);
         process_command(data, server_fd);
@@ -133,6 +133,8 @@ void MasterSocketManagement::send_handshake_to_master(int port){
         process_command(data2, server_fd);
         close(server_fd);
     };
+
+    retrieve_commands_from_master();
 
 }
 
