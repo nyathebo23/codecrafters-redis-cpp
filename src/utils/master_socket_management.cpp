@@ -126,6 +126,7 @@ void MasterSocketManagement::process_command(std::string data, int fd) {
 }
 
 void MasterSocketManagement::retrieve_commands_from_master() {
+    close(this->server_fd);
     this->newsocket();
     if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
         std::cout << "Connect to master failed";
