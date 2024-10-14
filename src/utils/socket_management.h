@@ -20,7 +20,7 @@ class SocketManagement {
         std::pair<std::string, std::vector<std::string>> get_command_array_from_rawdata(std::string data);
 
     public:
-        void handle_connection(int clientfd);
+        void handle_connection(int& clientfd);
 
         short socket_family;
 
@@ -30,7 +30,7 @@ class SocketManagement {
 
         CommandProcessing command_processing;
 
-        virtual void execute_command(std::string buffer_data, int clientfd);
+        virtual void execute_command(std::string buffer_data, int& clientfd);
 
         SocketManagement(short family, int type, std::map<std::string, std::string> extra);
 

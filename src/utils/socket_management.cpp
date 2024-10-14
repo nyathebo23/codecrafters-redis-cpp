@@ -19,13 +19,13 @@
 #include "socket_management.h"
 #include "command_processing.h"
 
-void SocketManagement::execute_command(std::string buffer_data, int clientfd) {
+void SocketManagement::execute_command(std::string buffer_data, int& clientfd) {
     
 };
 
-void SocketManagement::handle_connection(int clientfd){
+void SocketManagement::handle_connection(int& clientfd){
     while (1) {
-        char buffer[64];    
+        char buffer[128];    
         if (recv(clientfd, &buffer, sizeof(buffer), 0) <= 0) {
             close(clientfd);
             break;
@@ -90,11 +90,11 @@ int SocketManagement::socket_listen(int connection_backlog){
 }
 
 
-void SocketManagement::check_incoming_clients_connections(int masterfd){
+void SocketManagement::check_incoming_clients_connections(int& masterfd){
   struct sockaddr_in client_addr;
   int client_addr_len = sizeof(client_addr);
   if (masterfd > 0){
-      std::thread connection([this](int clientfd){handle_connection(clientfd);}, masterfd);
+      std::thread connection([this](int& clientfd){handle_connection(clientfd);}, masterfd);
       connection.detach();
   }
   std::cout << "Waiting for a client to connect...\n";
