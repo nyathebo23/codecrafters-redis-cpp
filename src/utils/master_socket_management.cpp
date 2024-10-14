@@ -137,6 +137,7 @@ void MasterSocketManagement::retrieve_commands_from_master() {
         // if (recv(newsocket, &buffer, sizeof(buffer), 0) <= 0)
         //     break;
         std::string data(buffer);
+        std::cout << buffer;
         // int pos = 0;
         // int end = data.find("*", 1);
         // while (end != std::string::npos){
