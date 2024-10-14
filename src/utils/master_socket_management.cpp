@@ -112,6 +112,7 @@ void MasterSocketManagement::send_handshake_to_master(int port){
     {
         std::string data(buffer);
         std::cout << data;
+        buffer = {0};
         int r = recv(server_fd, &buffer, sizeof(buffer), 0);
     }
     
