@@ -85,26 +85,27 @@ void MasterSocketManagement::execute_command(std::string buffer_data, int client
     }
 }
 
-int MasterSocketManagement::send_handshake_to_master(int port){
+void MasterSocketManagement::send_handshake_to_master(int port){
     if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
         std::cout << "Connect to master failed";
-        return -1;
+
     }
     std::vector<std::any> ping = {std::string("PING")};
     if(send_receive_msg_by_command(parse_encode_array(ping), "PONG") < 0)
-        return -1;
+        std::cout << "PING failed";
 
     std::vector<std::any> replconf_msg1 = {std::string("REPLCONF"), std::string("listening-port"), std::to_string(port)}; 
     if(send_receive_msg_by_command(parse_encode_array(replconf_msg1), "OK") < 0)
-        return -1;
+        std::cout << "REPLCONF failed";
     
     std::vector<std::any> replconf_msg2 = {std::string("REPLCONF"), std::string("capa"), std::string("psync2")};
     if(send_receive_msg_by_command(parse_encode_array(replconf_msg2), "OK") < 0)
-        return -1;
+        std::cout << "REPLCONF failed";
 
     std::vector<std::any> psync_msg = {std::string("PSYNC"), std::string("?"), std::string("-1")};
     if(send_receive_msg_by_command(parse_encode_array(psync_msg), "FULLRESYNC <REPL_ID> 0") < 0)
-        return -1;
+        std::cout << "PSYNC failed";
+
     char buffer[128];
     if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
             std::cout << "Don't receive file";
@@ -113,7 +114,6 @@ int MasterSocketManagement::send_handshake_to_master(int port){
        std::thread t([this] () {retrieve_commands_from_master();});   
        t.detach();
     }
-    return 1;
 }
 
 void MasterSocketManagement::process_command(std::string data, int fd) {
