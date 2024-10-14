@@ -58,7 +58,7 @@ void CommandProcessing::ping(int dest_fd){
 bool CommandProcessing::set_without_send(std::vector<std::string> extras){
     if (extras.size() > 1){
         std::string key = extras[0];
-        GlobalDatas::set[key] = extras[1];
+        GlobalDatas::set(key, extras[1]);
         if (extras.size() == 4){
             std::string param = extras[2];
             if (param == "px"){
@@ -102,7 +102,7 @@ void CommandProcessing::get(std::vector<std::string> extras, int dest_fd, std::s
             if (GlobalDatas::dict_table.count(key) == 0)
                 resp = "$-1\r\n";
             else 
-                resp = parse_encode_bulk_string(GlobalDatas::get[key]);
+                resp = parse_encode_bulk_string(GlobalDatas::get(key));
         }
         else
             resp = parse_encode_bulk_string(std::any_cast<std::string>(keys_values.second[index]));
