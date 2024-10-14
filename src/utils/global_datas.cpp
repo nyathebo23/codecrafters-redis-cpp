@@ -3,8 +3,7 @@
 
 bool GlobalDatas::isMaster = true;
 
-bool GlobalDatas::isMaster = false;
-
+bool GlobalDatas::isRequestFromMaster = false;
 
 std::map<std::string, std::string> GlobalDatas::dict_table;
 
