@@ -129,7 +129,6 @@ void MasterSocketManagement::retrieve_commands_from_master() {
     this->newsocket();
     if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
         std::cout << "Connect to master failed";
-        return -1;
     }
     while (1){
         char buffer[128]; 
