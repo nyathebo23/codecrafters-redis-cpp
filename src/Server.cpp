@@ -54,13 +54,13 @@ int main(int argc, char **argv) {
     std::cerr << "listen failed\n";
     return 1;
   }
-  std::thread t([&socket_management] () {socket_management.check_incoming_clients_connections();});
-  t.detach();
+
+
   if (args_map.count("replicaof") != 0){
       master_socket_management.send_handshake_to_master(ntohs(socket_management.get_server_addr().sin_port));
-      //master_socket_management.retrieve_commands_from_master();
+      master_socket_management.retrieve_commands_from_master();
   }
-
+  socket_management.check_incoming_clients_connections();
 
   return 0;
 }
