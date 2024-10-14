@@ -119,7 +119,7 @@ void MasterSocketManagement::process_command(std::string data, int fd) {
     auto command_elts = this->get_command_array_from_rawdata(data);
     std::string cmd = command_elts.first;
     std::vector<std::string> extra_params = command_elts.second;
-
+    std::cout << "zertyuiop";
     if (cmd == "set"){
         command_processing.set_without_send(extra_params);
     } else if (cmd == "replconf"){
@@ -140,7 +140,7 @@ void MasterSocketManagement::retrieve_commands_from_master() {
         recv(newsocket, &buffer, sizeof(buffer), 0);
         // if (recv(newsocket, &buffer, sizeof(buffer), 0) <= 0)
         //     break;
-        std::cout << "zertyuiop";
+        
         std::string data(buffer);
         std::cout << data;
         // int pos = 0;
