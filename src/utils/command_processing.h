@@ -13,7 +13,7 @@ class CommandProcessing {
         
 
     public:
-        std::map<std::string, std::string> dict_table;
+        static std::map<std::string, std::string> dict_table;
         void echo(std::vector<std::string> extras, int dest_fd);
         bool send_data(std::string data, int dest_fd);
         void ping(int dest_fd);
