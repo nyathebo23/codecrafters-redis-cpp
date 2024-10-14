@@ -30,10 +30,6 @@ void SocketManagement::execute_command(std::string buffer_data, int clientfd) {
         command_processing.ping(clientfd);
     }
     else if (cmd == "set"){
-        for (int replica_fd: this->replicas_fd) {
-            if (send(replica_fd, buffer_data.c_str(), buffer_data.length(), 0) <= 0)
-                std::cout <<  "replica send msg failed";                
-        }
         command_processing.set(extra_params, clientfd);
     }
     else if (cmd == "get"){
