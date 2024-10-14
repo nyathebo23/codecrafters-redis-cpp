@@ -30,7 +30,7 @@ class SocketManagement {
 
         CommandProcessing command_processing;
 
-        virtual void execute_command(std::string buffer_data, int& clientfd);
+        virtual void execute_command(std::string buffer_data, const int& clientfd);
 
         SocketManagement(short family, int type, std::map<std::string, std::string> extra);
 

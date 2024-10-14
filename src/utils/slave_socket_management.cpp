@@ -29,7 +29,7 @@ SlaveSocketManagement::SlaveSocketManagement(short family, int type, std::map<st
 } ;
 
 
-void SlaveSocketManagement::execute_command(std::string buffer_data, int& clientfd) {
+void SlaveSocketManagement::execute_command(std::string buffer_data, const int& clientfd) {
     auto command_elts = this->get_command_array_from_rawdata(buffer_data);
     std::string cmd = command_elts.first;
     std::vector<std::string> extra_params = command_elts.second;
