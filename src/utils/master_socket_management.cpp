@@ -19,6 +19,7 @@
 #include "encode/simple_data_parser_enc.h"
 #include "encode/small_aggregate_parser_enc.h"
 #include "decode/simple_data_parser_dec.h"
+#include "global_datas.h"
 
 
 int MasterSocketManagement::send_receive_msg_by_command(std::string tosend, std::string toreceive){

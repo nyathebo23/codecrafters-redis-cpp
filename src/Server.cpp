@@ -8,6 +8,7 @@
 #include <map>
 #include "utils/master_socket_management.h"
 #include "utils/slave_socket_management.h"
+#include "global_datas.h"
 
 
 int main(int argc, char **argv) {

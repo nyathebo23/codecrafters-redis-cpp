@@ -19,6 +19,8 @@
 #include "decode/simple_data_parser_dec.h"
 #include "socket_management.h"
 #include "command_processing.h"
+#include "global_datas.h"
+
 
 void SocketManagement::execute_command(std::string buffer_data, const int& clientfd) {
     

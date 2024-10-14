@@ -21,6 +21,7 @@
 #include "encode/small_aggregate_parser_enc.h"
 #include "command_processing.h"
 #include "socket_management.h"
+#include "global_datas.h"
 
 
 

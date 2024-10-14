@@ -19,12 +19,11 @@
 #include "process_rdbfile_datas.h"
 #include "decode/simple_data_parser_dec.h"
 #include "command_processing.h"
+#include "global_datas.h"
 
-
-std::map<std::string, std::string> CommandProcessing::dict_table;
 
 void CommandProcessing::erase_key(const std::string& key) {
-    dict_table.erase(key);
+    GlobalDatas::dict_table.erase(key);
 }
 
 void CommandProcessing::execute_after_delay(int delay, const std::string& key) {
@@ -59,7 +58,7 @@ void CommandProcessing::ping(int dest_fd){
 bool CommandProcessing::set_without_send(std::vector<std::string> extras){
     if (extras.size() > 1){
         std::string key = extras[0];
-        CommandProcessing::dict_table[key] = extras[1];
+        GlobalDatas::set[key] = extras[1];
         if (extras.size() == 4){
             std::string param = extras[2];
             if (param == "px"){
@@ -100,10 +99,10 @@ void CommandProcessing::get(std::vector<std::string> extras, int dest_fd, std::s
         }
         std::string resp;
         if (index >= size || size == 0){
-            if (dict_table.count(key) == 0)
+            if (GlobalDatas::dict_table.count(key) == 0)
                 resp = "$-1\r\n";
             else 
-                resp = parse_encode_bulk_string(this->dict_table[key]);
+                resp = parse_encode_bulk_string(GlobalDatas::get[key]);
         }
         else
             resp = parse_encode_bulk_string(std::any_cast<std::string>(keys_values.second[index]));
@@ -126,7 +125,7 @@ void CommandProcessing::config(std::vector<std::string> extras, int dest_fd, std
         }
         send_data(resp, dest_fd);
     }
-    
+
 }
 
 void CommandProcessing::info(std::vector<std::string> extras, int dest_fd, std::string role){
