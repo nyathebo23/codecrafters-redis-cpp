@@ -119,7 +119,7 @@ void MasterSocketManagement::process_command(std::string data, int fd) {
         //std::cout << "zertyuiop";
         std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::string("0")};
         std::string resp = parse_encode_array(rep);
-        send_data(resp, fd);
+        command_processing.send_data(resp, fd);
         //command_processing.replconf(extra_params, fd);
     }
 }
