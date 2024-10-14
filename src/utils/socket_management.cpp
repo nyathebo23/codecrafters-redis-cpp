@@ -22,10 +22,6 @@
 #include "global_datas.h"
 
 
-void SocketManagement::execute_command(std::string buffer_data, const int& clientfd) {
-    
-};
-
 void SocketManagement::handle_connection(const int& clientfd){
     while (1) {
         char buffer[128];  
@@ -34,7 +30,41 @@ void SocketManagement::handle_connection(const int& clientfd){
             break;
         }
         std::string data(buffer);
-        execute_command(data, clientfd);
+        auto command_elts = this->get_command_array_from_rawdata(data);
+        std::string cmd = command_elts.first;
+        std::vector<std::string> extra_params = command_elts.second;
+
+        if (cmd == "echo"){
+            CommandProcessing::echo(extra_params, clientfd);
+        }
+        else if (cmd == "ping"){
+            CommandProcessing::ping(clientfd);
+        }
+        else if (cmd == "set"){
+            for (int replica_fd: this->replicas_fd) {
+                if (send(replica_fd, data.c_str(), data.length(), 0) <= 0)
+                    std::cout <<  "replica send msg failed";                
+            }
+            CommandProcessing::set(extra_params, clientfd);
+        }
+        else if (cmd == "get"){
+            CommandProcessing::get(extra_params, clientfd, extra_args["dir"] + "/" + extra_args["dbfilename"]);
+        }
+        else if (cmd == "config"){
+            CommandProcessing::config(extra_params, clientfd, extra_args);
+        }
+        else if (cmd == "keys"){
+            CommandProcessing::keys(extra_params, clientfd, extra_args["dir"] + "/" + extra_args["dbfilename"]);
+        }
+        else if (cmd == "info"){
+            CommandProcessing::info(extra_params, clientfd, "master");
+        }
+        else if (cmd == "replconf"){
+            CommandProcessing::replconf(extra_params, clientfd);
+        }
+        else if (cmd == "psync"){
+            CommandProcessing::psync(extra_params, clientfd, replicas_fd);
+        }
     }
 }
 
@@ -76,8 +106,50 @@ int SocketManagement::get_server_fd() const{
     return server_fd;
 }
 
-void SocketManagement::newsocket() {
-    this->server_fd = socket(this->socket_family, this->socket_type, 0);
+int SocketManagement::send_receive_msg_by_command(std::string tosend, std::string toreceive){
+    if (send(server_fd, tosend.c_str(), tosend.length(), 0) <= 0){
+        std::cout << "Send "+ tosend + " handshake failed";
+        //close(server_fd);
+        return -1;
+    }
+    char buffer[128];    
+    if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
+        //close(server_fd);
+        return -1;
+    }
+    std::string data(buffer);
+    std::string data_decoded = parse_decode_simple_string(data).first;
+    // if (data_decoded != toreceive){
+    //     std::cout << "Bad message receive to " + tosend + " which is " + data_decoded;
+    //     return -1;
+    // }
+    return 1;
+};
+
+
+void SocketManagement::send_handshake_to_master(int port){
+    if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
+        std::cout << "Connect to master failed";
+    }
+    std::vector<std::any> ping = {std::string("PING")};
+    if(send_receive_msg_by_command(parse_encode_array(ping), "PONG") < 0)
+        std::cout << "PING failed";
+
+    std::vector<std::any> replconf_msg1 = {std::string("REPLCONF"), std::string("listening-port"), std::to_string(port)}; 
+    if(send_receive_msg_by_command(parse_encode_array(replconf_msg1), "OK") < 0)
+        std::cout << "REPLCONF failed";
+    
+    std::vector<std::any> replconf_msg2 = {std::string("REPLCONF"), std::string("capa"), std::string("psync2")};
+    if(send_receive_msg_by_command(parse_encode_array(replconf_msg2), "OK") < 0)
+        std::cout << "REPLCONF failed";
+
+    std::vector<std::any> psync_msg = {std::string("PSYNC"), std::string("?"), std::string("-1")};
+    if(send_receive_msg_by_command(parse_encode_array(psync_msg), "FULLRESYNC <REPL_ID> 0") < 0)
+        std::cout << "PSYNC failed";
+    
+    char buffer[256];  
+    int r = recv(server_fd, &buffer, sizeof(buffer), 0);  
+
 }
 
 struct sockaddr_in SocketManagement::get_server_addr() const {
@@ -92,8 +164,6 @@ int SocketManagement::socket_listen(int connection_backlog){
     return listen(server_fd, connection_backlog);
 }
 
-
-
 void SocketManagement::check_incoming_clients_connections(const int& masterfd){
   struct sockaddr_in client_addr;
   int client_addr_len = sizeof(client_addr);
@@ -104,9 +174,6 @@ void SocketManagement::check_incoming_clients_connections(const int& masterfd){
       std::thread connection([this](int master){handle_connection(master);}, masterfd);
       connection.detach();
   }
-  std::cout << GlobalDatas::get("foo");
-  std::cout << GlobalDatas::get("bar");
-  std::cout << GlobalDatas::get("baz");
   std::cout << "Waiting for a client to connect...\n";
   while (1){
       int client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 

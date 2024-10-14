@@ -12,12 +12,16 @@
 class SocketManagement {
     protected:
         int server_fd;
+
         struct sockaddr_in server_addr;
+        
         std::map<std::string, std::string> extra_args;
-        std::map<std::string, std::string> dict_data;
-        //std::vector<int> replicas_fd;
+
+        std::vector<int> replicas_fd;
 
         std::pair<std::string, std::vector<std::string>> get_command_array_from_rawdata(std::string data);
+
+        int send_receive_msg_by_command(std::string tosend, std::string toreceive);
 
     public:
         void handle_connection(const int& clientfd);
@@ -26,16 +30,11 @@ class SocketManagement {
 
         int socket_type;
 
-        void newsocket();
-
-        virtual void execute_command(std::string buffer_data, const int& clientfd);
-
         SocketManagement(short family, int type, std::map<std::string, std::string> extra);
 
         int get_server_fd() const;
 
         struct sockaddr_in get_server_addr() const;
-        //sockaddr_in get_addr_from_params_datas(std::string master_raw_data);
 
         int socket_bind();
 
@@ -43,7 +42,7 @@ class SocketManagement {
 
         void check_incoming_clients_connections(const int& fd);
 
+        void send_handshake_to_master(int port);
 };
-
 
 #endif
