@@ -126,6 +126,9 @@ void MasterSocketManagement::retrieve_commands_from_master() {
     // }
 
     char buffer[256]; 
+    std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::string("0")};
+    std::string resp = parse_encode_array(rep);
+    command_processing.send_data(resp, server_fd);
     while (true){
         recv(server_fd, &buffer, sizeof(buffer), 0);
         // if (recv(newsocket, &buffer, sizeof(buffer), 0) <= 0)
@@ -133,9 +136,7 @@ void MasterSocketManagement::retrieve_commands_from_master() {
         std::string data(buffer);
         std::cout << data;
         memset(buffer, 0, 256);
-        std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::string("0")};
-        std::string resp = parse_encode_array(rep);
-        command_processing.send_data(resp, server_fd);
+
         // int pos = 0;
         // int end = data.find("*", 1);
         // while (end != std::string::npos){
