@@ -103,7 +103,7 @@ void SocketManagement::check_incoming_clients_connections(const int& masterfd){
   command_processing.send_data(resp, masterfd);
   if (masterfd > 0){
       std::thread connection([this](int master){handle_connection(master);}, masterfd);
-      connection.detach();
+      connection.join();
   }
   std::cout << "Waiting for a client to connect...\n";
   while (1){
