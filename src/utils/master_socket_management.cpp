@@ -108,9 +108,7 @@ void MasterSocketManagement::send_handshake_to_master(int port){
 }
 
 void MasterSocketManagement::process_command(std::string data, int fd) {
-            std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::string("0")};
-        std::string resp = parse_encode_array(rep);
-        command_processing.send_data(resp, fd);
+
     std::cout << data.size();
     auto command_elts = this->get_command_array_from_rawdata(data);
     std::string cmd = command_elts.first;
@@ -118,11 +116,7 @@ void MasterSocketManagement::process_command(std::string data, int fd) {
     if (cmd == "set"){
         command_processing.set_without_send(extra_params);
     } else if (cmd == "replconf"){
-        //std::cout << "zertyuiop";
-        std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::string("0")};
-        std::string resp = parse_encode_array(rep);
-        command_processing.send_data(resp, fd);
-        //command_processing.replconf(extra_params, fd);
+        command_processing.replconf(extra_params, fd);
     }
 }
 
@@ -139,7 +133,9 @@ void MasterSocketManagement::retrieve_commands_from_master() {
         std::string data(buffer);
         std::cout << data;
         memset(buffer, 0, 256);
-
+        std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::string("0")};
+        std::string resp = parse_encode_array(rep);
+        command_processing.send_data(resp, server_fd);
         // int pos = 0;
         // int end = data.find("*", 1);
         // while (end != std::string::npos){
