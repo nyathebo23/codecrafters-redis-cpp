@@ -63,7 +63,7 @@ bool CommandProcessing::set_without_send(std::vector<std::string> extras){
             std::string param = extras[2];
             if (param == "px"){
                 const int duration = stoi(extras[3]);
-                std::thread t([this, &duration, &key]() {execute_after_delay(duration, key);});
+                std::thread t(execute_after_delay, duration, key);
                 t.detach();
                 return true;
             } return true;
@@ -74,7 +74,7 @@ bool CommandProcessing::set_without_send(std::vector<std::string> extras){
 }
 
 void CommandProcessing::set(std::vector<std::string> extras, int dest_fd){
-    if (this->set_without_send(extras)){
+    if (set_without_send(extras)){
         std::string resp = parse_encode_simple_string("OK");
         send_data(resp, dest_fd);
     }
