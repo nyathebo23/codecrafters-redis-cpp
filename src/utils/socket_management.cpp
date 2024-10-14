@@ -175,10 +175,11 @@ void SocketManagement::check_incoming_clients_connections(const int& masterfd){
 //   CommandProcessing::send_data(resp, masterfd);
   if (masterfd > 0){
       GlobalDatas::isRequestFromMaster = true;
-      int client_fd = accept(masterfd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
-
-      std::thread connection([this](int master){handle_connection(master);}, client_fd);
+      std::thread connection([this](int master){handle_connection(master);}, masterfd);
       connection.join();
+      int client_fd = accept(masterfd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
+      std::thread connection([this](int clientfd){handle_connection(clientfd);}, client_fd);
+      connection.detach();
   }
 
   GlobalDatas::isRequestFromMaster = false;
