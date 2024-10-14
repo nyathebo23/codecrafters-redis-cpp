@@ -8,8 +8,8 @@
 
 class CommandProcessing {
     protected:
-        void erase_key(const std::string& key);
-        void execute_after_delay(int delay, const std::string& key);
+        static void erase_key(const std::string& key);
+        static void execute_after_delay(int delay, const std::string& key);
         
 
     public:
