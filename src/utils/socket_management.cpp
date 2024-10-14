@@ -79,7 +79,7 @@ int SocketManagement::get_server_fd() const{
 }
 
 void SocketManagement::newsocket() {
-    this->server_fd = socket(this->socket_family, this->socket_type, 0)
+    this->server_fd = socket(this->socket_family, this->socket_type, 0);
 }
 
 struct sockaddr_in SocketManagement::get_server_addr() const {
