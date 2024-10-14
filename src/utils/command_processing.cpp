@@ -21,13 +21,13 @@
 #include "command_processing.h"
 
 
-static void CommandProcessing::erase_key(const std::string& key) {
-    CommandProcessing::dict_table.erase(key);
+void CommandProcessing::erase_key(const std::string& key) {
+    this->dict_table.erase(key);
 }
 
-static void CommandProcessing::execute_after_delay(int delay, const std::string& key) {
+void CommandProcessing::execute_after_delay(int delay, const std::string& key) {
     std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-    CommandProcessing::erase_key(key);
+    this->erase_key(key);
 }
 
 bool CommandProcessing::send_data(std::string data, int dest_fd){
