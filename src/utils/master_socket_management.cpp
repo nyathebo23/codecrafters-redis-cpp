@@ -105,37 +105,7 @@ void MasterSocketManagement::send_handshake_to_master(int port){
     char buffer[256];     
     recv(server_fd, &buffer, sizeof(buffer), 0);
 
-    // std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::string("0")};
-    // std::string resp = parse_encode_array(rep);
-    // if (command_processing.send_data(resp, server_fd));
-    //     memset(buffer, 0, 256);
-    // recv(server_fd, &buffer, sizeof(buffer), 0);
-    // std::string data0(buffer);
-    // std::cout << data0;
-    // process_command(data0, server_fd);
-    // memset(buffer, 0, 256);
-    
-    // if (recv(server_fd, &buffer, sizeof(buffer), 0)){
-    //     std::string data(buffer);
-    //     process_command(data, server_fd);
-    //     memset(buffer, 0, 256);
-    // }
-
-    // if (recv(server_fd, &buffer, sizeof(buffer), 0)){
-    //     std::string data1(buffer);
-    //     process_command(data1, server_fd);
-    //     memset(buffer, 0, 256);
-    // };
-
-
-    // if (recv(server_fd, &buffer, sizeof(buffer), 0)){
-    //     std::string data2(buffer);
-    //     process_command(data2, server_fd);
-    //     close(server_fd);
-    // };
-
     check_incoming_master_connections();
-
 }
 
 void MasterSocketManagement::process_command(std::string data, int fd) {
