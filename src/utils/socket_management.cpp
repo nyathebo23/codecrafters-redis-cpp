@@ -42,7 +42,7 @@ std::pair<std::string, std::vector<std::string>> SocketManagement::get_command_a
     auto arr = std::get<ArrayAndInd>(arr_resp.first);
     auto command = arr.first;
     for (int i = 0; i < command.size(); i++)
-        std::cout << command[i];
+        std::cout << std::any_cast<std::string>(command[i]);
     std::string cmd = std::any_cast<std::string>(command[0]);
     std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
     std::vector<std::string> array_cmd;
