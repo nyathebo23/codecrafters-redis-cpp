@@ -88,7 +88,6 @@ void MasterSocketManagement::execute_command(std::string buffer_data, int client
 void MasterSocketManagement::send_handshake_to_master(int port){
     if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
         std::cout << "Connect to master failed";
-
     }
     std::vector<std::any> ping = {std::string("PING")};
     if(send_receive_msg_by_command(parse_encode_array(ping), "PONG") < 0)
@@ -107,7 +106,7 @@ void MasterSocketManagement::send_handshake_to_master(int port){
         std::cout << "PSYNC failed";
     char buffer[1024];     
     int r = recv(server_fd, &buffer, sizeof(buffer), 0);
-    std::cout << r;
+    close(server_fd);
 }
 
 void MasterSocketManagement::process_command(std::string data, int fd) {
@@ -127,7 +126,9 @@ void MasterSocketManagement::process_command(std::string data, int fd) {
 }
 
 void MasterSocketManagement::retrieve_commands_from_master() {
-
+    if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
+        std::cout << "Connect to master failed";
+    }
     std::cout << "zertyuiop";
     while (1){
         char buffer[1024]; 
