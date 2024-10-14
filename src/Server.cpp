@@ -58,9 +58,12 @@ int main(int argc, char **argv) {
 
   if (args_map.count("replicaof") != 0){
       master_socket_management.send_handshake_to_master(ntohs(socket_management.get_server_addr().sin_port));
-
       //master_socket_management.check_incoming_master_connections();
   }
+  std::cout << GlobalDatas::get('foo');
+  std::cout << GlobalDatas::get('bar');
+  std::cout << GlobalDatas::get('baz');
+
   socket_management.check_incoming_clients_connections(master_socket_management.get_server_fd());
 
   return 0;
