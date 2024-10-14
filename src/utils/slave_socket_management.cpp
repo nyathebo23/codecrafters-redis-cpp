@@ -55,6 +55,8 @@ void SlaveSocketManagement::execute_command(std::string buffer_data, int clientf
     else if (cmd == "info"){
         command_processing.info(extra_params, clientfd, "slave");
     }
-
+    else if (cmd == "replconf"){
+        command_processing.replconf(extra_params, clientfd);
+    }
 }
 
