@@ -106,7 +106,7 @@ void MasterSocketManagement::send_handshake_to_master(int port){
         std::cout << "PSYNC failed";
     char buffer[1024];     
     int r = recv(server_fd, &buffer, sizeof(buffer), 0);
-    close(server_fd);
+    
 }
 
 void MasterSocketManagement::process_command(std::string data, int fd) {
