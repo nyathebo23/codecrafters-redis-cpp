@@ -103,12 +103,13 @@ void MasterSocketManagement::send_handshake_to_master(int port){
     if(send_receive_msg_by_command(parse_encode_array(psync_msg), "FULLRESYNC <REPL_ID> 0") < 0)
         std::cout << "PSYNC failed";
     char buffer[256];    
-    while (recv(server_fd, &buffer, sizeof(buffer), 0))
+    while (recv(server_fd, &buffer, sizeof(buffer), 0);)
     {
+        
         std::string data(buffer);
-        if (data.size() > 80, server_fd);
+        if (data.size() > 80)
             continue;
-        process_command(data);
+        process_command(data, server_fd);
         memset(&buffer, 0, 256);
     }
      
