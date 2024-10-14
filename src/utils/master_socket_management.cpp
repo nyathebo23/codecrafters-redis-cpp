@@ -129,13 +129,14 @@ void MasterSocketManagement::retrieve_commands_from_master() {
     // }
 
     char buffer[256]; 
-    while (recv(server_fd, &buffer, sizeof(buffer), 0) > 0){
-        
-        memset(buffer, 0, 256);
+    while (true){
+        recv(server_fd, &buffer, sizeof(buffer), 0);
         // if (recv(newsocket, &buffer, sizeof(buffer), 0) <= 0)
         //     break;
         std::string data(buffer);
         std::cout << data;
+        memset(buffer, 0, 256);
+
         // int pos = 0;
         // int end = data.find("*", 1);
         // while (end != std::string::npos){
