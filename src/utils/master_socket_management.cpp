@@ -109,6 +109,7 @@ void MasterSocketManagement::send_handshake_to_master(int port){
     // command_processing.send_data(resp, server_fd);
     recv(server_fd, &buffer, sizeof(buffer), 0);
     std::string data(buffer);
+    std::cout << data;
     process_command(data, server_fd);
     recv(server_fd, &buffer, sizeof(buffer), 0);
 
@@ -116,7 +117,6 @@ void MasterSocketManagement::send_handshake_to_master(int port){
 
 void MasterSocketManagement::process_command(std::string data, int fd) {
 
-    std::cout << data.size();
     auto command_elts = this->get_command_array_from_rawdata(data);
     std::string cmd = command_elts.first;
     std::vector<std::string> extra_params = command_elts.second;
