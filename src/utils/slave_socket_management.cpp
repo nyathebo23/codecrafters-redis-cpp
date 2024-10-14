@@ -25,8 +25,8 @@
 
 void SlaveSocketManagement::check_incoming_master_connections(const int& masterfd){
     retrieve_commands_from_master(masterfd);
-    // std::thread connection([this](int fd){retrieve_commands_from_master(fd);}, masterfd);
-    // connection.join();
+    std::thread connection([this](int fd){retrieve_commands_from_master(fd);}, masterfd);
+    connection.detach();
 }
 
 SlaveSocketManagement::SlaveSocketManagement(short family, int type, std::map<std::string, std::string> extra) 
@@ -71,7 +71,6 @@ void SlaveSocketManagement::process_command(std::string data, int fd) {
         std::cout << "zertyuiop";
         command_processing.set_without_send(extra_params);
     } else if (cmd == "replconf"){
-        std::cout << "zertyuiop";
         command_processing.replconf(extra_params, fd);
     }
 }
