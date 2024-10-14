@@ -23,6 +23,11 @@ class SocketManagement {
         std::pair<std::string, std::vector<std::string>> get_command_array_from_rawdata(std::string data);
 
     public:
+        short socket_family;
+
+        int socket_type;
+
+        void newsocket();
 
         CommandProcessing command_processing;
 

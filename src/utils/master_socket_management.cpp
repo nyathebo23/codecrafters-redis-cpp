@@ -112,3 +112,41 @@ int MasterSocketManagement::send_handshake_to_master(int port){
     
     return 1;
 }
+
+void MasterSocketManagement::process_command(std::string data, int fd) {
+    auto command_elts = this->get_command_array_from_rawdata(data);
+    std::string cmd = command_elts.first;
+    std::vector<std::string> extra_params = command_elts.second;
+    if (cmd == "set"){
+        std::cout << "zertyuiop";
+        command_processing.set_without_send(extra_params);
+    } else if (cmd == "replconf"){
+        command_processing.replconf(extra_params, fd);
+    }
+}
+
+void MasterSocketManagement::retrieve_commands_from_master() {
+    this->newsocket();
+    if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
+        std::cout << "Connect to master failed";
+        return -1;
+    }
+    while (1){
+        char buffer[128]; 
+        //recv(serverfd, &buffer, sizeof(buffer), 0);   
+        if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0)
+            break;
+        std::string data(buffer);
+        std::cout << data;
+        // int pos = 0;
+        // int end = data.find("*", 1);
+        // while (end != std::string::npos){
+        //     process_command(data.substr(pos, end-pos));
+        //     pos = end;
+        //     end = data.find("*", pos+1);
+        // }
+        process_command(data, server_fd);
+    }
+};
+
+

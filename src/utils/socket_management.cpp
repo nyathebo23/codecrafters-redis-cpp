@@ -58,6 +58,8 @@ std::pair<std::string, std::vector<std::string>> SocketManagement::get_command_a
 
 SocketManagement::SocketManagement(short family, int type, std::map<std::string, std::string> extra) {
     server_fd = socket(family, type, 0); 
+    socket_family = family;
+    socket_type = type;
     server_addr.sin_family = family;
     server_addr.sin_addr.s_addr = INADDR_ANY;
     extra_args = extra;
@@ -74,6 +76,10 @@ SocketManagement::SocketManagement(short family, int type, std::map<std::string,
 
 int SocketManagement::get_server_fd() const{
     return server_fd;
+}
+
+void SocketManagement::newsocket() {
+    this->server_fd = socket(this->socket_family, this->socket_type, 0)
 }
 
 struct sockaddr_in SocketManagement::get_server_addr() const {

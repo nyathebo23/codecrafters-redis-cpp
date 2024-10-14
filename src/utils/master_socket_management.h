@@ -9,6 +9,8 @@ class MasterSocketManagement : public SocketManagement {
     private:
         int send_receive_msg_by_command(std::string tosend, std::string toreceive);
 
+        void process_command(std::string data, int fd);
+
     public:
         std::vector<int> replicas_fd;
         
@@ -17,6 +19,8 @@ class MasterSocketManagement : public SocketManagement {
         MasterSocketManagement(short family, int type, std::map<std::string, std::string> extra);
 
         void execute_command(std::string buffer_data, int clientfd) override;
+
+        void retrieve_commands_from_master();
  
 };
 
