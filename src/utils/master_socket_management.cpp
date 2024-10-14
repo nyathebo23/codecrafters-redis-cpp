@@ -134,7 +134,6 @@ void MasterSocketManagement::send_handshake_to_master(int port){
 }
 
 void MasterSocketManagement::process_command(std::string data, int fd) {
-
     auto command_elts = this->get_command_array_from_rawdata(data);
     std::string cmd = command_elts.first;
     std::vector<std::string> extra_params = command_elts.second;
