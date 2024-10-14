@@ -23,6 +23,7 @@
 
 
 void SocketManagement::handle_connection(const int& clientfd){
+    std::cout << GlobalDatas::isRequestFromMaster;
     while (1) {
         char buffer[256];  
         if (int r = recv(clientfd, &buffer, sizeof(buffer), 0) <= 0) {
