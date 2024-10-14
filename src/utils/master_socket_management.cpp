@@ -130,9 +130,10 @@ void MasterSocketManagement::retrieve_commands_from_master() {
     //     std::cout << "Connect to master failed";
     // }
     std::cout << "zertyuiop";
-    while (1){
-        char buffer[1024]; 
-        recv(server_fd, &buffer, sizeof(buffer), 0);
+    char buffer[256]; 
+    while (recv(server_fd, &buffer, sizeof(buffer), 0) > 0){
+        
+        memset(buffer, 0, 256);
         // if (recv(newsocket, &buffer, sizeof(buffer), 0) <= 0)
         //     break;
         std::string data(buffer);
