@@ -67,10 +67,10 @@ void SlaveSocketManagement::process_command(std::string data, int fd) {
     std::string cmd = command_elts.first;
     std::vector<std::string> extra_params = command_elts.second;
     if (cmd == "set"){
-        //std::cout << "zertyuiop";
+        std::cout << "zertyuiop";
         command_processing.set_without_send(extra_params);
     } else if (cmd == "replconf"){
-        //std::cout << "zertyuiop";
+        std::cout << "zertyuiop";
         command_processing.replconf(extra_params, fd);
     }
 }
@@ -78,10 +78,11 @@ void SlaveSocketManagement::process_command(std::string data, int fd) {
 void SlaveSocketManagement::retrieve_commands_from_master(int serverfd) {
     while (1){
         char buffer[128]; 
-        recv(serverfd, &buffer, sizeof(buffer), 0);   
-        // if (recv(serverfd, &buffer, sizeof(buffer), 0) <= 0)
-        //     break;
+        //recv(serverfd, &buffer, sizeof(buffer), 0);   
+        if (recv(serverfd, &buffer, sizeof(buffer), 0) <= 0)
+            break;
         std::string data(buffer);
+        std::cout << data;
         // int pos = 0;
         // int end = data.find("*", 1);
         // while (end != std::string::npos){
