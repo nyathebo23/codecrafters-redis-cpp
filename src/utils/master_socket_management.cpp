@@ -105,7 +105,6 @@ void MasterSocketManagement::send_handshake_to_master(int port){
     char buffer[256];     
     recv(server_fd, &buffer, sizeof(buffer), 0);
 
-    check_incoming_master_connections();
 }
 
 void MasterSocketManagement::process_command(std::string data, int fd) {
