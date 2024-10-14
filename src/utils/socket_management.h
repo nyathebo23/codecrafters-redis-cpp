@@ -48,7 +48,7 @@ class SocketManagement {
 
         void check_incoming_master_connections(const int& fd);
 
-        void retrieve_commands_from_master(const int& serverfd)
+        void retrieve_commands_from_master(const int& serverfd);
 };
 
 #endif
