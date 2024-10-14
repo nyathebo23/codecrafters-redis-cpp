@@ -57,9 +57,11 @@ void CommandProcessing::ping(int dest_fd){
 }
 
 bool CommandProcessing::set_without_send(std::vector<std::string> extras){
+    for (int i = 0; i < 2; i++)
+        std::cout << extras[i];
     if (extras.size() > 1){
         std::string key = extras[0];
-        dict_table[key] = extras[1];
+        CommandProcessing::dict_table[key] = extras[1];
         if (extras.size() == 4){
             std::string param = extras[2];
             if (param == "px"){
