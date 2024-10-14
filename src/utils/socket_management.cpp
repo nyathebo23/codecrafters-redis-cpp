@@ -178,8 +178,8 @@ void SocketManagement::check_incoming_clients_connections(const int& masterfd){
       std::thread connection([this](int master){handle_connection(master);}, masterfd);
       connection.join();
       int client_fd = accept(masterfd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
-      std::thread connection([this](int clientfd){handle_connection(clientfd);}, client_fd);
-      connection.detach();
+      std::thread connection2([this](int clientfd){handle_connection(clientfd);}, client_fd);
+      connection2.detach();
   }
 
   GlobalDatas::isRequestFromMaster = false;
