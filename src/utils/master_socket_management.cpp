@@ -136,8 +136,9 @@ void MasterSocketManagement::retrieve_commands_from_master() {
     while (1){
         char buffer[128]; 
         recv(newsocket, &buffer, sizeof(buffer), 0);
-        if (recv(newsocket, &buffer, sizeof(buffer), 0) <= 0)
-            break;
+        // if (recv(newsocket, &buffer, sizeof(buffer), 0) <= 0)
+        //     break;
+        std::cout << "zertyuiop";
         std::string data(buffer);
         std::cout << data;
         // int pos = 0;
