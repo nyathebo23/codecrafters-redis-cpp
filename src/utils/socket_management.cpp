@@ -29,7 +29,6 @@ void SocketManagement::execute_command(std::string buffer_data, const int& clien
 void SocketManagement::handle_connection(const int& clientfd){
     while (1) {
         char buffer[128];  
-          
         if (recv(clientfd, &buffer, sizeof(buffer), 0) <= 0) {
             close(clientfd);
             break;
@@ -103,7 +102,7 @@ void SocketManagement::check_incoming_clients_connections(const int& masterfd){
   command_processing.send_data(resp, masterfd);
   if (masterfd > 0){
       std::thread connection([this](int master){handle_connection(master);}, masterfd);
-      connection.join();
+      connection.detach();
   }
   std::cout << "Waiting for a client to connect...\n";
   while (1){

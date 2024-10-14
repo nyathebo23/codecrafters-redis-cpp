@@ -8,7 +8,7 @@
 #include <map>
 #include "utils/master_socket_management.h"
 #include "utils/slave_socket_management.h"
-
+#include "utils/global_datas.h"
 
 int main(int argc, char **argv) {
   std::map<std::string, std::string> args_map;
