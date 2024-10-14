@@ -108,7 +108,9 @@ int MasterSocketManagement::send_handshake_to_master(int port){
     char buffer[128];
     if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
             std::cout << "Don't receive file";
-    }    
+    }
+    else 
+       retrieve_commands_from_master();    
     
     return 1;
 }
