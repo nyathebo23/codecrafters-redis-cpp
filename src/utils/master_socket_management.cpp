@@ -46,8 +46,6 @@ MasterSocketManagement::MasterSocketManagement(short family, int type, std::map<
 
 };
 
-
-
 void MasterSocketManagement::execute_command(std::string buffer_data, int clientfd) {
     auto command_elts = this->get_command_array_from_rawdata(buffer_data);
     std::string cmd = command_elts.first;
@@ -110,7 +108,7 @@ void MasterSocketManagement::send_handshake_to_master(int port){
 }
 
 void MasterSocketManagement::process_command(std::string data, int fd) {
-    std::cout << data;
+    std::cout << data.size();
     auto command_elts = this->get_command_array_from_rawdata(data);
     std::string cmd = command_elts.first;
     std::vector<std::string> extra_params = command_elts.second;
@@ -151,7 +149,7 @@ void MasterSocketManagement::retrieve_commands_from_master() {
 
 void MasterSocketManagement::check_incoming_master_connections() {
     std::thread t([this] (){retrieve_commands_from_master();});
-    t.join();
+    t.detach();
 };
 
 

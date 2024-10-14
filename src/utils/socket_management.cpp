@@ -19,11 +19,6 @@
 #include "socket_management.h"
 #include "command_processing.h"
 
-
-
-
-
-
 void SocketManagement::execute_command(std::string buffer_data, int clientfd) {
             
 };
