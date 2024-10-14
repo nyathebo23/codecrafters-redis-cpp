@@ -24,6 +24,8 @@
 
 void SocketManagement::handle_connection(const int& clientfd){
     std::cout << GlobalDatas::isRequestFromMaster;
+    std::cout << clientfd;
+
     while (1) {
         char buffer[256];  
         if (int r = recv(clientfd, &buffer, sizeof(buffer), 0) <= 0) {
@@ -88,7 +90,7 @@ std::pair<std::string, std::vector<std::string>> SocketManagement::get_command_a
 
 
 SocketManagement::SocketManagement(short family, int type, std::map<std::string, std::string> extra) {
-    server_fd = socket(family, type, 0); 
+    server_fd = socket(family, type, 0);
     socket_family = family;
     socket_type = type;
     server_addr.sin_family = family;
@@ -102,6 +104,7 @@ SocketManagement::SocketManagement(short family, int type, std::map<std::string,
     if (extra_args.count("port") != 0){
         port = std::stoi(extra_args["port"]);
     }
+    std::cout << port << " " << server_fd;
     server_addr.sin_port = htons(port);
 }
 
