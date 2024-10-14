@@ -38,7 +38,6 @@ void SocketManagement::handle_connection(const int& clientfd){
 }
 
 std::pair<std::string, std::vector<std::string>> SocketManagement::get_command_array_from_rawdata(std::string data){
-    std::cout << data;
     ArrayResp arr_resp = parse_decode_array(data);
     auto arr = std::get<ArrayAndInd>(arr_resp.first);
     auto command = arr.first;
