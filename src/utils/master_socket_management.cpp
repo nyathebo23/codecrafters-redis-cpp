@@ -127,14 +127,14 @@ void MasterSocketManagement::process_command(std::string data, int fd) {
 
 void MasterSocketManagement::retrieve_commands_from_master() {
     close(this->server_fd);
-    this->newsocket();
-    if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
+    int newsocket = socket(socket_family, socket_type, 0);
+    if (connect(newsocket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
         std::cout << "Connect to master failed";
     }
     while (1){
         char buffer[128]; 
         //recv(serverfd, &buffer, sizeof(buffer), 0);   
-        if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0)
+        if (recv(newsocket, &buffer, sizeof(buffer), 0) <= 0)
             break;
         std::string data(buffer);
         std::cout << data;
@@ -145,7 +145,7 @@ void MasterSocketManagement::retrieve_commands_from_master() {
         //     pos = end;
         //     end = data.find("*", pos+1);
         // }
-        process_command(data, server_fd);
+        process_command(data, newsocket);
     }
 };
 
