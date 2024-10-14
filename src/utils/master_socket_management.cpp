@@ -117,7 +117,6 @@ void MasterSocketManagement::process_command(std::string data, int fd) {
     auto command_elts = this->get_command_array_from_rawdata(data);
     std::string cmd = command_elts.first;
     std::vector<std::string> extra_params = command_elts.second;
-    std::cout << "zertyuiop";
 
     if (cmd == "set"){
         command_processing.set_without_send(extra_params);
@@ -132,6 +131,8 @@ void MasterSocketManagement::retrieve_commands_from_master() {
     if (connect(newsocket, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
         std::cout << "Connect to master failed";
     }
+        std::cout << "zertyuiop";
+
     while (1){
         char buffer[128]; 
 
