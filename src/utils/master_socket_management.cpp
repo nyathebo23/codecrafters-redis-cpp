@@ -104,7 +104,7 @@ void MasterSocketManagement::send_handshake_to_master(int port){
         std::cout << "PSYNC failed";
     char buffer[1024];     
     int r = recv(server_fd, &buffer, sizeof(buffer), 0);
-    std::thread t([this](int fd){this->handle_connection(fd)}, server_fd);
+    std::thread t([this](int fd){this->handle_connection(fd);}, server_fd);
     t.detach();
 }
 
