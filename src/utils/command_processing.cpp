@@ -142,7 +142,7 @@ void CommandProcessing::info(std::vector<std::string> extras, int dest_fd, std::
 void CommandProcessing::replconf(std::vector<std::string> extras, int dest_fd){
     if (extras[0] == "listening-port" || extras[0] == "capa" && extras.size() > 1){
         std::string resp = parse_encode_simple_string(std::string("OK"));
-        send(dest_fd, resp.c_str(), resp.length(), 0);
+        send_data(resp, dest_fd);
     } else if (extras[0] == "getack" && extras[1] == "*"){
         std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::string("0")};
         std::string resp = parse_encode_array(rep);
@@ -160,7 +160,7 @@ void CommandProcessing::psync(std::vector<std::string> extras, int dest_fd, std:
         unsigned char data[size];
         memcpy(data, bytes.data(), size);
         if (send_data(resp, dest_fd))
-            if (send(dest_fd, data, size, 0) > 0);
+            if (send(dest_fd, data, size, 0) > 0)
                 replicas_fd.push_back(dest_fd);
     }   
 }
