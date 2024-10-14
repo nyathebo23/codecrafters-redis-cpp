@@ -31,7 +31,7 @@ void SocketManagement::handle_connection(int clientfd){
             break;
         }
         std::string data(buffer);
-        auto command_elts = this->get_command_array_from_rawdata(buffer_data);
+        auto command_elts = this->get_command_array_from_rawdata(data);
         std::string cmd = command_elts.first;
         std::vector<std::string> extra_params = command_elts.second;
 
