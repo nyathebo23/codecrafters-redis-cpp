@@ -161,7 +161,6 @@ void MasterSocketManagement::retrieve_commands_from_master() {
         // if (recv(newsocket, &buffer, sizeof(buffer), 0) <= 0)
         //     break;
         std::string data(buffer);
-        std::cout << data;
         memset(buffer, 0, 256);
 
         // int pos = 0;
