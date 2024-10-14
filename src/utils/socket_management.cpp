@@ -27,28 +27,11 @@ void SocketManagement::execute_command(std::string buffer_data, const int& clien
 void SocketManagement::handle_connection(const int& clientfd){
     while (1) {
         char buffer[128];  
-        fd_set read_fds;
-        FD_ZERO(&read_fds);
-        FD_SET(clientfd, &read_fds);
-
-        struct timeval timeout;
-        timeout.tv_sec = 5;  // Timeout de 5 secondes
-        timeout.tv_usec = 0;
-
-        int activity = select(clientfd + 1, &read_fds, nullptr, nullptr, &timeout);
-
-        if (activity > 0 && FD_ISSET(clientfd, &read_fds)) {
-            // Le socket est prêt à recevoir des données
-            recv(clientfd, buffer, sizeof(buffer), 0);
-        } else if (activity == 0) {
-            std::cerr << "Timeout: pas de données reçues sur le socket." << std::endl;
-        } else {
-            std::cerr << "Erreur dans select(): " << strerror(errno) << std::endl;
-        }  
-        // if (recv(clientfd, &buffer, sizeof(buffer), 0) <= 0) {
-        //     close(clientfd);
-        //     break;
-        // }
+          
+        if (recv(clientfd, &buffer, sizeof(buffer), 0) <= 0) {
+            close(clientfd);
+            break;
+        }
         std::string data(buffer);
         execute_command(data, clientfd);
     }
@@ -58,6 +41,8 @@ std::pair<std::string, std::vector<std::string>> SocketManagement::get_command_a
     ArrayResp arr_resp = parse_decode_array(data);
     auto arr = std::get<ArrayAndInd>(arr_resp.first);
     auto command = arr.first;
+    for (int i = 0; i < command.size(); i++)
+        std::cout << command[i];
     std::string cmd = std::any_cast<std::string>(command[0]);
     std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
     std::vector<std::string> array_cmd;

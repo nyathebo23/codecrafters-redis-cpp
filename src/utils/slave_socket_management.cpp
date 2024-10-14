@@ -41,7 +41,7 @@ void SlaveSocketManagement::execute_command(std::string buffer_data, const int& 
         command_processing.ping(clientfd);
     }
     else if (cmd == "set"){
-        command_processing.set(extra_params, clientfd);
+        command_processing.set_without_send(extra_params, clientfd);
     }
     else if (cmd == "get"){
         command_processing.get(extra_params, clientfd, extra_args["dir"] + "/" + extra_args["dbfilename"]);
