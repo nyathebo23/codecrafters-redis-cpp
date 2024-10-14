@@ -107,6 +107,10 @@ void MasterSocketManagement::send_handshake_to_master(int port){
     std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::string("0")};
     std::string resp = parse_encode_array(rep);
     command_processing.send_data(resp, server_fd);
+    recv(server_fd, &buffer, sizeof(buffer), 0);
+    recv(server_fd, &buffer, sizeof(buffer), 0);
+    std::string data(buffer);
+    process_command(data, server_fd);
 }
 
 void MasterSocketManagement::process_command(std::string data, int fd) {
