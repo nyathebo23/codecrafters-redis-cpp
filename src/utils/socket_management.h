@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include "command_processing.h"
+#include "master_socket_management.h"
 
 class SocketManagement {
     protected:
