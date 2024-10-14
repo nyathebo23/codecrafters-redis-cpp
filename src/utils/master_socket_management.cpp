@@ -104,7 +104,9 @@ void MasterSocketManagement::send_handshake_to_master(int port){
         std::cout << "PSYNC failed";
     char buffer[256];     
     recv(server_fd, &buffer, sizeof(buffer), 0);
-    
+    std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::string("0")};
+    std::string resp = parse_encode_array(rep);
+    command_processing.send_data(resp, server_fd);
 }
 
 void MasterSocketManagement::process_command(std::string data, int fd) {
@@ -126,9 +128,6 @@ void MasterSocketManagement::retrieve_commands_from_master() {
     // }
 
     char buffer[256]; 
-    std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::string("0")};
-    std::string resp = parse_encode_array(rep);
-    command_processing.send_data(resp, server_fd);
     while (true){
         recv(server_fd, &buffer, sizeof(buffer), 0);
         // if (recv(newsocket, &buffer, sizeof(buffer), 0) <= 0)
