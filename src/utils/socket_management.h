@@ -12,7 +12,6 @@
 class SocketManagement {
     protected:
         int server_fd;
-        //int client_fd;
         struct sockaddr_in server_addr;
         std::map<std::string, std::string> extra_args;
         std::map<std::string, std::string> dict_data;

@@ -31,7 +31,34 @@ void SocketManagement::handle_connection(int clientfd){
             break;
         }
         std::string data(buffer);
-        execute_command(data, clientfd);
+        auto command_elts = this->get_command_array_from_rawdata(buffer_data);
+        std::string cmd = command_elts.first;
+        std::vector<std::string> extra_params = command_elts.second;
+
+        if (cmd == "echo"){
+            command_processing.echo(extra_params, clientfd);
+        }
+        else if (cmd == "ping"){
+            command_processing.ping(clientfd);
+        }
+        else if (cmd == "set"){
+            command_processing.set(extra_params, clientfd);
+        }
+        else if (cmd == "get"){
+            command_processing.get(extra_params, clientfd, extra_args["dir"] + "/" + extra_args["dbfilename"]);
+        }
+        else if (cmd == "config"){
+            command_processing.config(extra_params, clientfd, extra_args);
+        }
+        else if (cmd == "keys"){
+            command_processing.keys(extra_params, clientfd, extra_args["dir"] + "/" + extra_args["dbfilename"]);
+        }
+        else if (cmd == "info"){
+            command_processing.info(extra_params, clientfd, "slave");
+        }
+        else if (cmd == "replconf"){
+            command_processing.replconf(extra_params, clientfd);
+        }    
     }
 }
 
