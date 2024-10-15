@@ -117,9 +117,6 @@ int SocketManagement::send_receive_msg_by_command(std::string tosend, std::strin
     if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
         return -1;
     }
-    for (size_t i = 0; i < 128; ++i) {
-        std::cout << std::hex << std::setw(2) << std::setfill('0') << (int)buffer[i] << " ";
-    }   
     std::cout << std::endl;
     std::string data(buffer);
     std::string data_decoded = parse_decode_simple_string(data).first;
@@ -164,17 +161,6 @@ void SocketManagement::send_handshake_to_master(int port){
     for (size_t i = r; i < 256; ++i) {
         std::cout << std::hex << (int)buffer[i] << " ";
     }    
-    std::cout << std::endl; 
-    for (size_t i = 0; i < r; ++i) {
-        std::cout << buffer[i] << " ";
-    }  
-    std::cout << std::endl; 
-    for (int i = r; i < 256; i++){
-        std::cout << " " << buffer[i] << "\n";
-    }
-    std::cout << std::dec << std::endl;
-
-
     //recv_rdb_file(server_fd);
 }
 
