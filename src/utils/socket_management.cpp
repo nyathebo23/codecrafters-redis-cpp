@@ -149,7 +149,6 @@ void SocketManagement::send_handshake_to_master(int port){
     std::string tosend = parse_encode_array(psync_msg);
     if (send(server_fd, tosend.c_str(), tosend.length(), 0) < 0){
         std::cout << "Send "+ tosend + " handshake failed";
-        return -1;
     }
     char buffer[256];  
     int bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0);  
