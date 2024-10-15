@@ -12,6 +12,7 @@
 #include <cstring> 
 #include <algorithm>
 #include <chrono>
+#include <map>
 
 using str_nullable = std::variant<std::string, std::nullptr_t>;
 
@@ -181,6 +182,20 @@ std::vector<unsigned char> string_to_binary(std::string str){
     }
     return bytes;
 } 
+
+std::pair<int, std::string> read_file_sent(char* buffer_data, int size){
+    int pos = 1;
+    std::string str_num;
+    while (buffer_data[pos] != '\r')
+    {
+        pos++;
+        str_num += buffer_data[pos];
+    }
+    std::string file(buffer_data, pos);
+    return std::make_pair(std::stoi(str_num), file);
+    
+}
+
 
 // int main(int argc, char **argv) {
 //     std::vector<std::any> str = get_keys_values_from_file("rdbfile.rdb");

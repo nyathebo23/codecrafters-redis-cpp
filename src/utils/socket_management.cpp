@@ -155,6 +155,8 @@ void SocketManagement::send_handshake_to_master(int port){
     char buffer[256];  
     int r = recv(server_fd, &buffer, sizeof(buffer), 0);
 
+    auto file_with_size = read_file_sent(buffer, 256);
+    std::cout << file_with_size.first << file_with_size.second;
 }
 
 struct sockaddr_in SocketManagement::get_server_addr() const {
