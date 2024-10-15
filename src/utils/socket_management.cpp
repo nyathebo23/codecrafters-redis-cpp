@@ -212,7 +212,7 @@ void SocketManagement::retrieve_commands_from_master() {
 
 void SocketManagement::recv_rdb_file(int master_fd) 
 {
-  char buf[1024];
+  char buf[256];
   bool size_determined = false;
   int size = 0;
   while(!size_determined) 
