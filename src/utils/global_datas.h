@@ -10,7 +10,13 @@ class GlobalDatas {
     public:
         static bool isMaster;
 
+        static unsigned int prec_commands_offset;
+
         static bool isRequestFromMaster;
+
+        static unsigned int commands_offset;
+
+        static void set_commands_offset(std::string str);
 
         static std::map<std::string, std::string> dict_table;
 

@@ -31,7 +31,6 @@ void SocketManagement::handle_connection(const int& clientfd){
             break;
         }
         std::string data(buffer);
-        std::cout << data;
         auto command_elts = this->get_command_array_from_rawdata(data);
         std::string cmd = command_elts.first;
         std::vector<std::string> extra_params = command_elts.second;
@@ -152,7 +151,7 @@ void SocketManagement::send_handshake_to_master(int port){
     
     char buffer[256];  
     int r = recv(server_fd, &buffer, sizeof(buffer), 0);
-
+    std::cout << r;
     auto file_with_size = read_file_sent(buffer, 256);
     //std::cout << file_with_size.first << file_with_size.second;
 }
@@ -207,7 +206,9 @@ void SocketManagement::retrieve_commands_from_master() {
         char buffer[128];    
         if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0)
             break;
+
         std::string data(buffer);
+        GlobalDatas::set_commands_offset(data);
         process_command(data);
     }
 };

@@ -143,7 +143,7 @@ void CommandProcessing::replconf(std::vector<std::string> extras, int dest_fd){
         std::string resp = parse_encode_simple_string(std::string("OK"));
         send_data(resp, dest_fd);
     } else if (extras[0] == "getack" && extras[1] == "*"){
-        std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::string("0")};
+        std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::to_string(GlobalDatas::prec_commands_offset)};
         std::string resp = parse_encode_array(rep);
         send_data(resp, dest_fd);
     }
