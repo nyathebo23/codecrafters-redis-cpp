@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
   if (args_map.count("replicaof") != 0){
       master_socket_management.send_handshake_to_master(ntohs(socket_management.get_server_addr().sin_port));
       //master_socket_management.check_incoming_master_connections();
-      socket_management.check_incoming_master_connections(master_socket_management.get_server_fd());
+      master_socket_management.check_incoming_master_connections();
   }
 
   socket_management.check_incoming_clients_connections();

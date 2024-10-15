@@ -185,8 +185,8 @@ void SocketManagement::check_incoming_clients_connections(){
 
 }
 
-void SocketManagement::check_incoming_master_connections(const int& masterfd){
-    std::thread connection([this](const int& fd){retrieve_commands_from_master(fd);}, masterfd);
+void SocketManagement::check_incoming_master_connections(){
+    std::thread connection([this](){retrieve_commands_from_master();});
     connection.detach();
 }
 
