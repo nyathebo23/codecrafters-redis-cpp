@@ -32,7 +32,7 @@ void CommandProcessing::execute_after_delay(int delay, const std::string& key) {
 }
 
 bool CommandProcessing::send_data(std::string data, int dest_fd){
-    if (!data.empty() && !GlobalDatas::isRequestFromMaster){
+    if (!data.empty()){
         if (int s = send(dest_fd, data.c_str(), data.length(), 0) <= 0){
             std::cout <<  "send data failed";
             std::strerror(errno);
@@ -125,7 +125,6 @@ void CommandProcessing::config(std::vector<std::string> extras, int dest_fd, std
         }
         send_data(resp, dest_fd);
     }
-
 }
 
 void CommandProcessing::info(std::vector<std::string> extras, int dest_fd, std::string role){
@@ -146,7 +145,7 @@ void CommandProcessing::replconf(std::vector<std::string> extras, int dest_fd){
     } else if (extras[0] == "getack" && extras[1] == "*"){
         std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::string("0")};
         std::string resp = parse_encode_array(rep);
-        send(dest_fd, resp.c_str(), resp.length(), 0);
+        send_data(resp, dest_fd);
     }
 }
 
