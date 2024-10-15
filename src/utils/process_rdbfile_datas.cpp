@@ -184,6 +184,7 @@ std::vector<unsigned char> string_to_binary(std::string str){
 } 
 
 std::pair<int, std::string> read_file_sent(char* buffer_data, int size){
+    std::cout << buffer_data;
     int pos = 1;
     std::string str_num;
     while (buffer_data[pos] != '\r')
