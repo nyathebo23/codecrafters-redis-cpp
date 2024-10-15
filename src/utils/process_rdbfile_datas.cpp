@@ -191,8 +191,6 @@ std::pair<int, std::vector<unsigned char>> read_file_sent(char* buffer_data, int
         str_num += buffer_data[pos];
         pos++;
     }
-    std::cout << "file size " << str_num << "\n";
-
     std::vector<unsigned char> file_content;
     if (pos == size)
         return std::make_pair(0, file_content);
