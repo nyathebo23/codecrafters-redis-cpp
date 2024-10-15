@@ -157,7 +157,7 @@ void SocketManagement::send_handshake_to_master(int port){
         std::cout << "la chaine ne se termine pas bien \n";
     std::cout << buffer << "\n";
     std::cout << "nombre de bytes reçus " << r << "\n";
-    auto file_with_size = read_file_sent(buffer, 256);
+    auto file_with_size = read_file_sent(buffer, r);
     //std::cout << file_with_size.first << file_with_size.second;
 }
 
