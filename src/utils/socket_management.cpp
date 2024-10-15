@@ -150,7 +150,8 @@ void SocketManagement::send_handshake_to_master(int port){
     if (send(server_fd, tosend.c_str(), tosend.length(), 0) < 0){
         std::cout << "Send "+ tosend + " handshake failed";
     }
-    char buffer[256];  
+    const SIZE = 256;
+    char buffer[SIZE];  
     int bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0);  
     if (bytes_received <= 0) {
         close(server_fd);
@@ -165,21 +166,15 @@ void SocketManagement::send_handshake_to_master(int port){
     std::pair<int, std::vector<unsigned char>> file_datas;
     if (p < bytes_received - 1){
         p++;
-        file_datas = read_file_sent(buffer, 256, p);
-        if (p < bytes_received){
-            std::cout << "p " << p << "bytes_received " << bytes_received << " str " << str << "\n";
-            process_command(std::string(buffer + p, buffer + bytes_received));
-        }
+        file_datas = read_file_sent(buffer, SIZE, p);
     }
     else {
-        int p = 0;
+        p = 0;
         bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0);
-        file_datas = read_file_sent(buffer, 256, p);
-        if (p < bytes_received){
-            std::cout << "p " << p << "bytes_received " << bytes_received << " str " << str << "\n";
-            process_command(std::string(buffer + p, buffer + bytes_received));
-        }
+        file_datas = read_file_sent(buffer, SIZE, p);
     }
+    retrieve_commands_from_master(bytes_received, buffer, SIZE, p);
+    std::cout << "p " << p << "bytes_received " << bytes_received << " str " << str << "\n";
 }
 
 struct sockaddr_in SocketManagement::get_server_addr() const {
@@ -224,18 +219,18 @@ void SocketManagement::process_command(std::string cmd, std::vector<std::string>
     }
 }
 
-void SocketManagement::retrieve_commands_from_master() {
-    int bytes_received;
-    char buffer[256];
-    while ((bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0)) > 0){
-        std::string data(buffer);
+void SocketManagement::retrieve_commands_from_master(int bytes_received, char* buffer, const int size, int& pos) {
+
+    while (bytes_received > 0){
+        std::string data(buffer + pos, buffer + bytes_received);
         std::cout << "data string size " << data.size() << " bytes_received " << bytes_received << "\n"; 
-        ArrayResp arr_resp = parse_decode_array(data);
-        auto arr = std::get<ArrayAndInd>(arr_resp.first);
-        while (arr.second != data.size){
-            arr_resp = parse_decode_array(data.substr(arr.second));
+        ArrayResp arr_resp;
+        ArrayAndInd arr;
+        while (pos < bytes_received){
+            arr_resp = parse_decode_array(data.substr(pos));
             arr = std::get<ArrayAndInd>(arr_resp.first);
             auto command = arr.first;
+            pos += arr.second;
             std::string cmd = std::any_cast<std::string>(command[0]);
             std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
             std::vector<std::string> array_cmd;
@@ -244,9 +239,11 @@ void SocketManagement::retrieve_commands_from_master() {
                 std::transform(param.begin(), param.end(), param.begin(), ::tolower);
                 array_cmd.push_back(param);
             }
-            GlobalDatas::set_commands_offset(data);
+            GlobalDatas::set_commands_offset(arr.second);
             process_command(cmd, array_cmd);
         }
+        std::memset(buffer, 0, size);
+        bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0)
     }
 };
 

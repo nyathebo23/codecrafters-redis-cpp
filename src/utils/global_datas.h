@@ -16,7 +16,7 @@ class GlobalDatas {
 
         static unsigned int commands_offset;
 
-        static void set_commands_offset(std::string str);
+        static void set_commands_offset(unsigned short offset);
 
         static std::map<std::string, std::string> dict_table;
 

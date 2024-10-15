@@ -9,9 +9,9 @@ unsigned int GlobalDatas::prec_commands_offset = 0;
 
 unsigned int GlobalDatas::commands_offset = 0;
 
-void GlobalDatas::set_commands_offset(std::string str){
+void GlobalDatas::set_commands_offset(unsigned short offset){
     GlobalDatas::prec_commands_offset = GlobalDatas::commands_offset;
-    GlobalDatas::commands_offset += str.size();
+    GlobalDatas::commands_offset += offset;
     std::cout << "offset précédent et offset actuel " << commands_offset << "  " << prec_commands_offset << "\n";
 };
 
