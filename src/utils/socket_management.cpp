@@ -115,15 +115,16 @@ int SocketManagement::send_receive_msg_by_command(std::string tosend, std::strin
     }
     char buffer[128];    
     if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
+        close(server_fd);
         return -1;
     }
     std::cout << std::endl;
     std::string data(buffer);
     std::string data_decoded = parse_decode_simple_string(data).first;
-    // if (data_decoded != toreceive){
-    //     std::cout << "Bad message receive to " + tosend + " which is " + data_decoded;
-    //     return -1;
-    // }
+    if (data_decoded != toreceive){
+        std::cout << "Bad message receive to " + tosend + " which is " + data_decoded;
+        return -1;
+    }
     return 1;
 };
 
@@ -145,23 +146,35 @@ void SocketManagement::send_handshake_to_master(int port){
         std::cout << "REPLCONF failed";
 
     std::vector<std::any> psync_msg = {std::string("PSYNC"), std::string("?"), std::string("-1")};
-    if(send_receive_msg_by_command(parse_encode_array(psync_msg), "FULLRESYNC <REPL_ID> 0") < 0)
-        std::cout << "PSYNC failed";
-
-    unsigned char buffer[256]; 
-    int r = recv(server_fd, &buffer, sizeof(buffer), 0);   
-    if (r <= 0) {
-        close(server_fd);
+    std::string tosend = parse_encode_array(psync_msg);
+    if (send(server_fd, tosend.c_str(), tosend.length(), 0) < 0){
+        std::cout << "Send "+ tosend + " handshake failed";
+        return -1;
     }
-    std::cout << "r " << r << "\n";
-    for (size_t i = 0; i < r; ++i) {
-        std::cout << std::hex << std::setw(2) << std::setfill('0') << (int)buffer[i] << " ";
-    }   
-    std::cout << std::endl; 
-    for (size_t i = r; i < 256; ++i) {
-        std::cout << std::hex << (int)buffer[i] << " ";
-    }    
-    //recv_rdb_file(server_fd);
+    char buffer[256];  
+    int bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0);  
+    if (bytes_received <= 0) {
+        close(server_fd);
+        std::cout << "PSYNC failed";
+        return -1;
+    }
+
+    int p = 1;
+    while (p < bytes_received && ((unsigned char)buffer[p-1] != 0x0d || (unsigned char)buffer[p] != 0x0a)){
+        p += 1;
+    }
+    std::pair<int, std::vector<unsigned char>> file_datas;
+    if (p < bytes_received - 1){
+        file_datas = read_file_sent(buffer, 256, p);
+    }
+    else {
+        int p = 0;
+        bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0);
+        file_datas = read_file_sent(buffer, 256, p);
+        if (p < bytes_received){
+            process_command(std::string(buffer + p));
+        }
+    }
 }
 
 struct sockaddr_in SocketManagement::get_server_addr() const {

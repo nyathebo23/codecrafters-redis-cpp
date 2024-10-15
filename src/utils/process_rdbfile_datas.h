@@ -7,5 +7,5 @@
 
 std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_file(std::string filepath);
 std::vector<unsigned char> string_to_binary(std::string str);
-std::pair<int, std::string> read_file_sent(char* buffer_data, int size);
+std::pair<int, std::vector<unsigned char>> read_file_sent(char* buffer_data, int size, int& pos);
 #endif
