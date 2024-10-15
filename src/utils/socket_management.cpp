@@ -147,7 +147,7 @@ void SocketManagement::send_handshake_to_master(int port){
     if(send_receive_msg_by_command(parse_encode_array(psync_msg), "FULLRESYNC <REPL_ID> 0") < 0)
         std::cout << "PSYNC failed";
 
-    unsigned char buffer[128]; 
+    unsigned char buffer[256]; 
     int r = recv(server_fd, &buffer, sizeof(buffer), 0);   
     if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
         close(server_fd);
