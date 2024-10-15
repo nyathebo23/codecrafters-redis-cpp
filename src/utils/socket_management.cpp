@@ -61,7 +61,7 @@ void SocketManagement::handle_connection(const int& clientfd){
             CommandProcessing::keys(extra_params, clientfd, extra_args["dir"] + "/" + extra_args["dbfilename"]);
         }
         else if (cmd == "info"){
-            CommandProcessing::info(extra_params, clientfd, "master");
+            CommandProcessing::info(extra_params, clientfd, GlobalDatas::isMaster ? "master" : "slave");
         }
         else if (cmd == "replconf"){
             CommandProcessing::replconf(extra_params, clientfd);
