@@ -113,7 +113,7 @@ int SocketManagement::send_receive_msg_by_command(std::string tosend, std::strin
         std::cout << "Send "+ tosend + " handshake failed";
         return -1;
     }
-    char buffer[128];    
+    unsigned char buffer[128];    
     if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
         return -1;
     }
