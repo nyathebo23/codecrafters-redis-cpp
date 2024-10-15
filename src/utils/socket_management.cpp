@@ -209,7 +209,7 @@ void SocketManagement::process_command(std::string data) {
 void SocketManagement::retrieve_commands_from_master() {
     while (1){
         char buffer[128];    
-        if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0)
+        if (recv(server_fd, &buffer, sizeof(buffer), 0) < 0)
             break;
 
         std::string data(buffer);
