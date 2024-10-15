@@ -193,7 +193,7 @@ std::pair<int, std::string> read_file_sent(char* buffer_data, int size){
     for (int i = 0; i < size; ++i) {
         myUnsignedCharArray[i] = static_cast<unsigned char>(buffer_data[i]);
     }
-    std::cout << myUnsignedCharArray[1] << " " << myUnsignedCharArray[2]  << " " << myUnsignedCharArray[3];
+    std::cout << "les éléments du tableau de char" << myUnsignedCharArray[1] << " " << myUnsignedCharArray[2]  << " " << myUnsignedCharArray[3];
     while (myUnsignedCharArray[pos] != '\r')
     {
         str_num += buffer_data[pos];
