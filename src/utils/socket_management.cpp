@@ -23,7 +23,6 @@
 
 
 void SocketManagement::handle_connection(const int& clientfd){
-    std::cout << GlobalDatas::isRequestFromMaster << " " << clientfd << " ";
 
     while (1) {
         char buffer[256];  
@@ -174,7 +173,7 @@ int SocketManagement::socket_listen(int connection_backlog){
 void SocketManagement::check_incoming_clients_connections(){
   struct sockaddr_in client_addr;
   int client_addr_len = sizeof(client_addr);
-  GlobalDatas::isRequestFromMaster = false;
+  //GlobalDatas::isRequestFromMaster = false;
 
   std::cout << "Waiting for a client to connect...\n";
   while (1){
