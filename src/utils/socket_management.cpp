@@ -205,10 +205,10 @@ void SocketManagement::check_incoming_clients_connections(){
 
 }
 
-void SocketManagement::check_incoming_master_connections(){
-    std::thread connection([this](){retrieve_commands_from_master();});
-    connection.detach();
-}
+// void SocketManagement::check_incoming_master_connections(){
+//     std::thread connection([this](){retrieve_commands_from_master();});
+//     connection.detach();
+// }
 
 void SocketManagement::process_command(std::string cmd, std::vector<std::string> extra_params) {
     if (cmd == "set"){

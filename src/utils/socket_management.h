@@ -47,7 +47,7 @@ class SocketManagement {
 
         void send_handshake_to_master(int port);
 
-        void check_incoming_master_connections();
+        // void check_incoming_master_connections();
 
         void retrieve_commands_from_master(int bytes_received, char* buffer, const int size, int& pos);
 };
