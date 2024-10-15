@@ -147,13 +147,17 @@ void SocketManagement::send_handshake_to_master(int port){
     if(send_receive_msg_by_command(parse_encode_array(psync_msg), "FULLRESYNC <REPL_ID> 0") < 0)
         std::cout << "PSYNC failed";
 
-    unsigned char buffer[128];    
+    unsigned char buffer[128]; 
+    int r = recv(server_fd, &buffer, sizeof(buffer), 0);   
     if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
         close(server_fd);
     }
-    for (size_t i = 0; i < 128; ++i) {
+    for (size_t i = 0; i < r; ++i) {
         std::cout << std::hex << std::setw(2) << std::setfill('0') << (int)buffer[i] << " ";
     }    
+    for (int i = r; i < 128; i++){
+        std::cout << " " << buffer[i];
+    }
     std::cout << std::dec << std::endl;
 
 
