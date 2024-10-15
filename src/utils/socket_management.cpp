@@ -117,6 +117,9 @@ int SocketManagement::send_receive_msg_by_command(std::string tosend, std::strin
     if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
         return -1;
     }
+    for (size_t i = 0; i < 128; ++i) {
+        std::cout << std::hex << std::setw(2) << std::setfill('0') << (int)buffer[i] << " ";
+    }   
     std::string data(buffer);
     std::string data_decoded = parse_decode_simple_string(data).first;
     // if (data_decoded != toreceive){
