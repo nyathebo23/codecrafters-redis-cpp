@@ -120,6 +120,7 @@ int SocketManagement::send_receive_msg_by_command(std::string tosend, std::strin
     for (size_t i = 0; i < 128; ++i) {
         std::cout << std::hex << std::setw(2) << std::setfill('0') << (int)buffer[i] << " ";
     }   
+    std::endl;
     std::string data(buffer);
     std::string data_decoded = parse_decode_simple_string(data).first;
     // if (data_decoded != toreceive){
