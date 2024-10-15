@@ -184,13 +184,14 @@ std::vector<unsigned char> string_to_binary(std::string str){
 } 
 
 std::pair<int, std::string> read_file_sent(char* buffer_data, int size){
-    std::cout << buffer_data;
+    
     int pos = 1;
     std::string str_num;
     while (buffer_data[pos] != '\r')
     {
         pos++;
         str_num += buffer_data[pos];
+        std::cout << buffer_data[pos];
     }
     std::string file(buffer_data, pos);
     return std::make_pair(std::stoi(str_num), file);
