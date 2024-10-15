@@ -156,6 +156,12 @@ void SocketManagement::send_handshake_to_master(int port){
     for (size_t i = 0; i < r; ++i) {
         std::cout << std::hex << std::setw(2) << std::setfill('0') << (int)buffer[i] << " ";
     }    
+    for (size_t i = 0; i < r; ++i) {
+        std::cout << std::hex << (int)buffer[i] << " ";
+    }    
+    for (size_t i = 0; i < r; ++i) {
+        std::cout << buffer[i] << " ";
+    }  
     for (int i = r; i < 128; i++){
         std::cout << " " << buffer[i] << "\n";
     }
