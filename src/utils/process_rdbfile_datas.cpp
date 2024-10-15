@@ -201,7 +201,7 @@ std::pair<int, std::string> read_file_sent(char* buffer_data, int size){
     }
     std::string file;
     std::cout << pos << " " << str_num;
-    return std::make_pair(std::stoi(str_num), file);
+    return std::make_pair(1, file);
     
 }
 
