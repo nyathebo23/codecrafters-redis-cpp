@@ -164,7 +164,11 @@ void SocketManagement::send_handshake_to_master(int port){
     std::cout << "p " << p << "bytes_received " << bytes_received;
     std::pair<int, std::vector<unsigned char>> file_datas;
     if (p < bytes_received - 1){
+        p++;
         file_datas = read_file_sent(buffer, 256, p);
+        if (p < bytes_received){
+            process_command(std::string(buffer + p));
+        }
     }
     else {
         int p = 0;
