@@ -120,7 +120,6 @@ int SocketManagement::send_receive_msg_by_command(std::string tosend, std::strin
     }
     std::string data(buffer);
     std::string data_decoded = parse_decode_simple_string(data).first;
-    std::cout << "data " << data.size() << " decoded " << data_decoded.size();
     // if (data_decoded != toreceive){
     //     std::cout << "Bad message receive to " + tosend + " which is " + data_decoded;
     //     return -1;
@@ -223,7 +222,7 @@ void SocketManagement::retrieve_commands_from_master(int bytes_received, char* b
 
     while (bytes_received > 0){
         std::string data(buffer + pos, buffer + bytes_received);
-        std::cout << "data string size " << data.size() << " bytes_received " << bytes_received << "\n"; 
+        std::cout << "data string size " << data.size() << " bytes_received " << bytes_received << " pos "  << pos << "\n"; 
         ArrayResp arr_resp;
         ArrayAndInd arr;
         while (pos < bytes_received){
