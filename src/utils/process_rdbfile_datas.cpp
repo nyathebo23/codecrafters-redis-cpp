@@ -183,7 +183,7 @@ std::vector<unsigned char> string_to_binary(std::string str){
     return bytes;
 } 
 
-std::pair<int, std::string> read_file_sent(char* buffer_data, int size){
+std::pair<int, std::string> read_file_sent(unsigned char* buffer_data, int size){
     
     int pos = 1;
     std::string str_num;
@@ -194,7 +194,7 @@ std::pair<int, std::string> read_file_sent(char* buffer_data, int size){
         str_num += buffer_data[pos];
        
     }
-    std::string file(buffer_data, pos);
+    std::string file;
     return std::make_pair(std::stoi(str_num), file);
     
 }

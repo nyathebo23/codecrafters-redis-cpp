@@ -102,7 +102,6 @@ SocketManagement::SocketManagement(short family, int type, std::map<std::string,
     if (extra_args.count("port") != 0){
         port = std::stoi(extra_args["port"]);
     }
-    std::cout << port << " " << server_fd << " \n";
     server_addr.sin_port = htons(port);
 }
 
