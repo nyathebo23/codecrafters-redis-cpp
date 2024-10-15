@@ -121,10 +121,10 @@ int SocketManagement::send_receive_msg_by_command(std::string tosend, std::strin
     std::string data(buffer);
     std::string data_decoded = parse_decode_simple_string(data).first;
     std::cout << "data " << data.size() << " decoded " << data_decoded.size();
-    if (data_decoded != toreceive){
-        std::cout << "Bad message receive to " + tosend + " which is " + data_decoded;
-        return -1;
-    }
+    // if (data_decoded != toreceive){
+    //     std::cout << "Bad message receive to " + tosend + " which is " + data_decoded;
+    //     return -1;
+    // }
     return 1;
 };
 
@@ -161,12 +161,13 @@ void SocketManagement::send_handshake_to_master(int port){
     while (p < bytes_received && ((unsigned char)buffer[p-1] != 0x0d || (unsigned char)buffer[p] != 0x0a)){
         p += 1;
     }
+    std::string str = std::string(buffer);
     std::pair<int, std::vector<unsigned char>> file_datas;
     if (p < bytes_received - 1){
         p++;
         file_datas = read_file_sent(buffer, 256, p);
         if (p < bytes_received){
-            std::cout << "p " << p << "bytes_received " << bytes_received;
+            std::cout << "p " << p << "bytes_received " << bytes_received << " str " << str << "\n";
             process_command(std::string(buffer + p, buffer + bytes_received));
         }
     }
@@ -175,7 +176,7 @@ void SocketManagement::send_handshake_to_master(int port){
         bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0);
         file_datas = read_file_sent(buffer, 256, p);
         if (p < bytes_received){
-            std::cout << "p " << p << "bytes_received " << bytes_received;
+            std::cout << "p " << p << "bytes_received " << bytes_received << " str " << str << "\n";
             process_command(std::string(buffer + p, buffer + bytes_received));
         }
     }
@@ -214,11 +215,7 @@ void SocketManagement::check_incoming_master_connections(){
     connection.detach();
 }
 
-void SocketManagement::process_command(std::string data) {
-    GlobalDatas::set_commands_offset(data);
-    auto command_elts = this->get_command_array_from_rawdata(data);
-    std::string cmd = command_elts.first;
-    std::vector<std::string> extra_params = command_elts.second;
+void SocketManagement::process_command(std::string cmd, std::vector<std::string> extra_params) {
     if (cmd == "set"){
         CommandProcessing::set_without_send(extra_params);
     }
@@ -228,13 +225,28 @@ void SocketManagement::process_command(std::string data) {
 }
 
 void SocketManagement::retrieve_commands_from_master() {
-    while (1){
-        char buffer[128];    
-        if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0)
-            break;
-        
+    int bytes_received;
+    char buffer[256];
+    while ((bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0)) > 0){
         std::string data(buffer);
-        process_command(data);
+        std::cout << "data string size " << data.size() << " bytes_received " << bytes_received << "\n"; 
+        ArrayResp arr_resp = parse_decode_array(data);
+        auto arr = std::get<ArrayAndInd>(arr_resp.first);
+        while (arr.second != data.size){
+            arr_resp = parse_decode_array(data.substr(arr.second));
+            arr = std::get<ArrayAndInd>(arr_resp.first);
+            auto command = arr.first;
+            std::string cmd = std::any_cast<std::string>(command[0]);
+            std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
+            std::vector<std::string> array_cmd;
+            for (int i = 1; i < command.size(); i++){
+                std::string param = std::any_cast<std::string>(command[i]);
+                std::transform(param.begin(), param.end(), param.begin(), ::tolower);
+                array_cmd.push_back(param);
+            }
+            GlobalDatas::set_commands_offset(data);
+            process_command(cmd, array_cmd);
+        }
     }
 };
 

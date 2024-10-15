@@ -25,11 +25,12 @@ ArrayResp parse_decode_array(const std::string& msg){
     int start_pos = end_symbol_pos + 2;
     int count_elements = 0;
     const int msglen = msg.length();
-    while (end_symbol_pos < msglen - 2 && end_symbol_pos != std::string::npos && count_elements < length){
+    while (end_symbol_pos < msglen - 2 &&  count_elements < length){
+        if ((end_symbol_pos = msg.find("\r\n", start_pos)) == std::string::npos)
+            return std::make_pair(std::make_pair(elements, start_pos), false);      
         switch (msg[start_pos]){
             case '+':
             {
-                end_symbol_pos = msg.find("\r\n", start_pos);
                 auto pair_token = parse_decode_simple_string(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
                 if (!pair_token.second)
                     return std::make_pair("Error on simple string", false);
@@ -40,7 +41,6 @@ ArrayResp parse_decode_array(const std::string& msg){
 
             case '-':
             {
-                end_symbol_pos = msg.find("\r\n", start_pos);
                 auto pair_token = parse_decode_error_msg(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
                 if (!pair_token.second)
                     return std::make_pair("Error on simple error", false);
@@ -50,7 +50,6 @@ ArrayResp parse_decode_array(const std::string& msg){
             }
             case ':':
             {
-                end_symbol_pos = msg.find("\r\n", start_pos);
                 auto pair_token = parse_decode_integer(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
                 if (!pair_token.second)
                     return std::make_pair("Error on integer", false);
@@ -61,14 +60,13 @@ ArrayResp parse_decode_array(const std::string& msg){
             }
             case '$':
             {
-                end_symbol_pos = msg.find("\r\n", start_pos);
                 std::pair<std::string, bool> pair_token;
                 if (msg[start_pos+1] == '-')
                     pair_token = parse_decode_bulk_string(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
                 else {
                     end_symbol_pos = msg.find("\r\n", end_symbol_pos+2);
                     if (end_symbol_pos == std::string::npos)
-                        break;
+                        return std::make_pair(std::make_pair(elements, start_pos), false);
                     pair_token = parse_decode_bulk_string(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
                 }
                 if (!pair_token.second)
@@ -77,21 +75,19 @@ ArrayResp parse_decode_array(const std::string& msg){
                 count_elements++;
                 break; 
             }
-            case '*':
-            {
-                auto pair_token = parse_decode_array(msg.substr(start_pos));
-                if (!pair_token.second)
-                    return std::make_pair("Array format error", false);
-    
-                auto pair_array_resp = std::get<ArrayAndInd>(pair_token.first);
-                end_symbol_pos = start_pos + pair_array_resp.second;
-                elements.push_back(pair_array_resp.first);
-                count_elements++;
-                break;
-            }
+            // case '*':
+            // {
+            //     auto pair_token = parse_decode_array(msg.substr(start_pos));
+            //     if (!pair_token.second)
+            //         return std::make_pair("Array format error", false);
+            //     auto pair_array_resp = std::get<ArrayAndInd>(pair_token.first);
+            //     end_symbol_pos = start_pos + pair_array_resp.second;
+            //     elements.push_back(pair_array_resp.first);
+            //     count_elements++;
+            //     break;
+            // }
             case '_':
             {
-                end_symbol_pos = msg.find("\r\n", start_pos);
                 const std::string str = msg.substr(start_pos, end_symbol_pos - start_pos + 2);
                 if (str.compare("_\r\n") == 0){
                     elements.push_back(nullptr);
@@ -103,7 +99,6 @@ ArrayResp parse_decode_array(const std::string& msg){
             }
             case '#':
             {
-                end_symbol_pos = msg.find("\r\n", start_pos);
                 auto pair_token = parse_decode_boolean(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
                 if (!pair_token.second)
                     return std::make_pair("Error on boolean", false);
@@ -113,7 +108,6 @@ ArrayResp parse_decode_array(const std::string& msg){
             }
             case ',':
             {
-                end_symbol_pos = msg.find("\r\n", start_pos);
                 auto pair_token = parse_decode_double(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
                 if (!pair_token.second)
                     return std::make_pair("Error on double", false);
@@ -123,7 +117,6 @@ ArrayResp parse_decode_array(const std::string& msg){
             }
             case '(':
             {
-                end_symbol_pos = msg.find("\r\n", start_pos);
                 auto pair_token = parse_decode_big_number(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
                 if (!pair_token.second)
                     return std::make_pair("Error on big num", false);
@@ -133,9 +126,9 @@ ArrayResp parse_decode_array(const std::string& msg){
             }
             case '!':
             {
-                end_symbol_pos = msg.find("\r\n", msg.find("\r\n", start_pos)+1);
+                end_symbol_pos = msg.find("\r\n", end_symbol_pos + 1);
                 if (end_symbol_pos == std::string::npos)
-                    break;
+                    return std::make_pair(std::make_pair(elements, start_pos), false);
                 auto pair_token = parse_decode_bulk_error(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
                 if (!pair_token.second)
                     return std::make_pair("Error on bulk error", false);
@@ -145,9 +138,9 @@ ArrayResp parse_decode_array(const std::string& msg){
             }
             case '=':
             {
-                end_symbol_pos = msg.find("\r\n", msg.find("\r\n", start_pos)+1);
+                end_symbol_pos = msg.find("\r\n", end_symbol_pos + 1);
                 if (end_symbol_pos == std::string::npos)
-                    break;
+                    return std::make_pair(std::make_pair(elements, start_pos), false);
                 auto pair_token = parse_decode_verbatim_string(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
                 if (!pair_token.second)
                     return std::make_pair("Error on verbatim string", false);
@@ -180,18 +173,12 @@ ArrayResp parse_decode_array(const std::string& msg){
                 return std::make_pair("Array format error", false);
         }
         start_pos = end_symbol_pos + 2; 
-
     }
 
-    if (end_symbol_pos == std::string::npos){
-        return std::make_pair("Array format error", false);
-    }
-    else {
-        if (count_elements == length)
-            return std::make_pair(std::make_pair(elements, end_symbol_pos), true);      
-        else
-            return std::make_pair("Array format error", false);
-    }
+    if (count_elements == length)
+        return std::make_pair(std::make_pair(elements, start_pos), true);
+    else
+        return std::make_pair(std::make_pair(elements, start_pos), false);
 
 }
 
