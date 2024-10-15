@@ -211,7 +211,7 @@ void SocketManagement::retrieve_commands_from_master() {
         char buffer[128];    
         if (recv(server_fd, &buffer, sizeof(buffer), 0) < 0)
             break;
-
+        std::cout << buffer << "\n";
         std::string data(buffer);
         GlobalDatas::set_commands_offset(data);
         process_command(data);
