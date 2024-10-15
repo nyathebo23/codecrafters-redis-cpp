@@ -149,8 +149,13 @@ void SocketManagement::send_handshake_to_master(int port){
     if(send_receive_msg_by_command(parse_encode_array(psync_msg), "FULLRESYNC <REPL_ID> 0") < 0)
         std::cout << "PSYNC failed";
     
-    char buffer[256];  
+    char buffer[256] = {0};  
     int r = recv(server_fd, &buffer, sizeof(buffer), 0);
+    if (buffer[r] == '\0')
+        std::cout << "la chaine se termine bien \n";
+    else
+        std::cout << "la chaine ne se termine pas bien \n";
+
     std::cout << "nombre de bytes reçus " << r << "\n";
     auto file_with_size = read_file_sent(buffer, 256);
     //std::cout << file_with_size.first << file_with_size.second;
