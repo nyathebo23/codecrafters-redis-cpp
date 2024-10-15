@@ -193,12 +193,11 @@ std::pair<int, std::string> read_file_sent(char* buffer_data, int size){
     for (int i = 0; i < size; ++i) {
         myUnsignedCharArray[i] = static_cast<unsigned char>(buffer_data[i]);
     }
-    std::cout << myUnsignedCharArray[0];
+    std::cout <<  myUnsignedCharArray[0] << myUnsignedCharArray[1] << myUnsignedCharArray[2];
     while (myUnsignedCharArray[pos] != '\r')
     {
         pos++;
         str_num += buffer_data[pos];
-       
     }
     std::string file;
     return std::make_pair(std::stoi(str_num), file);
