@@ -187,11 +187,12 @@ std::pair<int, std::string> read_file_sent(char* buffer_data, int size){
     
     int pos = 1;
     std::string str_num;
+     std::cout << buffer_data[0];
     while (buffer_data[pos] != '\r')
     {
         pos++;
         str_num += buffer_data[pos];
-        std::cout << buffer_data[pos];
+       
     }
     std::string file(buffer_data, pos);
     return std::make_pair(std::stoi(str_num), file);
