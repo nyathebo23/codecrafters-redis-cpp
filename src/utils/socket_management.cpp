@@ -194,14 +194,18 @@ void SocketManagement::process_command(std::string data) {
     auto command_elts = this->get_command_array_from_rawdata(data);
     std::string cmd = command_elts.first;
     std::vector<std::string> extra_params = command_elts.second;
-    if (cmd == "set")
+    if (cmd == "set"){
         CommandProcessing::set_without_send(extra_params);
+    }
+    else if (cmd == "replconf"){
+        CommandProcessing::replconf(extra_params, this->server_fd);
+    }
 }
 
-void SocketManagement::retrieve_commands_from_master(const int& serverfd) {
+void SocketManagement::retrieve_commands_from_master() {
     while (1){
         char buffer[128];    
-        if (recv(serverfd, &buffer, sizeof(buffer), 0) <= 0)
+        if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0)
             break;
         std::string data(buffer);
         process_command(data);
