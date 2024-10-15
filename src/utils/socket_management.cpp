@@ -146,8 +146,18 @@ void SocketManagement::send_handshake_to_master(int port){
     std::vector<std::any> psync_msg = {std::string("PSYNC"), std::string("?"), std::string("-1")};
     if(send_receive_msg_by_command(parse_encode_array(psync_msg), "FULLRESYNC <REPL_ID> 0") < 0)
         std::cout << "PSYNC failed";
-    
-    recv_rdb_file(server_fd);
+
+    unsigned char buffer[128];    
+    if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
+        return -1;
+    }
+    for (size_t i = 0; i < 128; ++i) {
+        std::cout << std::hex << std::setw(2) << std::setfill('0') << (int)buffer[i] << " ";
+    }    
+    std::cout << std::dec << std::endl;
+
+
+    //recv_rdb_file(server_fd);
 }
 
 struct sockaddr_in SocketManagement::get_server_addr() const {
