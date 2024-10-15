@@ -150,7 +150,7 @@ void SocketManagement::send_handshake_to_master(int port){
     if (send(server_fd, tosend.c_str(), tosend.length(), 0) < 0){
         std::cout << "Send "+ tosend + " handshake failed";
     }
-    const SIZE = 256;
+    const int SIZE = 256;
     char buffer[SIZE];  
     int bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0);  
     if (bytes_received <= 0) {
