@@ -183,12 +183,18 @@ std::vector<unsigned char> string_to_binary(std::string str){
     return bytes;
 } 
 
-std::pair<int, std::string> read_file_sent(unsigned char* buffer_data, int size){
+std::pair<int, std::string> read_file_sent(char* buffer_data, int size){
     
     int pos = 1;
     std::string str_num;
-     std::cout << buffer_data[0];
-    while (buffer_data[pos] != '\r')
+    unsigned char myUnsignedCharArray[size];
+
+    // Conversion de chaque élément
+    for (int i = 0; i < size; ++i) {
+        myUnsignedCharArray[i] = static_cast<unsigned char>(buffer_data[i]);
+    }
+    std::cout << myUnsignedCharArray[0];
+    while (myUnsignedCharArray[pos] != '\r')
     {
         pos++;
         str_num += buffer_data[pos];
