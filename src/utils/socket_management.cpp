@@ -149,11 +149,7 @@ void SocketManagement::send_handshake_to_master(int port){
     if(send_receive_msg_by_command(parse_encode_array(psync_msg), "FULLRESYNC <REPL_ID> 0") < 0)
         std::cout << "PSYNC failed";
     
-    char buffer[256] = {0};  
-    int r = recv(server_fd, &buffer, sizeof(buffer), 0);
-    
-    std::cout << "nombre de bytes reçus " << r << "\n";
-    auto file_with_size = read_file_sent(buffer, r);
+    recv_rdb_file(server_fd);
     //std::cout << file_with_size.first << file_with_size.second;
 }
 
@@ -214,4 +210,29 @@ void SocketManagement::retrieve_commands_from_master() {
     }
 };
 
+void SocketManagement::recv_rdb_file(int master_fd) 
+{
+  char buf[1024];
+  bool size_determined = false;
+  int size = 0;
+  while(!size_determined) 
+  {
+    recv(master_fd, buf, 1, 0);
+    std::cout << buf[0] <<"\n";
+    if(buf[0] == '$' || buf[0] == '\r') 
+      continue;
+    else if (buf[0] == '\n')
+      size_determined = true;
+    else 
+      size = size * 10 + (buf[0] - '0');
+  }
+  std::cout << size << "\n";
+  int bytes_recvd = 0;
+  while(bytes_recvd < size)
+  {
+    recv(master_fd, buf, 1, 0);
+    std::cout << buf[0];
+    bytes_recvd++;
+  }
+}
 

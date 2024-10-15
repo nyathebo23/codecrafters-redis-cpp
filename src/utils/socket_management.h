@@ -25,6 +25,8 @@ class SocketManagement {
 
         void process_command(std::string data);
 
+        void recv_rdb_file(int masterfd);
+    
     public:
         void handle_connection(const int& clientfd);
 
