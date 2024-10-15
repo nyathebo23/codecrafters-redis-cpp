@@ -152,11 +152,12 @@ void SocketManagement::send_handshake_to_master(int port){
     if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
         close(server_fd);
     }
+    std::cout << "r " << r;
     for (size_t i = 0; i < r; ++i) {
         std::cout << std::hex << std::setw(2) << std::setfill('0') << (int)buffer[i] << " ";
     }    
     for (int i = r; i < 128; i++){
-        std::cout << " " << buffer[i];
+        std::cout << " " << buffer[i] << "\n";
     }
     std::cout << std::dec << std::endl;
 
