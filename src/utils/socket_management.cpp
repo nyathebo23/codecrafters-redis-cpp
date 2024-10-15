@@ -20,7 +20,7 @@
 #include "socket_management.h"
 #include "command_processing.h"
 #include "global_datas.h"
-
+#include <iomanip>
 
 void SocketManagement::handle_connection(const int& clientfd){
 
@@ -111,12 +111,10 @@ int SocketManagement::get_server_fd() const{
 int SocketManagement::send_receive_msg_by_command(std::string tosend, std::string toreceive){
     if (send(server_fd, tosend.c_str(), tosend.length(), 0) <= 0){
         std::cout << "Send "+ tosend + " handshake failed";
-        //close(server_fd);
         return -1;
     }
     char buffer[128];    
     if (recv(server_fd, &buffer, sizeof(buffer), 0) <= 0) {
-        //close(server_fd);
         return -1;
     }
     std::string data(buffer);
@@ -150,7 +148,6 @@ void SocketManagement::send_handshake_to_master(int port){
         std::cout << "PSYNC failed";
     
     recv_rdb_file(server_fd);
-    //std::cout << file_with_size.first << file_with_size.second;
 }
 
 struct sockaddr_in SocketManagement::get_server_addr() const {
