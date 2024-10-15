@@ -214,6 +214,7 @@ void SocketManagement::check_incoming_master_connections(){
 }
 
 void SocketManagement::process_command(std::string data) {
+    GlobalDatas::set_commands_offset(data);
     auto command_elts = this->get_command_array_from_rawdata(data);
     std::string cmd = command_elts.first;
     std::vector<std::string> extra_params = command_elts.second;
@@ -232,7 +233,6 @@ void SocketManagement::retrieve_commands_from_master() {
             break;
         
         std::string data(buffer);
-        GlobalDatas::set_commands_offset(data);
         process_command(data);
     }
 };
