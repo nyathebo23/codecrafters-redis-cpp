@@ -120,7 +120,7 @@ int SocketManagement::send_receive_msg_by_command(std::string tosend, std::strin
     }
     std::string data(buffer);
     std::string data_decoded = parse_decode_simple_string(data).first;
-    std::cout << "data " << data << " decoded " << data_decoded;
+    std::cout << "data " << data.size() << " decoded " << data_decoded.size();
     if (data_decoded != toreceive){
         std::cout << "Bad message receive to " + tosend + " which is " + data_decoded;
         return -1;
@@ -167,7 +167,7 @@ void SocketManagement::send_handshake_to_master(int port){
         file_datas = read_file_sent(buffer, 256, p);
         if (p < bytes_received){
             std::cout << "p " << p << "bytes_received " << bytes_received;
-            process_command(std::string(buffer + p));
+            process_command(std::string(buffer + p, buffer + bytes_received));
         }
     }
     else {
@@ -176,7 +176,7 @@ void SocketManagement::send_handshake_to_master(int port){
         file_datas = read_file_sent(buffer, 256, p);
         if (p < bytes_received){
             std::cout << "p " << p << "bytes_received " << bytes_received;
-            process_command(std::string(buffer + p));
+            process_command(std::string(buffer + p, buffer + bytes_received));
         }
     }
 }
