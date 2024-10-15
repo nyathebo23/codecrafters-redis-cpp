@@ -226,7 +226,7 @@ void SocketManagement::retrieve_commands_from_master(int bytes_received, char* b
         ArrayResp arr_resp;
         ArrayAndInd arr;
         while (pos < bytes_received){
-            arr_resp = parse_decode_array(data.substr(pos));
+            arr_resp = parse_decode_array(data);
             arr = std::get<ArrayAndInd>(arr_resp.first);
             auto command = arr.first;
             pos += arr.second;
@@ -238,9 +238,11 @@ void SocketManagement::retrieve_commands_from_master(int bytes_received, char* b
                 std::transform(param.begin(), param.end(), param.begin(), ::tolower);
                 array_cmd.push_back(param);
             }
+            data = data.substr(arr.second);
             GlobalDatas::set_commands_offset(arr.second);
             process_command(cmd, array_cmd);
         }
+        pos = 0;
         std::memset(buffer, 0, size);
         bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0);
     }
