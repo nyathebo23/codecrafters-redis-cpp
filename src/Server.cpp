@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
       master_socket_management.check_incoming_master_connections();
   }
 
-  socket_management.check_incoming_clients_connections();
+  //socket_management.check_incoming_clients_connections();
 
   return 0;
 }
