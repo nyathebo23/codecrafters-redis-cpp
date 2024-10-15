@@ -156,7 +156,6 @@ void SocketManagement::send_handshake_to_master(int port){
     if (bytes_received <= 0) {
         close(server_fd);
         std::cout << "PSYNC failed";
-        return -1;
     }
 
     int p = 1;
