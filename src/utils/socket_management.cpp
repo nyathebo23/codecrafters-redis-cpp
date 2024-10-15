@@ -151,10 +151,6 @@ void SocketManagement::send_handshake_to_master(int port){
     
     char buffer[256] = {0};  
     int r = recv(server_fd, &buffer, sizeof(buffer), 0);
-    if (buffer[r] == '\0')
-        std::cout << "la chaine se termine bien \n";
-    else
-        std::cout << "la chaine ne se termine pas bien \n";
     
     std::cout << "nombre de bytes reçus " << r << "\n";
     auto file_with_size = read_file_sent(buffer, r);
