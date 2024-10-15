@@ -270,7 +270,7 @@ std::pair<int, std::string> read_file_sent(char* buffer_data, int size){
     int pos = 1;
     std::string str_num;
     if (size == 58)
-        std::cout << base64Decoder(buffer_data, 58);
+        std::cout << base64Decoder(buffer_data, 58) << "\n";
     unsigned char myUnsignedCharArray[size];
 
     // Conversion de chaque élément
