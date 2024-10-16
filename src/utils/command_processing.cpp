@@ -192,8 +192,7 @@ std::pair<std::string, std::vector<std::any>> CommandProcessing::get_command_arr
     std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
     std::vector<std::any> array_cmd;
     for (int i = 1; i < command.size(); i++){
-        std::string param = command[i];
-        array_cmd.push_back(param);
+        array_cmd.push_back(command[i]);
     }
     return std::make_pair(cmd, array_cmd);
 };
