@@ -237,7 +237,7 @@ void SocketManagement::retrieve_commands_from_master(int bytes_received, char* b
             }
             data = data.substr(arr.second);
             GlobalDatas::set_commands_offset(arr.second);
-            std::cout << "cmd " << cmd << "\n";
+            std::cout << "cmd " << data << "\n";
             process_command(cmd, array_cmd);
         }
         pos = 0;
