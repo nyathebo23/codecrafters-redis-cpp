@@ -172,7 +172,6 @@ void CommandProcessing::wait(unsigned int numreplicas, unsigned long timeout, in
                 if (it != list_replicas_fd.end()){
                     list_replicas_fd.erase(it);
                     nb_replicas_updated++;
-                    std::cout << "ertyuitdtfghjgtyhujik\n";
                 }
             }
         
