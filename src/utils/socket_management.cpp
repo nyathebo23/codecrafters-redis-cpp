@@ -174,7 +174,7 @@ void SocketManagement::send_handshake_to_master(int port){
     while (bytes_received > 0){
         std::cout << "pos " << p << " buffer " << buffer << " cc\n";
         std::string data(buffer + p);
-        std::cout << "data last " << (int)data[bytes_received-pos-1] << " bytes_received " << bytes_received << " pos "  << pos << "\n"; 
+        std::cout << "data last " << (int)data[bytes_received-p-1] << " bytes_received " << bytes_received << " pos "  << p << "\n"; 
         ArrayResp arr_resp;
         ArrayAndInd arr;
         while (p < bytes_received){
