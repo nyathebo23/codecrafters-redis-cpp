@@ -49,7 +49,7 @@ class SocketManagement {
 
         // void check_incoming_master_connections();
 
-        void retrieve_commands_from_master(int& bytes_received, char* buffer, const int size, int& pos);
+        void retrieve_commands_from_master(int bytes_received, char* buffer, const int size, int pos);
 };
 
 #endif
