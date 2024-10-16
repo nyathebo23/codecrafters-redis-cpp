@@ -158,7 +158,6 @@ void CommandProcessing::wait(unsigned int numreplicas, unsigned long timeout, in
             CommandProcessing::send_replconf_getack(replica_pair.first);
     }
     GlobalMasterDatas::set_commands_offset(REPLCONF_GETACK_CMD.size(), false);
-    std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
     std::vector<int> list_replicas_fd;
     for (auto&  replica_pair: GlobalMasterDatas::replicas_offsets)
         list_replicas_fd.push_back(replica_pair.first);
@@ -174,9 +173,7 @@ void CommandProcessing::wait(unsigned int numreplicas, unsigned long timeout, in
                     nb_replicas_updated++;
                 }
             }
-        
     }
-
     std::string resp = parse_encode_integer(nb_replicas_updated);
     send_data(resp, dest_fd);
 }
