@@ -172,8 +172,9 @@ void SocketManagement::send_handshake_to_master(int port){
         bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0);
         file_datas = read_file_sent(buffer, SIZE, p);
     }
+    std::cout << "p " << p << "bytes_received " << bytes_received << " str " << str.size() << "\n";
+
     retrieve_commands_from_master(bytes_received, buffer, SIZE, p);
-    std::cout << "p " << p << "bytes_received " << bytes_received << " str " << str << "\n";
 }
 
 struct sockaddr_in SocketManagement::get_server_addr() const {
@@ -219,7 +220,6 @@ void SocketManagement::process_command(std::string cmd, std::vector<std::string>
 }
 
 void SocketManagement::retrieve_commands_from_master(int bytes_received, char* buffer, const int size, int& pos) {
-
     while (bytes_received > 0){
         std::string data(buffer + pos, buffer + bytes_received);
         std::cout << "data string size " << data.size() << " bytes_received " << bytes_received << " pos "  << pos << "\n"; 
