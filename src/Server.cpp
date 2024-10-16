@@ -25,7 +25,6 @@ int main(int argc, char **argv) {
   }
 
 
-
   // Flush after every std::cout / std::cerr
   std::cout << std::unitbuf;
   std::cerr << std::unitbuf;
@@ -54,6 +53,8 @@ int main(int argc, char **argv) {
     return 1;
   }
 
+
+  SocketManagement master_socket_management(AF_INET, SOCK_STREAM, args_map_master);
   if (args_map.count("replicaof") != 0){
       std::thread connection([&socket_management, &master_socket_management]() {
         master_socket_management.send_handshake_to_master(ntohs(socket_management.get_server_addr().sin_port));
