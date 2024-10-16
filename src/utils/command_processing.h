@@ -20,7 +20,7 @@ class CommandProcessing {
         static bool send_data(std::string data, int dest_fd);
         static void send_replconf_getack(int dest_fd);
         static void ping(int dest_fd);
-        static void set(std::vector<std::string> extras, int dest_fd);
+        static void set(std::vector<std::string> extras, std::string data, int dest_fd);
         static bool set_without_send(std::vector<std::string> extras);
         static void get(std::vector<std::string> extras, int dest_fd, std::string filepath);
         static void keys(std::vector<std::string> extras, int dest_fd, std::string filepath);

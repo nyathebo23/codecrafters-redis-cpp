@@ -74,7 +74,7 @@ bool CommandProcessing::set_without_send(std::vector<std::string> extras){
     return false;
 }
 
-void CommandProcessing::set(std::vector<std::string> extras, int dest_fd){
+void CommandProcessing::set(std::vector<std::string> extras, std::string data, int dest_fd){
     if (GlobalDatas::isMaster){
         for (auto& replica_fd_offset: GlobalMasterDatas::replicas_offsets) {
             if (send(replica_fd_offset.first, data.c_str(), data.length(), 0) <= 0)
