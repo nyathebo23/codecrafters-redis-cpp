@@ -161,7 +161,6 @@ void SocketManagement::send_handshake_to_master(int port){
     while (p < bytes_received && ((unsigned char)buffer[p-1] != 0x0d || (unsigned char)buffer[p] != 0x0a)){
         p += 1;
     }
-
     std::pair<int, std::vector<unsigned char>> file_datas;
     if (p < bytes_received - 1){
         p++;
@@ -173,7 +172,6 @@ void SocketManagement::send_handshake_to_master(int port){
         file_datas = read_file_sent(buffer, SIZE, p);
     }
     std::cout << "p " << p << " bytes_received " << bytes_received << "\n";
-
     retrieve_commands_from_master(bytes_received, buffer, SIZE, p);
 }
 
@@ -221,9 +219,9 @@ void SocketManagement::process_command(std::string cmd, std::vector<std::string>
 
 void SocketManagement::retrieve_commands_from_master(int bytes_received, char* buffer, const int size, int& pos) {
     if (bytes_received == pos){
-        std::memset(buffer, 0, size);
+        std::memset(buffer, 0, sizeof(buffer));
         pos = 0;
-        bytes_received = recv(server_fd, &buffer, size, 0);
+        bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0);
     }
     while (bytes_received > 0){
         std::string data(buffer + pos, buffer + bytes_received);
@@ -249,8 +247,8 @@ void SocketManagement::retrieve_commands_from_master(int bytes_received, char* b
             process_command(cmd, array_cmd);
         }
         pos = 0;
-        std::memset(buffer, 0, size);
-        bytes_received = recv(server_fd, &buffer, size, 0);
+        std::memset(buffer, 0, sizeof(buffer));
+        bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0);
         std::cout << " bytes_received " << bytes_received;
     }
 };
