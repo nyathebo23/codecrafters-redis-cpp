@@ -217,9 +217,12 @@ void SocketManagement::process_command(std::string cmd, std::vector<std::string>
 }
 
 void SocketManagement::retrieve_commands_from_master(int bytes_receive, char* buffe, const int size, int p) {
+
     char buffer[size];
-    int bytes_received = recv(server_fd, &buffer, size, 0);
-    int pos = 0;
+    for (int i = 0; i < size; i++)
+        buffer[i] = buffe[i];
+    int bytes_received = bytes_receive;
+    int pos = p;
     while (bytes_received > 0){
         std::cout << "pos " << pos << " buffer " << buffer << " cc\n";
         std::string data(buffer + pos);
