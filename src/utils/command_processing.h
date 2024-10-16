@@ -25,7 +25,7 @@ class CommandProcessing {
         static void keys(std::vector<std::string> extras, int dest_fd, std::string filepath);
         static void info(std::vector<std::string> extras, int dest_fd, std::string role);
         static void replconf(std::vector<std::string> extras, int dest_fd);
-        static void wait(unsigned int numreplicas, unsigned long timeout, int dest_fd);
+        static void wait(unsigned int numreplicas, unsigned long timeout, unsigned int replicasnb, int dest_fd);
         static void psync(std::vector<std::string> extras, int dest_fd, std::vector<int>& replicas_fd);
         static void config(std::vector<std::string> extras, int dest_fd, std::map<std::string, std::string> args_map);
 };

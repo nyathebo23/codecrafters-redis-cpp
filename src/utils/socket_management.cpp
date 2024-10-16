@@ -38,7 +38,7 @@ void SocketManagement::handle_connection(const int& clientfd){
             CommandProcessing::echo(extra_params, clientfd);
         }
         else if (cmd == "wait"){
-            CommandProcessing::wait(std::stoi(extra_params[0]), std::stol(extra_params[1]), clientfd);
+            CommandProcessing::wait(std::stoi(extra_params[0]), std::stol(extra_params[1]), replicas_fd.size(), clientfd);
         }
         else if (cmd == "ping"){
             CommandProcessing::ping(clientfd);
