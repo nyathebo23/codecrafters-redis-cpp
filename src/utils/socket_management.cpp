@@ -31,17 +31,14 @@ void SocketManagement::handle_connection(const int& clientfd){
             break;
         }
         std::string data(buffer);
-        auto command_elts = CommandProcessing::get_command_array_multitypes_from_rawdata(data);
+        auto command_elts = CommandProcessing::get_command_array_from_rawdata(data);
         std::string cmd = command_elts.first;
-        if (cmd == "wait"){
-            CommandProcessing::wait(std::any_cast<unsigned int>(command_elts.second[0]), std::any_cast<unsigned long>(command_elts.second[1]), clientfd);
-            continue;
-        }
-        std::vector<std::string> extra_params;
-        for (auto elts: command_elts.second)
-            extra_params.push_back(std::any_cast<std::string>(elts)); 
+        std::vector<std::string> extra_params = command_elts.second;
         if (cmd == "echo"){
             CommandProcessing::echo(extra_params, clientfd);
+        }
+        else if (cmd == "wait"){
+            CommandProcessing::wait(std::stoi(extra_params[0]), std::stol(extra_params[1]), clientfd);
         }
         else if (cmd == "ping"){
             CommandProcessing::ping(clientfd);
