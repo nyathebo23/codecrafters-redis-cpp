@@ -251,7 +251,8 @@ void SocketManagement::retrieve_commands_from_master(int bytes_received, char* b
             std::cout << std::hex << std::setw(2) << std::setfill('0') << (static_cast<unsigned char>(buffer[i]) & 0xFF) << " ";
         }
         std::cout << std::dec << std::endl; 
-        std::cout << " bytes_received "  << bytes_received << " buffer " << data(buffer+pos) << "\n";
+        std::string dat(buffer+pos);
+        std::cout << " bytes_received "  << bytes_received << " buffer " << dat << "\n";
     }
 };
 
