@@ -172,7 +172,7 @@ void SocketManagement::send_handshake_to_master(int port){
         bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0);
         file_datas = read_file_sent(buffer, SIZE, p);
     }
-    std::cout << "p " << p << " bytes_received " << bytes_received << " str " << str << "\n";
+    std::cout << "p " << p << " bytes_received " << bytes_received << " str " << str << "str size " << str.size() << "\n";
 
     retrieve_commands_from_master(bytes_received, buffer, SIZE, p);
 }
