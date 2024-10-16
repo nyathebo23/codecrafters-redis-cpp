@@ -222,6 +222,8 @@ void SocketManagement::retrieve_commands_from_master(int bytes_received, char* b
         std::memset(buffer, 0, sizeof(buffer));
         pos = 0;
         bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0);
+        std::cout << " bytes_received " << bytes_received;
+
     }
     while (bytes_received > 0){
         std::string data(buffer + pos, buffer + bytes_received);
