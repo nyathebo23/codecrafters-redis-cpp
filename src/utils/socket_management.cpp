@@ -149,7 +149,7 @@ void SocketManagement::send_handshake_to_master(int port){
     if (send(server_fd, tosend.c_str(), tosend.length(), 0) < 0){
         std::cout << "Send "+ tosend + " handshake failed";
     }
-    const int SIZE = 1024;
+    const int SIZE = 256;
     char buffer[SIZE];  
     int bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0);  
     if (bytes_received <= 0) {
@@ -197,7 +197,7 @@ void SocketManagement::send_handshake_to_master(int port){
             process_command(cmd, array_cmd);
         }
         p = 0;
-        std::memset(&buffer, 0, SIZE);
+        std::memset(buffer, 0, SIZE);
         bytes_received = recv(server_fd, &buffer, SIZE, 0);
         std::cout << "Buffer in hex: ";
         for (int i = 0; i < SIZE; ++i) {
