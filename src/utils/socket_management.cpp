@@ -222,6 +222,7 @@ void SocketManagement::process_command(std::string cmd, std::vector<std::string>
 void SocketManagement::retrieve_commands_from_master(int bytes_received, char* buffer, const int size, int& pos) {
     if (bytes_received == pos){
         std::memset(buffer, 0, size);
+        pos = 0;
         bytes_received = recv(server_fd, &buffer, size, 0);
     }
     while (bytes_received > 0){
