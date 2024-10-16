@@ -171,34 +171,7 @@ void SocketManagement::send_handshake_to_master(int port){
         bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0);
         file_datas = read_file_sent(buffer, SIZE, p);
     }
-    while (bytes_received > 0){
-        std::string data(buffer + p, buffer + bytes_received);
-        std::cout << "data string size " << data.size() << " bytes_received " << bytes_received << " pos "  << p << "\n"; 
-        ArrayResp arr_resp;
-        ArrayAndInd arr;
-        while (p < bytes_received){
-            arr_resp = parse_decode_array(data);
-            arr = std::get<ArrayAndInd>(arr_resp.first);
-            auto command = arr.first;
-            p += arr.second;
-            std::string cmd = std::any_cast<std::string>(command[0]);
-            std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
-            std::vector<std::string> array_cmd;
-            for (int i = 1; i < command.size(); i++){
-                std::string param = std::any_cast<std::string>(command[i]);
-                std::transform(param.begin(), param.end(), param.begin(), ::tolower);
-                array_cmd.push_back(param);
-            }
-            data = data.substr(arr.second);
-            GlobalDatas::set_commands_offset(arr.second);
-            std::cout << "cmd " << cmd << "\n";
-            process_command(cmd, array_cmd);
-        }
-        p = 0;
-        std::memset(buffer, 0, SIZE);
-        bytes_received = recv(server_fd, &buffer, SIZE, 0);
-        std::cout << " bytes_received " << bytes_received;
-    }
+    retrieve_commands_from_master(bytes_received, buffer, SIZE, p);
 }
 
 struct sockaddr_in SocketManagement::get_server_addr() const {
@@ -221,7 +194,7 @@ void SocketManagement::check_incoming_clients_connections(){
   std::cout << "Waiting for a client to connect...\n";
   while (1){
       int client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
-      std::cout << "Client connected " +std::to_string(client_fd)+  " \n";
+      std::cout << "Client connected \n";
       std::thread connection([this](int clientfd){handle_connection(clientfd);}, client_fd);
       connection.detach();
   }
