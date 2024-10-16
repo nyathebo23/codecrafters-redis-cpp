@@ -243,7 +243,7 @@ void SocketManagement::retrieve_commands_from_master(int bytes_received, char* b
             process_command(cmd, array_cmd);
         }
         pos = 0;
-        std::memset(buffer, 0, size);
+        char buffer[size];
         bytes_received = recv(server_fd, &buffer, size, 0);
         std::cout << " bytes_received "  << bytes_received << " buffer " << buffer << "\n";
     }
