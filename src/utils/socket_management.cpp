@@ -26,7 +26,7 @@ void SocketManagement::handle_connection(const int& clientfd){
 
     while (1) {
         char buffer[256];  
-        if (int r = recv(clientfd, &buffer, sizeof(buffer), 0) <= 0) {
+        if (recv(clientfd, &buffer, sizeof(buffer), 0) <= 0) {
             close(clientfd);
             break;
         }
@@ -173,11 +173,6 @@ void SocketManagement::send_handshake_to_master(int port){
         file_datas = read_file_sent(buffer, SIZE, p);
         retrieve_commands_from_master(bytes_received, buffer, SIZE, p);
     }
-    // std::thread t([this, &bytes_received, &buffer, &SIZE, &p](){
-    //     retrieve_commands_from_master(bytes_received, buffer, SIZE, p);
-    // });
-    // t.detach();
-    
 }
 
 struct sockaddr_in SocketManagement::get_server_addr() const {
@@ -230,7 +225,6 @@ void SocketManagement::retrieve_commands_from_master(int bytes_receive, char* bu
     int bytes_received = bytes_receive;
     int pos = p;
     while (bytes_received > 0){
-        
         std::string data(buffer + pos);
         ArrayResp arr_resp;
         ArrayAndInd arr;
