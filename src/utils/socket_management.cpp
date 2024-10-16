@@ -100,6 +100,7 @@ SocketManagement::SocketManagement(short family, int type, std::map<std::string,
     int port = 6379;
     if (extra_args.count("port") != 0){
         port = std::stoi(extra_args["port"]);
+        std::cout << port  << " \n";
     }
     server_addr.sin_port = htons(port);
 }
