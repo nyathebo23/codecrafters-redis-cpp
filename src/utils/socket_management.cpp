@@ -171,8 +171,10 @@ void SocketManagement::send_handshake_to_master(int port){
         bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0);
         file_datas = read_file_sent(buffer, SIZE, p);
     }
-    std::cout << "p " << p << " bytes_received " << bytes_received << " file size " << file_datas.first << " " << file_datas.second.size()  << "\n";
-    retrieve_commands_from_master(bytes_received, buffer, SIZE, p);
+    std::thread connect([&bytes_received, &buffer, &SIZE, &p](){
+        retrieve_commands_from_master(bytes_received, buffer, SIZE, p);
+    });
+    connect.detach();
 }
 
 struct sockaddr_in SocketManagement::get_server_addr() const {
