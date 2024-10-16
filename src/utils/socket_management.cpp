@@ -239,7 +239,6 @@ void SocketManagement::retrieve_commands_from_master(int bytes_receive, char* bu
                 std::transform(param.begin(), param.end(), param.begin(), ::tolower);
                 array_cmd.push_back(param);
             }
-            std::cout << "cmd " << arr.second << " pos " << pos << "\n";
             if (arr.second < data.size())
                 data = data.substr(arr.second);
             GlobalDatas::set_commands_offset(arr.second);
@@ -248,12 +247,7 @@ void SocketManagement::retrieve_commands_from_master(int bytes_receive, char* bu
         pos = 0;
         std::memset(buffer, 0, size);
         bytes_received = recv(server_fd, &buffer, size, 0);
-        std::cout << "Buffer in hex: ";
-        for (int i = 0; i < size; ++i) {
-            // Afficher chaque octet en hexadécimal avec deux chiffres (00 - FF)
-            std::cout << std::hex << std::setw(2) << std::setfill('0') << (static_cast<unsigned char>(buffer[i]) & 0xFF) << " ";
-        }
-        std::cout << std::dec << std::endl; 
+
         std::string dat(buffer+pos);
         std::cout << " bytes_received "  << bytes_received << " buffer " << dat << "\n";
     }
