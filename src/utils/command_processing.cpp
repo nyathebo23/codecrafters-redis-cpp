@@ -138,6 +138,10 @@ void CommandProcessing::info(std::vector<std::string> extras, int dest_fd, std::
     }  
 }
 
+void CommandProcessing::wait(unsigned int numreplicas, unsigned long timeout, int dest_fd){
+
+}
+
 void CommandProcessing::replconf(std::vector<std::string> extras, int dest_fd){
     if (extras[0] == "listening-port" || extras[0] == "capa" && extras.size() > 1){
         std::string resp = parse_encode_simple_string(std::string("OK"));
@@ -164,4 +168,31 @@ void CommandProcessing::psync(std::vector<std::string> extras, int dest_fd, std:
     }   
 }
 
+std::pair<std::string, std::vector<std::string>> CommandProcessing::get_command_array_from_rawdata(std::string data){
+    ArrayResp arr_resp = parse_decode_array(data);
+    auto arr = std::get<ArrayAndInd>(arr_resp.first);
+    auto command = arr.first;
+    std::string cmd = std::any_cast<std::string>(command[0]);
+    std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
+    std::vector<std::string> array_cmd;
+    for (int i = 1; i < command.size(); i++){
+        std::string param = std::any_cast<std::string>(command[i]);
+        std::transform(param.begin(), param.end(), param.begin(), ::tolower);
+        array_cmd.push_back(param);
+    }
+    return std::make_pair(cmd, array_cmd);
+};
 
+std::pair<std::string, std::vector<std::any>> CommandProcessing::get_command_array_multitypes_from_rawdata(std::string data){
+    ArrayResp arr_resp = parse_decode_array(data);
+    auto arr = std::get<ArrayAndInd>(arr_resp.first);
+    auto command = arr.first;
+    std::string cmd = std::any_cast<std::string>(command[0]);
+    std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
+    std::vector<std::any> array_cmd;
+    for (int i = 1; i < command.size(); i++){
+        std::string param = command[i];
+        array_cmd.push_back(param);
+    }
+    return std::make_pair(cmd, array_cmd);
+};

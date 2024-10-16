@@ -19,8 +19,6 @@ class SocketManagement {
 
         std::vector<int> replicas_fd;
 
-        std::pair<std::string, std::vector<std::string>> get_command_array_from_rawdata(std::string data);
-
         int send_receive_msg_by_command(std::string tosend, std::string toreceive);
 
         void process_command(std::string, std::vector<std::string>);
@@ -45,9 +43,7 @@ class SocketManagement {
 
         void check_incoming_clients_connections();
 
-        void send_handshake_to_master(int port);
-
-        // void check_incoming_master_connections();
+        void handshake_and_check_incoming_master_connections(int port);
 
         void retrieve_commands_from_master(int bytes_received, char* buffer, const int size, int pos);
 };

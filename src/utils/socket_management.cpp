@@ -31,10 +31,15 @@ void SocketManagement::handle_connection(const int& clientfd){
             break;
         }
         std::string data(buffer);
-        auto command_elts = this->get_command_array_from_rawdata(data);
+        auto command_elts = CommandProcessing::get_command_array_multitypes_from_rawdata(data);
         std::string cmd = command_elts.first;
-        std::vector<std::string> extra_params = command_elts.second;
-
+        if (cmd == "wait"){
+            CommandProcessing::wait(std::any_cast<unsigned int>(command_elts.second[0]), std::any_cast<unsigned long>(command_elts.second[1]), clientfd);
+            continue;
+        }
+        std::vector<std::string> extra_params;
+        for (auto elts: command_elts.second)
+            extra_params.push_back(std::any_cast<std::string>(elts)); 
         if (cmd == "echo"){
             CommandProcessing::echo(extra_params, clientfd);
         }
@@ -70,21 +75,6 @@ void SocketManagement::handle_connection(const int& clientfd){
     }
 }
 
-std::pair<std::string, std::vector<std::string>> SocketManagement::get_command_array_from_rawdata(std::string data){
-    ArrayResp arr_resp = parse_decode_array(data);
-    auto arr = std::get<ArrayAndInd>(arr_resp.first);
-    auto command = arr.first;
-    std::string cmd = std::any_cast<std::string>(command[0]);
-    std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
-    std::vector<std::string> array_cmd;
-    for (int i = 1; i < command.size(); i++){
-        std::string param = std::any_cast<std::string>(command[i]);
-        std::transform(param.begin(), param.end(), param.begin(), ::tolower);
-        array_cmd.push_back(param);
-    }
-    return std::make_pair(cmd, array_cmd);
-};
-
 
 SocketManagement::SocketManagement(short family, int type, std::map<std::string, std::string> extra) {
     server_fd = socket(family, type, 0);
@@ -103,7 +93,6 @@ SocketManagement::SocketManagement(short family, int type, std::map<std::string,
     }
     server_addr.sin_port = htons(port);
 }
-
 int SocketManagement::get_server_fd() const{
     return server_fd;
 }
@@ -128,7 +117,7 @@ int SocketManagement::send_receive_msg_by_command(std::string tosend, std::strin
 };
 
 
-void SocketManagement::send_handshake_to_master(int port){
+void SocketManagement::handshake_and_check_incoming_master_connections(int port){
     if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
         std::cout << "Connect to master failed";
     }
@@ -149,6 +138,7 @@ void SocketManagement::send_handshake_to_master(int port){
     if (send(server_fd, tosend.c_str(), tosend.length(), 0) < 0){
         std::cout << "Send "+ tosend + " handshake failed";
     }
+
     const int SIZE = 256;
     char buffer[SIZE];  
     int bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0);  
@@ -156,7 +146,6 @@ void SocketManagement::send_handshake_to_master(int port){
         close(server_fd);
         std::cout << "PSYNC failed";
     }
-
     int p = 1;
     while (p < bytes_received && ((unsigned char)buffer[p-1] != 0x0d || (unsigned char)buffer[p] != 0x0a)){
         p += 1;
@@ -164,15 +153,13 @@ void SocketManagement::send_handshake_to_master(int port){
     std::pair<int, std::vector<unsigned char>> file_datas;
     if (p < bytes_received - 1){
         p++;
-        file_datas = read_file_sent(buffer, SIZE, p);
-        retrieve_commands_from_master(bytes_received, buffer, SIZE, p);
     }
     else {
         p = 0;
         bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0);
-        file_datas = read_file_sent(buffer, SIZE, p);
-        retrieve_commands_from_master(bytes_received, buffer, SIZE, p);
     }
+    file_datas = read_file_sent(buffer, SIZE, p);
+    retrieve_commands_from_master(bytes_received, buffer, SIZE, p);
 }
 
 struct sockaddr_in SocketManagement::get_server_addr() const {
@@ -190,8 +177,6 @@ int SocketManagement::socket_listen(int connection_backlog){
 void SocketManagement::check_incoming_clients_connections(){
   struct sockaddr_in client_addr;
   int client_addr_len = sizeof(client_addr);
-  //GlobalDatas::isRequestFromMaster = false;
-
   std::cout << "Waiting for a client to connect...\n";
   while (1){
       int client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
@@ -200,13 +185,7 @@ void SocketManagement::check_incoming_clients_connections(){
       connection.detach();
   }
   close(server_fd);
-
 }
-
-// void SocketManagement::check_incoming_master_connections(){
-//     std::thread connection([this](){retrieve_commands_from_master();});
-//     connection.detach();
-// }
 
 void SocketManagement::process_command(std::string cmd, std::vector<std::string> extra_params) {
     if (cmd == "set"){
@@ -218,7 +197,6 @@ void SocketManagement::process_command(std::string cmd, std::vector<std::string>
 }
 
 void SocketManagement::retrieve_commands_from_master(int bytes_receive, char* buffe, const int size, int p) {
-
     char buffer[size];
     for (int i = 0; i < size; i++)
         buffer[i] = buffe[i];
@@ -249,8 +227,6 @@ void SocketManagement::retrieve_commands_from_master(int bytes_receive, char* bu
         pos = 0;
         std::memset(buffer, 0, size);
         bytes_received = recv(server_fd, &buffer, size, 0);
-        std::string dat(buffer+pos);
-        std::cout << " bytes_received "  << bytes_received << "\n";
     }
 };
 

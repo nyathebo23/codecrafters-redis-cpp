@@ -53,11 +53,10 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-
   SocketManagement master_socket_management(AF_INET, SOCK_STREAM, args_map_master);
   if (args_map.count("replicaof") != 0){
       std::thread connection([&socket_management, &master_socket_management]() {
-        master_socket_management.send_handshake_to_master(ntohs(socket_management.get_server_addr().sin_port));
+        master_socket_management.handshake_and_check_incoming_master_connections(ntohs(socket_management.get_server_addr().sin_port));
       });
       connection.detach();
       //master_socket_management.check_incoming_master_connections();
