@@ -75,6 +75,13 @@ bool CommandProcessing::set_without_send(std::vector<std::string> extras){
 }
 
 void CommandProcessing::set(std::vector<std::string> extras, int dest_fd){
+    if (GlobalDatas::isMaster){
+        for (auto& replica_fd_offset: GlobalMasterDatas::replicas_offsets) {
+            if (send(replica_fd_offset.first, data.c_str(), data.length(), 0) <= 0)
+                std::cout <<  "replica send msg failed";                
+        }
+        GlobalMasterDatas::set_commands_offset(data.size(), true);
+    }
     if (set_without_send(extras)){
         std::string resp = parse_encode_simple_string("OK");
         send_data(resp, dest_fd);

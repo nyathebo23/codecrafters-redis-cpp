@@ -44,14 +44,6 @@ void SocketManagement::handle_connection(const int& clientfd){
             CommandProcessing::ping(clientfd);
         }
         else if (cmd == "set"){
-            if (GlobalDatas::isMaster){
-                for (auto& replica_fd_offset: GlobalMasterDatas::replicas_offsets) {
-                    GlobalMasterDatas::set_commands_offset(data.size(), true);
-                    if (send(replica_fd_offset.first, data.c_str(), data.length(), 0) <= 0)
-                        std::cout <<  "replica send msg failed";                
-                }
-                GlobalDatas::set_commands_offset(data.size());
-            }
             CommandProcessing::set(extra_params, clientfd);
         }
         else if (cmd == "get"){
