@@ -55,14 +55,13 @@ int main(int argc, char **argv) {
   }
 
   if (args_map.count("replicaof") != 0){
-      std::thread connection([&socket_management]() {socket_management.check_incoming_clients_connections();});
+      std::thread connection([&socket_management]() {
+        master_socket_management.send_handshake_to_master(ntohs(socket_management.get_server_addr().sin_port));
+      });
       connection.detach();
-      SocketManagement master_socket_management(AF_INET, SOCK_STREAM, args_map_master);
-      master_socket_management.send_handshake_to_master(ntohs(socket_management.get_server_addr().sin_port));
       //master_socket_management.check_incoming_master_connections();
   }
-  else
-      socket_management.check_incoming_clients_connections();
+    socket_management.check_incoming_clients_connections();
 
 
 
