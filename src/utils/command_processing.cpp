@@ -23,6 +23,11 @@
 #include "global_datas.h"
 
 
+
+
+std::vector<std::any> vect_getack = {std::string("REPLCONF"), std::string("GETACK"), std::string("*")};
+std::string REPLCONF_GETACK_CMD = parse_encode_array(vect_getack);
+
 void CommandProcessing::erase_key(const std::string& key) {
     GlobalDatas::dict_table.erase(key);
 }
@@ -80,6 +85,7 @@ void CommandProcessing::set(std::vector<std::string> extras, std::string data, i
             if (send(replica_fd_offset.first, data.c_str(), data.length(), 0) <= 0)
                 std::cout <<  "replica send msg failed";                
         }
+        std::cout << data << "\n";                
         GlobalMasterDatas::set_commands_offset(data.size(), true);
     }
     if (set_without_send(extras)){
@@ -152,6 +158,7 @@ void CommandProcessing::wait(unsigned int numreplicas, unsigned long timeout, in
         for (auto& replica_pair: GlobalMasterDatas::replicas_offsets)
             CommandProcessing::send_replconf_getack(replica_pair.first);
     }
+    GlobalMasterDatas::set_commands_offset(REPLCONF_GETACK_CMD.size(), false);
     std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
     std::vector<int> list_replicas_fd;
     for (auto&  replica_pair: GlobalMasterDatas::replicas_offsets)
@@ -246,8 +253,5 @@ std::pair<std::string, std::vector<std::any>> CommandProcessing::get_command_arr
 };
 
 void CommandProcessing::send_replconf_getack(int dest_fd){
-    std::vector<std::any> rep = {std::string("REPLCONF"), std::string("GETACK"), std::string("*")};
-    std::string resp = parse_encode_array(rep);
-    GlobalMasterDatas::set_commands_offset(resp.size(), false);
-    send_data(resp, dest_fd);
+    send_data(REPLCONF_GETACK_CMD, dest_fd);
 };
