@@ -151,7 +151,7 @@ void CommandProcessing::wait(unsigned int numreplicas, unsigned long timeout, in
         list_replicas_fd.push_back(replica_pair.first);
 
     auto limit = get_now_time_milliseconds() + timeout;
-
+    std::cout << GlobalMasterDatas::prec_commands_offset << "\n";
     while (get_now_time_milliseconds() < limit && nb_replicas_updated < numreplicas){
         for (auto&  replica_pair: GlobalMasterDatas::replicas_offsets)
             if (replica_pair.second == GlobalMasterDatas::prec_commands_offset){
