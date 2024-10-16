@@ -91,7 +91,7 @@ SocketManagement::SocketManagement(short family, int type, std::map<std::string,
     socket_family = family;
     socket_type = type;
     server_addr.sin_family = family;
-    server_addr.sin_addr.s_addr = "127.0.0.1";
+    server_addr.sin_addr.s_addr = INADDR_ANY;
     extra_args = extra;
     if (extra_args.count("host") != 0){
         std::string ip_address = extra_args["host"] == "localhost" ? "127.0.0.1" : extra_args["host"];
