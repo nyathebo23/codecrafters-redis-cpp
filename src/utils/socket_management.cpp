@@ -165,16 +165,18 @@ void SocketManagement::send_handshake_to_master(int port){
     if (p < bytes_received - 1){
         p++;
         file_datas = read_file_sent(buffer, SIZE, p);
+        retrieve_commands_from_master(bytes_received, buffer, SIZE, p);
     }
     else {
         p = 0;
         bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0);
         file_datas = read_file_sent(buffer, SIZE, p);
-    }
-    std::thread t([this, &bytes_received, &buffer, &SIZE, &p](){
         retrieve_commands_from_master(bytes_received, buffer, SIZE, p);
-    });
-    t.detach();
+    }
+    // std::thread t([this, &bytes_received, &buffer, &SIZE, &p](){
+    //     retrieve_commands_from_master(bytes_received, buffer, SIZE, p);
+    // });
+    // t.detach();
     
 }
 
