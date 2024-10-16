@@ -171,7 +171,7 @@ void SocketManagement::send_handshake_to_master(int port){
         bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0);
         file_datas = read_file_sent(buffer, SIZE, p);
     }
-    std::thread t([this, &bytes_received, buffer, &SIZE, &p](){
+    std::thread t([this, &bytes_received, &buffer, &SIZE, &p](){
         retrieve_commands_from_master(bytes_received, buffer, SIZE, p);
     });
     t.detach();
