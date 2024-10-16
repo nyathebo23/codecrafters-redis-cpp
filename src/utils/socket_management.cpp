@@ -232,7 +232,6 @@ void SocketManagement::retrieve_commands_from_master(int bytes_receive, char* bu
     while (bytes_received > 0){
         
         std::string data(buffer + pos);
-        std::cout << "data last " << (int)data[bytes_received-pos-1] << " bytes_received " << bytes_received << " pos "  << pos << "\n"; 
         ArrayResp arr_resp;
         ArrayAndInd arr;
         while (pos < bytes_received){
