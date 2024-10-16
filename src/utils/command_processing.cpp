@@ -188,6 +188,7 @@ void CommandProcessing::replconf(std::vector<std::string> extras, int dest_fd){
         try {
             int num = stoi(extras[1]);
             GlobalMasterDatas::replicas_offsets[dest_fd] = num;
+            std::cout << num << "\n";
         }
         catch(std::exception e){}
     }
