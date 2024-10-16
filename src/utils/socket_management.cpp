@@ -149,7 +149,7 @@ void SocketManagement::send_handshake_to_master(int port){
     if (send(server_fd, tosend.c_str(), tosend.length(), 0) < 0){
         std::cout << "Send "+ tosend + " handshake failed";
     }
-    const int SIZE = 150;
+    const int SIZE = 1024;
     char buffer[SIZE];  
     int bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0);  
     if (bytes_received <= 0) {
@@ -220,7 +220,7 @@ void SocketManagement::retrieve_commands_from_master(int bytes_received, char* b
     while (bytes_received > 0){
         std::cout << "pos " << pos << " buffer " << buffer << " cc\n";
         std::string data(buffer + pos);
-        std::cout << "data last " << std::hex << (int)data[bytes_received-pos-1] << " bytes_received " << bytes_received << " pos "  << pos << "\n"; 
+        std::cout << "data last " << (int)data[bytes_received-pos-1] << " bytes_received " << bytes_received << " pos "  << pos << "\n"; 
         ArrayResp arr_resp;
         ArrayAndInd arr;
         while (pos < bytes_received){
@@ -229,8 +229,6 @@ void SocketManagement::retrieve_commands_from_master(int bytes_received, char* b
             auto command = arr.first;
             pos += arr.second;
             std::string cmd = std::any_cast<std::string>(command[0]);
-            std::cout << "cmd " << arr.second << " pos " << pos << "\n";
-
             std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
             std::vector<std::string> array_cmd;
             for (int i = 1; i < command.size(); i++){
