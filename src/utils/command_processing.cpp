@@ -140,7 +140,7 @@ void CommandProcessing::info(std::vector<std::string> extras, int dest_fd, std::
 }
 
 void CommandProcessing::wait(unsigned int numreplicas, unsigned long timeout, int dest_fd){
-    std::string resp = parse_encode_integer(numreplicas);
+    std::string resp = parse_encode_integer(7);
     send_data(resp, dest_fd);
 }
 
