@@ -23,6 +23,8 @@ int main(int argc, char **argv) {
       args_map_master["port"] = args_map["replicaof"].substr(args_map["replicaof"].find_last_of(" ")+1);
       GlobalDatas::isMaster = false;
   }
+  else 
+      args_map_master["port"] = 6380;
 
   SocketManagement master_socket_management(AF_INET, SOCK_STREAM, args_map_master);
 
