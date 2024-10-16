@@ -245,7 +245,7 @@ void SocketManagement::retrieve_commands_from_master(int bytes_received, char* b
         }
         pos = 0;
         std::memset(buffer, 0, size);
-        bytes_received = recv(server_fd, &buffer, sizeof(buffer), 0);
+        bytes_received = recv(server_fd, &buffer, size, 0);
     }
 };
 
