@@ -237,7 +237,7 @@ std::pair<std::string, std::vector<std::any>> CommandProcessing::get_command_arr
 };
 
 void CommandProcessing::send_replconf_getack(int dest_fd){
-    std::vector<std::any> rep = {std::string("REPLCONF"), std::string("getack"), std::string("*")};
+    std::vector<std::any> rep = {std::string("REPLCONF"), std::string("GETACK"), std::string("*")};
     std::string resp = parse_encode_array(rep);
     GlobalMasterDatas::set_commands_offset(resp.size(), false);
     send_data(resp, dest_fd);
