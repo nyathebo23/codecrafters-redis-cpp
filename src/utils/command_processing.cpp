@@ -139,9 +139,39 @@ void CommandProcessing::info(std::vector<std::string> extras, int dest_fd, std::
     }  
 }
 
-void CommandProcessing::wait(unsigned int numreplicas, unsigned long timeout, unsigned int replicasnb, int dest_fd){
-    std::string resp = parse_encode_integer(replicasnb);
+void CommandProcessing::wait(unsigned int numreplicas, unsigned long timeout, int dest_fd){
+    int nb_replicas_updated = 0;
+    if (GlobalMasterDatas::prec_commands_offset == GlobalMasterDatas::commands_offset){
+        for (auto& replica_pair: GlobalMasterDatas::replicas_offsets)
+            CommandProcessing::send_replconf_getack(replica_pair.first);
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
+    std::vector<int> list_replicas_fd;
+    for (auto&  replica_pair: GlobalMasterDatas::replicas_offsets)
+        list_replicas_fd.push_back(replica_pair.first);
+
+    auto limit = get_now_time_milliseconds() + std::chrono::milliseconds(timeout);
+
+    while (get_now_time_milliseconds() < limit && nb_replicas_updated < numreplicas){
+        for (auto&  replica_pair: GlobalMasterDatas::replicas_offsets)
+            if (replica_pair.second == GlobalMasterDatas::prec_commands_offset){
+                auto it = std::find(list_replicas_fd.begin(), list_replicas_fd.end(), replica_pair.first);
+                if (it != list_replicas_fd.end()){
+                    list_replicas_fd.erase(it);
+                    nb_replicas_updated++;
+                }
+            }
+        
+    }
+
+    std::string resp = parse_encode_integer(nb_replicas_updated);
     send_data(resp, dest_fd);
+}
+
+int64_t CommandProcessing::get_now_time_milliseconds() {
+    auto now = std::chrono::system_clock::now();
+    auto duration = now.time_since_epoch();
+    return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 }
 
 void CommandProcessing::replconf(std::vector<std::string> extras, int dest_fd){
@@ -153,9 +183,16 @@ void CommandProcessing::replconf(std::vector<std::string> extras, int dest_fd){
         std::string resp = parse_encode_array(rep);
         send_data(resp, dest_fd);
     }
+    else if (extras[0] == "ack" && extras.size() == 2){
+        try {
+            int num = stoi(extras[1]);
+            GlobalMasterDatas::replicas_offsets[dest_fd] = num;
+        }
+        catch(std::exception e){}
+    }
 }
 
-void CommandProcessing::psync(std::vector<std::string> extras, int dest_fd, std::vector<int>& replicas_fd){
+void CommandProcessing::psync(std::vector<std::string> extras, int dest_fd){
     if (extras[0] == "?" && extras[1] == "-1"){
         std::string replication_id = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
         std::string resp = parse_encode_simple_string("FULLRESYNC " + replication_id + " 0");
@@ -165,8 +202,9 @@ void CommandProcessing::psync(std::vector<std::string> extras, int dest_fd, std:
         unsigned char data[size];
         memcpy(data, bytes.data(), size);
         if (send_data(resp, dest_fd))
-            if (send(dest_fd, data, size, 0) > 0)
-                replicas_fd.push_back(dest_fd);
+            if (send(dest_fd, data, size, 0) > 0){
+                GlobalMasterDatas::replicas_offsets[dest_fd] = 0;
+            }
     }   
 }
 
@@ -196,4 +234,11 @@ std::pair<std::string, std::vector<std::any>> CommandProcessing::get_command_arr
         array_cmd.push_back(command[i]);
     }
     return std::make_pair(cmd, array_cmd);
+};
+
+void CommandProcessing::send_replconf_getack(int dest_fd){
+    std::vector<std::any> rep = {std::string("REPLCONF"), std::string("getack"), std::string("*")};
+    std::string resp = parse_encode_array(rep);
+    GlobalMasterDatas::set_commands_offset(resp.size(), false);
+    send_data(resp, dest_fd);
 };

@@ -38,17 +38,20 @@ void SocketManagement::handle_connection(const int& clientfd){
             CommandProcessing::echo(extra_params, clientfd);
         }
         else if (cmd == "wait"){
-            CommandProcessing::wait(std::stoi(extra_params[0]), std::stol(extra_params[1]), replicas_fd.size(), clientfd);
+            CommandProcessing::wait(std::stoi(extra_params[0]), std::stol(extra_params[1]), clientfd);
         }
         else if (cmd == "ping"){
             CommandProcessing::ping(clientfd);
         }
         else if (cmd == "set"){
-            if (GlobalDatas::isMaster)
-                for (int replica_fd: this->replicas_fd) {
-                    if (send(replica_fd, data.c_str(), data.length(), 0) <= 0)
+            if (GlobalDatas::isMaster){
+                for (auto& replica_fd_offset: GlobalMasterDatas::replicas_offsets) {
+                    GlobalMasterDatas::set_commands_offset(data.size(), true);
+                    if (send(replica_fd_offset.first, data.c_str(), data.length(), 0) <= 0)
                         std::cout <<  "replica send msg failed";                
                 }
+                GlobalDatas::set_commands_offset(data.size());
+            }
             CommandProcessing::set(extra_params, clientfd);
         }
         else if (cmd == "get"){
@@ -67,7 +70,7 @@ void SocketManagement::handle_connection(const int& clientfd){
             CommandProcessing::replconf(extra_params, clientfd);
         }
         else if (cmd == "psync"){
-            CommandProcessing::psync(extra_params, clientfd, replicas_fd);
+            CommandProcessing::psync(extra_params, clientfd);
         }
     }
 }

@@ -17,8 +17,6 @@ class SocketManagement {
         
         std::map<std::string, std::string> extra_args;
 
-        std::vector<int> replicas_fd;
-
         int send_receive_msg_by_command(std::string tosend, std::string toreceive);
 
         void process_command(std::string, std::vector<std::string>);
