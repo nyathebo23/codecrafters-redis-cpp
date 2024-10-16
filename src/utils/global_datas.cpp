@@ -31,8 +31,8 @@ unsigned int GlobalMasterDatas::commands_offset = 0;
 
 void GlobalMasterDatas::set_commands_offset(unsigned short offset, bool is_write_cmd){
     if (is_write_cmd){
-        GlobalMasterDatas::prec_commands_offset += offset;
-        GlobalMasterDatas::commands_offset = GlobalMasterDatas::prec_commands_offset;
+        GlobalMasterDatas::commands_offset += offset;
+        GlobalMasterDatas::prec_commands_offset = GlobalMasterDatas::commands_offset;
     }
     else {
         GlobalMasterDatas::prec_commands_offset = GlobalMasterDatas::commands_offset;
