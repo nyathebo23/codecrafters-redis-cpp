@@ -217,10 +217,7 @@ void SocketManagement::process_command(std::string cmd, std::vector<std::string>
     }
 }
 
-void SocketManagement::retrieve_commands_from_master(int bytes, char* buff, const int size, int& pos) {
-    char buffer[size];
-    int bytes_received = bytes;
-    std::strcpy(buffer, buff);
+void SocketManagement::retrieve_commands_from_master(int& bytes_received, char* buffer, const int size, int& pos) {
     if (bytes_received == pos){
         std::memset(buffer, 0, sizeof(buffer));
         pos = 0;
