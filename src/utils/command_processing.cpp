@@ -144,7 +144,7 @@ std::pair<unsigned long, unsigned int> CommandProcessing::split_entry_id(std::st
         return std::make_pair(millisecond_time, sequence_num);
     }
     catch(std::exception e){
-        std::cout << e.what() " \n";
+        std::cout << e.what() << " \n";
         return std::make_pair(1, 2);    
     }
 
