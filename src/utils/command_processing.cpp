@@ -37,10 +37,10 @@ void CommandProcessing::execute_after_delay(int delay, const std::string& key) {
     erase_key(key);
 }
 
-void CommandProcessing::type(std::vector<std::string> extras, int dest_fd){
-    if (GlobalDatas::dict_table.count(extras[0]) != 0)
+void CommandProcessing::type(std::string key, int dest_fd){
+    if (GlobalDatas::dict_table.count(key) != 0)
         send_data(std::string("+string\r\n"), dest_fd);
-    else if (extras[0] == "stream_key"){
+    else if (GlobalDatas::get_entry_index(key) != GlobalDatas::entries.size()){
         send_data(std::string("+stream\r\n"), dest_fd);
     } else  {
         send_data(std::string("+none\r\n"), dest_fd);
@@ -135,7 +135,7 @@ void CommandProcessing::get(std::vector<std::string> extras, int dest_fd, std::s
 }
 
 void CommandProcessing::xadd(std::vector<std::string> extras, int dest_fd){
-    if (extras[0] == "stream_key"){
+    if (extras.size() % 2 == 0){
         GlobalDatas::set_entry(extras);
         std::string resp = parse_encode_bulk_string(extras[1]);
         send_data(resp, dest_fd);

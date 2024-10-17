@@ -5,13 +5,17 @@
 #include <map>
 #include <vector>
 
+using VectorMapEntries = std::vector<std::map<std::string, std::string>>;
+
 class GlobalDatas {
     public:
         static bool isMaster;
 
-        static std::vector<std::map<std::string, std::string>> entries;
+        static std::vector<std::pair<std::string, VectorMapEntries>> entries;
 
         static void set_entry(std::vector<std::string> vals);
+
+        static int get_entry_index(std::string entry_key);
 
         static unsigned int prec_commands_offset;
 

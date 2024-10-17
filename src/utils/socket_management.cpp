@@ -47,7 +47,7 @@ void SocketManagement::handle_connection(const int& clientfd){
             CommandProcessing::set(extra_params, data, clientfd);
         }
         else if (cmd == "type"){
-            CommandProcessing::type(extra_params, clientfd);
+            CommandProcessing::type(extra_params[0], clientfd);
         }
         else if (cmd == "xadd"){
             CommandProcessing::xadd(extra_params, clientfd);

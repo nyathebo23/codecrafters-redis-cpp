@@ -1,11 +1,12 @@
 #include "global_datas.h"
 #include <iostream>
 
+
 bool GlobalDatas::isMaster = true;
 
 unsigned int GlobalDatas::prec_commands_offset = 0;
 
-std::vector<std::map<std::string, std::string>> GlobalDatas::entries;
+std::vector<std::pair<std::string, VectorMapEntries>> GlobalDatas::entries;
 
 unsigned int GlobalDatas::commands_offset = 0;
 
@@ -23,13 +24,32 @@ std::string GlobalDatas::get(std::string key){
     return dict_table[key];
 }
 
+int GlobalDatas::get_entry_index(std::string entry_key){
+    int index = 0, size = entries.size();
+    while (index < size && entries[index].first != entry_key){
+        index++;
+    } 
+    return index;
+};
+
+
 void GlobalDatas::set_entry(std::vector<std::string> vals){
     std::map<std::string, std::string> map_entry;
     map_entry["id"] = vals[1];
     for (int i = 2; i < vals.size()-1; i+=2)
         map_entry[vals[i]] = vals[i+1];
-    entries.push_back(map_entry);
+    int index = get_entry_index(vals[0]);
+    VectorMapEntries vector_map_entries;
+    if (index == entries.size()){
+        vector_map_entries.push_back(map_entry);
+        entries.push_back(std::make_pair(vals[0], vector_map_entries));
+    }
+    else {
+        entries[index].second.push_back(map_entry);
+    }        
 };
+
+
 
 std::map<int, int> GlobalMasterDatas::replicas_offsets;
 
