@@ -152,18 +152,19 @@ std::pair<long long, int> CommandProcessing::split_entry_id(std::string str){
 
 void CommandProcessing::xadd(std::vector<std::string> extras, int dest_fd){
     if (extras.size() % 2 == 0){
-        int size = GlobalDatas::entries.size();
+        int index_entry = GlobalDatas::get_entry_index(extras[0]);
         std::string str_error;
         auto new_entry_id = split_entry_id(extras[1]);
         if (new_entry_id.first == -1L || new_entry_id.second == -1){
             str_error = "ERR The ID specified in XADD is invalid";
         }
-        if (new_entry_id.first == 0 && new_entry_id.second == 0){
+        else if (new_entry_id.first == 0 && new_entry_id.second == 0){
             str_error = "ERR The ID specified in XADD must be greater than 0-0";
         }   
-        if (size > 0){
-            auto last_entry = GlobalDatas::entries.back();
-            auto last_entry_id = split_entry_id(last_entry.first);
+        else if (index_entry < GlobalDatas::entries.size()){
+            int index_entry = GlobalDatas::get_entry_index(extras[0]);
+            auto last_entry = GlobalDatas::entries[index_entry].second.back();
+            auto last_entry_id = split_entry_id(last_entry["id"]);
             std::cout << new_entry_id.first << " " << last_entry_id.first << " " << new_entry_id.second << " " << last_entry_id.second << "\n";
             if (new_entry_id.first < last_entry_id.first || ((last_entry_id.first == new_entry_id.first) &&
             (new_entry_id.second <= last_entry_id.second)))  {
