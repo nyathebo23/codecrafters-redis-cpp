@@ -5,6 +5,8 @@ bool GlobalDatas::isMaster = true;
 
 unsigned int GlobalDatas::prec_commands_offset = 0;
 
+std::vector<std::map<std::string, std::string>> GlobalDatas::entries;
+
 unsigned int GlobalDatas::commands_offset = 0;
 
 void GlobalDatas::set_commands_offset(unsigned short offset){
@@ -21,7 +23,13 @@ std::string GlobalDatas::get(std::string key){
     return dict_table[key];
 }
 
-
+void GlobalDatas::set_entry(std::vector<std::string> vals){
+    std::map<std::string, std::string> map_entry;
+    map_entry["id"] = vals[1];
+    for (int i = 2; i < vals.size()-1; i+=2)
+        map_entry[vals[i]] = vals[i+1];
+    entries.push_back(map_entry);
+};
 
 std::map<int, int> GlobalMasterDatas::replicas_offsets;
 

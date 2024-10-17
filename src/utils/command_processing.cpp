@@ -38,10 +38,13 @@ void CommandProcessing::execute_after_delay(int delay, const std::string& key) {
 }
 
 void CommandProcessing::type(std::vector<std::string> extras, int dest_fd){
-    if (GlobalDatas::dict_table.count(extras[0]) == 0)
-        send_data(std::string("+none\r\n"), dest_fd);
-    else 
+    if (GlobalDatas::dict_table.count(extras[0]) != 0)
         send_data(std::string("+string\r\n"), dest_fd);
+    else if (extras[0] == "stream_key"){
+        send_data(std::string("+stream\r\n"), dest_fd);
+    } else  {
+        send_data(std::string("+none\r\n"), dest_fd);
+    }
 }
 
 bool CommandProcessing::send_data(std::string data, int dest_fd){
@@ -130,6 +133,15 @@ void CommandProcessing::get(std::vector<std::string> extras, int dest_fd, std::s
     }
     
 }
+
+void CommandProcessing::xadd(std::vector<std::string> extras, int dest_fd){
+    if (extras[0] == "stream_key"){
+        GlobalDatas::set_entry(extras);
+        std::string resp = parse_encode_bulk_string(extras[1]);
+        send_data(resp, dest_fd);
+    }
+};
+
 
 void CommandProcessing::config(std::vector<std::string> extras, int dest_fd, std::map<std::string, std::string> args_map){
     std::string resp;

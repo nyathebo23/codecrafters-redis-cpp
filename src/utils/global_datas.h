@@ -3,10 +3,15 @@
 
 #include <string>
 #include <map>
+#include <vector>
 
 class GlobalDatas {
     public:
         static bool isMaster;
+
+        static std::vector<std::map<std::string, std::string>> entries;
+
+        static void set_entry(std::vector<std::string> vals);
 
         static unsigned int prec_commands_offset;
 

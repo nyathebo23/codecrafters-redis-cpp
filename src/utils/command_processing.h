@@ -29,6 +29,8 @@ class CommandProcessing {
         static void wait(unsigned int numreplicas, unsigned long timeout, int dest_fd);
         static void psync(std::vector<std::string> extras, int dest_fd);
         static void type(std::vector<std::string> extras, int dest_fd);
+        static void xadd(std::vector<std::string> extras, int dest_fd);
+
         static void config(std::vector<std::string> extras, int dest_fd, std::map<std::string, std::string> args_map);
 };
 
