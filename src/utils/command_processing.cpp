@@ -134,11 +134,19 @@ void CommandProcessing::get(std::vector<std::string> extras, int dest_fd, std::s
     
 }
 
-std::pair<long, int> CommandProcessing::split_entry_id(std::string str){
-    int ind_separator = str.find("-");
-    long millisecond_time = std::stol(str.substr(0, ind_separator));
-    int sequence_num = std::stoi(str.substr(ind_separator+1));
-    return std::make_pair(millisecond_time, sequence_num);
+std::pair<long long, int> CommandProcessing::split_entry_id(std::string str){
+    size_t ind_separator = str.find("-");
+    if (ind_separator == 0 || ind_separator == str.size() - 1 || ind_separator = std::string::npos)
+        return std::make_pair(-1L, -1);
+    try {
+        long long millisecond_time = std::stoll(str.substr(0, ind_separator));
+        int sequence_num = std::stoi(str.substr(ind_separator+1));
+        return std::make_pair(millisecond_time, sequence_num);
+    } catch (const std::invalid_argument& e) {
+        return std::make_pair(-1L, -1);
+    } catch (const std::out_of_range& e) {
+        return std::make_pair(-1L, -1);
+    }
 };
 
 void CommandProcessing::xadd(std::vector<std::string> extras, int dest_fd){
@@ -146,6 +154,11 @@ void CommandProcessing::xadd(std::vector<std::string> extras, int dest_fd){
         int size = GlobalDatas::entries.size();
         std::string str_error;
         auto new_entry_id = split_entry_id(extras[1]);
+        if (new_entry_id.first == -1L || new_entry_id.second == -1){
+            str_error = "ERR The ID specified in XADD is invalid";
+            send_data(parse_encode_error_msg(str_error), dest_fd);
+            return;
+        }
         if (new_entry_id.first == 0 && new_entry_id.second == 0){
             str_error = "ERR The ID specified in XADD must be greater than 0-0";
             send_data(parse_encode_error_msg(str_error), dest_fd);
