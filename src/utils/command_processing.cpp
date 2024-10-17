@@ -138,7 +138,7 @@ std::pair<unsigned long, unsigned int> CommandProcessing::split_entry_id(std::st
     int ind_separator = str.find("-");
     unsigned long millisecond_time = std::stol(str.substr(0, ind_separator));
     unsigned int sequence_num = std::stoi(str.substr(ind_separator+1));
-    std::cout << millisecond_time << " \n";
+    std::cout << str.substr(ind_separator+1) << " \n";
     return std::make_pair(millisecond_time, sequence_num);
 };
 
