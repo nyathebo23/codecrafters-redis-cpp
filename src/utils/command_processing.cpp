@@ -136,11 +136,10 @@ void CommandProcessing::get(std::vector<std::string> extras, int dest_fd, std::s
 
 std::pair<unsigned long, unsigned int> CommandProcessing::split_entry_id(std::string str){
     int ind_separator = str.find("-");
-    std::cout << ind_separator << " \n";
-    unsigned long millisecond_time = std::stoi(str.substr(0, ind_separator));
-    std::cout << millisecond_time << " \n";
-    unsigned int sequence_num = std::stoi(str.substr(ind_separator+1));
-    std::cout << sequence_num << " " <<str.substr(ind_separator+1) <<  " " << str.size() << " "<< str.substr(0, ind_separator) << " \n";
+    std::string p1 = str.substr(0, ind_separator);
+    std::string p2 = str.substr(ind_separator+1);
+    unsigned long millisecond_time = std::stol(p1);
+    unsigned int sequence_num = std::stoi(p2);
 
     return std::make_pair(millisecond_time, sequence_num);
 };
