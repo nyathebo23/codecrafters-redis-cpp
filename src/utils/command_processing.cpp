@@ -184,7 +184,7 @@ void CommandProcessing::xadd(std::vector<std::string> extras, int dest_fd){
             }
         }
         else if (new_entry_id_str.second == "*"){
-            id = new_entry_id_str.first + "-" + new_ms_time == 0 ? "1" : "0";
+            id = new_entry_id_str.first + "-" + (new_ms_time == 0 ? "1" : "0");
             extras[1] = id;
         }  
     }
