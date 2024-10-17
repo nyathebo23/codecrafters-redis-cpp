@@ -235,7 +235,7 @@ void CommandProcessing::xrange(std::vector<std::string> extras, int dest_fd) {
             ++it;
             elt_id = split_entry_id_num((*it)["id"]);
         }
-        while (it != entry_data.end() (&& elt_id.first < range_sup_id.first || 
+        while (it != entry_data.end() && (elt_id.first < range_sup_id.first || 
             ((elt_id.first == range_sup_id.first) && (elt_id.second <= range_sup_id.second))))
         {
             ++it;    
