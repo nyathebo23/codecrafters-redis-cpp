@@ -139,24 +139,27 @@ void CommandProcessing::xadd(std::vector<std::string> extras, int dest_fd){
         int size = GlobalDatas::entries.size();
         std::string str_error;
         if (size > 0){
-            auto& last_entry = GlobalDatas::entries.back();
-            int ind_separator = last_entry.first.find("-");
-            auto milliseconds_time = std::stol(last_entry.first.substr(0, ind_separator));
-            auto sequence_num = std::stoi(last_entry.first.substr(ind_separator));
-            if (milliseconds_time == 0 && sequence_num == 0){
+            int ind_separator2 = extras[1].find("-");
+            auto milliseconds_time2 = std::stol(last_entry.first.substr(0, ind_separator2));
+            auto sequence_num2 = std::stoi(last_entry.first.substr(ind_separator2+1));
+
+            if (milliseconds_time2 == 0 && sequence_num2 == 0){
                 str_error = "ERR The ID specified in XADD must be greater than 0-0";
                 send_data(parse_encode_error_msg(str_error), dest_fd);
                 return;
-            }
-            int ind_separator2 = extras[1].find("-");
-            auto milliseconds_time2 = std::stol(last_entry.first.substr(0, ind_separator2));
-            auto sequence_num2 = std::stoi(last_entry.first.substr(ind_separator2));
+            }   
+
+            auto& last_entry = GlobalDatas::entries.back();
+            int ind_separator = last_entry.first.find("-");
+            auto milliseconds_time = std::stol(last_entry.first.substr(0, ind_separator));
+            auto sequence_num = std::stoi(last_entry.first.substr(ind_separator+1));
+
             if (milliseconds_time2 < milliseconds_time || ((milliseconds_time2 == milliseconds_time) &&
             (milliseconds_time2 <= milliseconds_time)))  {
                 str_error = "ERR The ID specified in XADD is equal or smaller than the target stream top item";
                 send_data(parse_encode_error_msg(str_error), dest_fd);
                 return;
-            }        
+            }     
         }
         GlobalDatas::set_entry(extras);
         std::string resp = parse_encode_bulk_string(extras[1]);
