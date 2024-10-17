@@ -21,6 +21,7 @@
 #include "decode/simple_data_parser_dec.h"
 #include "command_processing.h"
 #include "global_datas.h"
+#include <sstream>
 
 
 
