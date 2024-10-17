@@ -137,7 +137,7 @@ void CommandProcessing::get(std::vector<std::string> extras, int dest_fd, std::s
 
 std::pair<std::string, std::string> split_entry_id(std::string str){
     size_t ind_separator = str.find("-");
-    return std::make_pair(str.substr(0, ind_separator), str.substr(ind_separator+1))
+    return std::make_pair(str.substr(0, ind_separator), str.substr(ind_separator+1));
 }
 
 void CommandProcessing::xadd(std::vector<std::string> extras, int dest_fd){
