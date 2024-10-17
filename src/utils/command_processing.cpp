@@ -156,8 +156,9 @@ void CommandProcessing::wait(unsigned int numreplicas, unsigned long timeout, in
     if (GlobalMasterDatas::prec_commands_offset == GlobalMasterDatas::commands_offset){
         for (auto& replica_pair: GlobalMasterDatas::replicas_offsets)
             CommandProcessing::send_replconf_getack(replica_pair.first);
+        if (GlobalMasterDatas::prec_commands_offset != 0)
+            GlobalMasterDatas::set_commands_offset(REPLCONF_GETACK_CMD.size(), false);
     }
-    GlobalMasterDatas::set_commands_offset(REPLCONF_GETACK_CMD.size(), false);
     std::vector<int> list_replicas_fd;
     for (auto&  replica_pair: GlobalMasterDatas::replicas_offsets)
         list_replicas_fd.push_back(replica_pair.first);
