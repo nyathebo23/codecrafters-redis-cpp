@@ -168,7 +168,7 @@ void CommandProcessing::xadd(std::vector<std::string> extras, int dest_fd){
         if (size > 0){
             auto last_entry = GlobalDatas::entries.back();
             auto last_entry_id = split_entry_id(last_entry.first);
-            std::cout << new_entry_id.first << " " << last_entry.first << " " << new_entry_id.second << " " << last_entry.second;
+            std::cout << new_entry_id.first << " " << last_entry_id.first << " " << new_entry_id.second << " " << last_entry_id.second;
             if (new_entry_id.first < last_entry_id.first || ((last_entry_id.first == new_entry_id.first) &&
             (new_entry_id.second <= last_entry_id.second)))  {
                 str_error = "ERR The ID specified in XADD is equal or smaller than the target stream top item";
