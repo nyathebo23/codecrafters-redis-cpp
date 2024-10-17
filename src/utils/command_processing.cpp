@@ -142,7 +142,7 @@ void CommandProcessing::xadd(std::vector<std::string> extras, int dest_fd){
             int ind_separator2 = extras[1].find("-");
             auto milliseconds_time2 = std::stol(extras[1].substr(0, ind_separator2));
             auto sequence_num2 = std::stoi(extras[1].substr(ind_separator2+1));
-
+            std::cout << extras[1].substr(0, ind_separator2);
             if (milliseconds_time2 == 0 && sequence_num2 == 0){
                 str_error = "ERR The ID specified in XADD must be greater than 0-0";
                 send_data(parse_encode_error_msg(str_error), dest_fd);
