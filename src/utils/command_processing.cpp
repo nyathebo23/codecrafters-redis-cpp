@@ -41,7 +41,7 @@ void CommandProcessing::type(std::vector<std::string> extras, int dest_fd){
     if (GlobalDatas::dict_table.count(extras[0]) == 0)
         send_data(std::string("+none\r\n"), dest_fd);
     else 
-        send_data(std::string("+string\r\n"), dest_fd)
+        send_data(std::string("+string\r\n"), dest_fd);
 }
 
 bool CommandProcessing::send_data(std::string data, int dest_fd){
