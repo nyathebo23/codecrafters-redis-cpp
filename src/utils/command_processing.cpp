@@ -136,10 +136,18 @@ void CommandProcessing::get(std::vector<std::string> extras, int dest_fd, std::s
 
 std::pair<unsigned long, unsigned int> CommandProcessing::split_entry_id(std::string str){
     int ind_separator = str.find("-");
-    unsigned long millisecond_time = std::stol(str.substr(0, ind_separator));
-    unsigned int sequence_num = std::stoi(str.substr(ind_separator+1));
-    std::cout << str.substr(ind_separator+1) << " \n";
-    return std::make_pair(millisecond_time, sequence_num);
+
+    try {
+        unsigned long millisecond_time = std::stol(str.substr(0, ind_separator));
+        unsigned int sequence_num = std::stoi(str.substr(ind_separator+1));
+
+        return std::make_pair(millisecond_time, sequence_num);
+    }
+    catch(std::exception e){
+        std::cout << e.what() " \n";
+        return std::make_pair(1, 2);    
+    }
+
 };
 
 void CommandProcessing::xadd(std::vector<std::string> extras, int dest_fd){
