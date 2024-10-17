@@ -221,8 +221,8 @@ std::pair<unsigned long, unsigned int> CommandProcessing::split_entry_id_num(std
 
 void CommandProcessing::xrange(std::vector<std::string> extras, int dest_fd) {
     std::string entry_key = extras[0];
-    auto range_inf_id = split_entry_id(extras[1]);
-    auto range_sup_id = split_entry_id(extras[2]);
+    auto range_inf_id = split_entry_id_num(extras[1]);
+    auto range_sup_id = split_entry_id_num(extras[2]);
     int index_entry = GlobalDatas::get_entry_index(entry_key);
     VectorMapEntries entry_data_filtered;
     if (index_entry < GlobalDatas::entries.size()){
