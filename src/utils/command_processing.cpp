@@ -134,51 +134,64 @@ void CommandProcessing::get(std::vector<std::string> extras, int dest_fd, std::s
     
 }
 
-std::pair<long long, int> CommandProcessing::split_entry_id(std::string str){
+
+std::pair<std::string, std::string> split_entry_id(std::string str){
     size_t ind_separator = str.find("-");
-    if (ind_separator == 0 || ind_separator == str.size() - 1 || ind_separator == std::string::npos)
-        return std::make_pair(-1L, -1);
-    try {
-        long long millisecond_time = std::stoll(str.substr(0, ind_separator));
-        int sequence_num = std::stoi(str.substr(ind_separator+1));
-        return std::make_pair(millisecond_time, sequence_num);
-    } catch (const std::invalid_argument& e) {
-        std::cout << "invalid " << e.what();
-        return std::make_pair(-1L, -1);
-    } catch (const std::out_of_range& e) {
-        return std::make_pair(-1L, -1);
-    }
-};
+    return std::make_pair(str.substr(0, ind_separator), str.substr(ind_separator+1))
+}
 
 void CommandProcessing::xadd(std::vector<std::string> extras, int dest_fd){
-    if (extras.size() % 2 == 0){
-        int index_entry = GlobalDatas::get_entry_index(extras[0]);
-        std::string str_error;
-        auto new_entry_id = split_entry_id(extras[1]);
-        if (new_entry_id.first == -1L || new_entry_id.second == -1){
-            str_error = "ERR The ID specified in XADD is invalid";
-        }
-        else if (new_entry_id.first == 0 && new_entry_id.second == 0){
+    int index_entry = GlobalDatas::get_entry_index(extras[0]);
+    std::string id;
+    std::string str_error;
+
+    if (extras[1] == "*"){
+        long timestamp = get_now_time_milliseconds();
+        id = std::to_string(timestamp) + "-0";
+        extras[1] = id;
+    }
+    else {
+        auto new_entry_id_str = split_entry_id(extras[1]);
+        long new_ms_time = std::stol(new_entry_id_str.first);
+        if (new_ms_time == 0 && new_entry_id_str.second != "*" && std::stol(new_entry_id_str.second) == 0){
             str_error = "ERR The ID specified in XADD must be greater than 0-0";
-        }   
-        else if (index_entry < GlobalDatas::entries.size()){
-            int index_entry = GlobalDatas::get_entry_index(extras[0]);
-            auto last_entry = GlobalDatas::entries[index_entry].second.back();
-            auto last_entry_id = split_entry_id(last_entry["id"]);
-            std::cout << new_entry_id.first << " " << last_entry_id.first << " " << new_entry_id.second << " " << last_entry_id.second << "\n";
-            if (new_entry_id.first < last_entry_id.first || ((last_entry_id.first == new_entry_id.first) &&
-            (new_entry_id.second <= last_entry_id.second)))  {
-                str_error = "ERR The ID specified in XADD is equal or smaller than the target stream top item";
-            }     
-        }
-        if (!str_error.empty()){
             send_data(parse_encode_error_msg(str_error), dest_fd);
             return;
         }
-        GlobalDatas::set_entry(extras);
-        std::string resp = parse_encode_bulk_string(extras[1]);
-        send_data(resp, dest_fd);
+        int index_entry = GlobalDatas::get_entry_index(extras[0]);        
+        if (index_entry < GlobalDatas::entries.size()){
+            auto last_entry = GlobalDatas::entries[index_entry].second.back();
+            auto last_entry_id = split_entry_id(last_entry["id"]);
+            long last_entry_ms_time = std::stol(last_entry_id.first);
+            int last_entry_seq_num = std::stol(last_entry_id.second);
+            if (last_entry_ms_time > new_ms_time){
+                str_error = "ERR The ID specified in XADD is equal or smaller than the target stream top item";
+                send_data(parse_encode_error_msg(str_error), dest_fd);
+                return;
+            }
+            else if (last_entry_ms_time == new_ms_time) {
+                if (new_entry_id_str.second == "*"){
+                    id = new_entry_id_str.first + "-" + std::to_string(last_entry_seq_num+1);
+                    extras[1] = id;
+                } else {
+                    int new_seq_number = std::stoi(new_entry_id_str.second);
+                    if (new_seq_number <= last_entry_seq_num){
+                        str_error = "ERR The ID specified in XADD is equal or smaller than the target stream top item";
+                        send_data(parse_encode_error_msg(str_error), dest_fd);
+                        return;
+                    }  
+                }
+            }
+        }
+        else if (new_entry_id_str.second == "*"){
+            id = new_entry_id_str.first + "-" + new_ms_time == 0 ? "1" : "0";
+            extras[1] = id;
+        }  
     }
+    GlobalDatas::set_entry(extras);
+    std::string resp = parse_encode_bulk_string(extras[1]);
+    send_data(resp, dest_fd);
+        
 };
 
 
