@@ -157,24 +157,22 @@ void CommandProcessing::xadd(std::vector<std::string> extras, int dest_fd){
         auto new_entry_id = split_entry_id(extras[1]);
         if (new_entry_id.first == -1L || new_entry_id.second == -1){
             str_error = "ERR The ID specified in XADD is invalid";
-            send_data(parse_encode_error_msg(str_error), dest_fd);
-            return;
         }
         if (new_entry_id.first == 0 && new_entry_id.second == 0){
             str_error = "ERR The ID specified in XADD must be greater than 0-0";
-            send_data(parse_encode_error_msg(str_error), dest_fd);
-            return;
         }   
         if (size > 0){
             auto last_entry = GlobalDatas::entries.back();
             auto last_entry_id = split_entry_id(last_entry.first);
-            std::cout << new_entry_id.first << " " << last_entry_id.first << " " << new_entry_id.second << " " << last_entry_id.second;
+            std::cout << new_entry_id.first << " " << last_entry_id.first << " " << new_entry_id.second << " " << last_entry_id.second << "\n";
             if (new_entry_id.first < last_entry_id.first || ((last_entry_id.first == new_entry_id.first) &&
             (new_entry_id.second <= last_entry_id.second)))  {
                 str_error = "ERR The ID specified in XADD is equal or smaller than the target stream top item";
-                send_data(parse_encode_error_msg(str_error), dest_fd);
-                return;
             }     
+        }
+        if (!str_error.empty()){
+            send_data(parse_encode_error_msg(str_error), dest_fd);
+            return;
         }
         GlobalDatas::set_entry(extras);
         std::string resp = parse_encode_bulk_string(extras[1]);
