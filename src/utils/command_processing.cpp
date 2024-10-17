@@ -140,7 +140,7 @@ std::pair<unsigned long, unsigned int> CommandProcessing::split_entry_id(std::st
     unsigned long millisecond_time = std::stol(str.substr(0, ind_separator));
     std::cout << millisecond_time << " \n";
     unsigned int sequence_num = std::stoi(str.substr(ind_separator+1));
-    std::cout << sequence_num << " " << str.size() << " "<< str.substr(0, ind_separator) << " \n";
+    std::cout << sequence_num << " " str.substr(ind_separator+1) <<  " " << str.size() << " "<< str.substr(0, ind_separator) << " \n";
 
     return std::make_pair(millisecond_time, sequence_num);
 };
