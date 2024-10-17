@@ -21,7 +21,6 @@
 #include "decode/simple_data_parser_dec.h"
 #include "command_processing.h"
 #include "global_datas.h"
-#include <sstream>
 
 
 
@@ -135,15 +134,10 @@ void CommandProcessing::get(std::vector<std::string> extras, int dest_fd, std::s
     
 }
 
-std::pair<unsigned long, unsigned int> CommandProcessing::split_entry_id(std::string str){
-    std::stringstream ss(str);
-    char delimiter = '-';
-    std::string milliseconds_time_str;
-    std::string sequence_num_str;
-    getline(ss, milliseconds_time_str, delimiter);
-    getline(ss, sequence_num_str, delimiter);
-    unsigned long millisecond_time = std::stol(milliseconds_time_str);
-    unsigned int sequence_num = std::stoi(sequence_num_str);
+std::pair<long, int> CommandProcessing::split_entry_id(std::string str){
+    int ind_separator = str.find("-");
+    long millisecond_time = std::stol(str.substr(0, ind_separator));
+    int sequence_num = std::stoi(str.substr(ind_separator+1));
     return std::make_pair(millisecond_time, sequence_num);
 };
 
