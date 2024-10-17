@@ -213,7 +213,6 @@ void CommandProcessing::wait(unsigned int numreplicas, unsigned long timeout, in
         list_replicas_fd.push_back(replica_pair.first);
 
     auto limit = get_now_time_milliseconds() + timeout;
-    std::cout << "prec cmd " << GlobalMasterDatas::prec_commands_offset << "\n";
     while (get_now_time_milliseconds() < limit && nb_replicas_updated < numreplicas){
         for (auto&  replica_pair: GlobalMasterDatas::replicas_offsets)
             if (replica_pair.second == GlobalMasterDatas::prec_commands_offset){
@@ -247,7 +246,6 @@ void CommandProcessing::replconf(std::vector<std::string> extras, int dest_fd){
         try {
             int num = stoi(extras[1]);
             GlobalMasterDatas::replicas_offsets[dest_fd] = num;
-            std::cout << "num " << num << "\n";
         }
         catch(std::exception e){}
     }
