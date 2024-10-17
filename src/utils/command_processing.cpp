@@ -214,6 +214,42 @@ void CommandProcessing::config(std::vector<std::string> extras, int dest_fd, std
     }
 }
 
+std::pair<unsigned long, unsigned int> CommandProcessing::split_entry_id_num(std::string str){
+    size_t ind_separator = str.find("-");
+    return std::make_pair(std::stol(str.substr(0, ind_separator)), std::stoi(str.substr(ind_separator+1)));
+}
+
+void CommandProcessing::xrange(std::vector<std::string> extras, int dest_fd) {
+    std::string entry_key = extras[0];
+    auto range_inf_id = split_entry_id(extras[1]);
+    auto range_sup_id = split_entry_id(extras[2]);
+    int index_entry = GlobalDatas::get_entry_index(entry_key);
+    VectorMapEntries entry_data_filtered;
+    if (index_entry < GlobalDatas::entries.size()){
+        auto entry_data = GlobalDatas::entries[index_entry].second;
+        VectorMapEntries::iterator it = entry_data.begin();
+        auto elt_id = split_entry_id_num((*it)["id"]);
+        while (it != entry_data.end() && (elt_id.first < range_inf_id.first || 
+            ((elt_id.first == range_inf_id.first) && (elt_id.second < range_inf_id.second))))
+        {
+            ++it;
+            elt_id = split_entry_id_num((*it)["id"]);
+        }
+        while (it != entry_data.end() && elt_id.first < range_sup_id.first || 
+            ((elt_id.first == range_sup_id.first) && (elt_id.second <= range_sup_id.second)))
+        {
+            ++it;    
+            auto elt = *it;
+            elt_id = split_entry_id_num(elt["id"]);
+            entry_data_filtered.push_back(elt);
+        }
+
+    }
+    std::string resp = parse_encode_array_of_array(entry_data_filtered);
+    send_data(resp, dest_fd);
+};
+
+
 void CommandProcessing::info(std::vector<std::string> extras, int dest_fd, std::string role){
     if (extras[0] == "replication"){
         std::string replication_id = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";

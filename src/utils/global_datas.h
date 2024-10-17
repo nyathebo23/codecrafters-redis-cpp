@@ -33,6 +33,7 @@ class GlobalDatas {
 class GlobalMasterDatas {
 
     public:
+    
         static unsigned int prec_commands_offset;
 
         static unsigned int commands_offset;

@@ -7,7 +7,7 @@
 #include "array_parser_enc.h"
 #include "simple_data_parser_enc.h"
 #include "small_aggregate_parser_enc.h"
-
+#include "../global_datas.h"
 
 std::string parse_encode_array(const std::vector<std::any>& msg){
     if (msg.size() == 0)
@@ -26,4 +26,25 @@ std::string parse_encode_array(const std::vector<std::any>& msg){
         } 
     }
     return startenc + encode_text; 
+}
+
+std::string parse_encode_array_of_array(const VectorMapEntries data){
+    int vector_map_size = data.size();
+    if (vector_map_size == 0)
+        return "*0\r\n";
+    VectorMapEntries vmap;
+    std::string entry_encoded = "*" + std::to_string(vector_map_size) +  "\r\n";
+    for (auto map_entry: data){
+        entry_encoded += "*2\r\n";
+        std::map<std::string, std::string>::iterator it = map_entry.begin();
+        entry_encoded += parse_encode_bulk_string(it->second);
+        std::vector<std::any> keys_vals_list;
+        while (it != map_entry.end()){
+            keys_vals_list.push_back(it->first);
+            keys_vals_list.push_back(it->second);
+            ++it;
+        }
+        entry_encoded += parse_encode_array(keys_vals_list);
+    }
+    return entry_encoded; 
 }
