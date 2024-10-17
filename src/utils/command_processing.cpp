@@ -136,9 +136,8 @@ void CommandProcessing::get(std::vector<std::string> extras, int dest_fd, std::s
 
 std::pair<unsigned long, unsigned int> CommandProcessing::split_entry_id(std::string str){
     int ind_separator = str.find("-");
-    auto& [part1, part2] = std::make_pair(str.substr(0, ind_separator), str.substr(ind_separator+1));
-    std::cout << part1 << " " << part2 <<" \n";
-    unsigned long millisecond_time = std::stol(str.substr(0, ind_separator));
+    std::string p1 = str.substr(0, ind_separator);
+    unsigned long millisecond_time = std::stol(p1);
     unsigned int sequence_num = std::stoi(str.substr(ind_separator+1));
     return std::make_pair(millisecond_time, sequence_num);
 };
@@ -147,18 +146,18 @@ void CommandProcessing::xadd(std::vector<std::string> extras, int dest_fd){
     if (extras.size() % 2 == 0){
         int size = GlobalDatas::entries.size();
         std::string str_error;
-        auto& [milliseconds_time2, sequence_num2] = split_entry_id(extras[1]);
-        if (milliseconds_time2 == 0 && sequence_num2 == 0){
+        auto new_entry_id = split_entry_id(extras[1]);
+        if (new_entry_id.first == 0 && new_entry_id.second == 0){
             str_error = "ERR The ID specified in XADD must be greater than 0-0";
             send_data(parse_encode_error_msg(str_error), dest_fd);
             return;
         }   
         if (size > 0){
-            auto& last_entry = GlobalDatas::entries.back();
-            auto& [milliseconds_time, sequence_num] = split_entry_id(last_entry.first);
+            auto last_entry = GlobalDatas::entries.back();
+            auto last_entry_id = split_entry_id(last_entry.first);
 
-            if (milliseconds_time2 < milliseconds_time || ((milliseconds_time2 == milliseconds_time) &&
-            (milliseconds_time2 <= milliseconds_time)))  {
+            if (new_entry_id.first < last_entry_id.first || ((last_entry_id.first == new_entry_id.first) &&
+            (new_entry_id.second <= last_entry_id.second)))  {
                 str_error = "ERR The ID specified in XADD is equal or smaller than the target stream top item";
                 send_data(parse_encode_error_msg(str_error), dest_fd);
                 return;
