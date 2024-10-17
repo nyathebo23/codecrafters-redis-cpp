@@ -31,7 +31,6 @@ void SocketManagement::handle_connection(const int& clientfd){
             break;
         }
         std::string data(buffer);
-        std::cout << data << " \n";
         auto command_elts = CommandProcessing::get_command_array_from_rawdata(data);
         std::string cmd = command_elts.first;
         std::vector<std::string> extra_params = command_elts.second;
