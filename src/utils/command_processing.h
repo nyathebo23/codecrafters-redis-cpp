@@ -31,7 +31,7 @@ class CommandProcessing {
         static void type(std::string key, int dest_fd);
         static void xadd(std::vector<std::string> extras, int dest_fd);
         static void config(std::vector<std::string> extras, int dest_fd, std::map<std::string, std::string> args_map);
-        static std::pair<unsigned long, unsigned int> split_entry_id(std::string str);
+        static std::pair<long, int> split_entry_id(std::string str);
 };
 
 #endif
