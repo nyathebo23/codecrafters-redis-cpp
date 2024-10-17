@@ -46,6 +46,9 @@ void SocketManagement::handle_connection(const int& clientfd){
         else if (cmd == "set"){
             CommandProcessing::set(extra_params, data, clientfd);
         }
+        else if (cmd == "type"){
+            CommandProcessing::type(extra_params, clientfd);
+        }
         else if (cmd == "get"){
             CommandProcessing::get(extra_params, clientfd, extra_args["dir"] + "/" + extra_args["dbfilename"]);
         }
