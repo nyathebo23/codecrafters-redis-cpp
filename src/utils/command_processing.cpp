@@ -143,6 +143,7 @@ std::pair<long long, int> CommandProcessing::split_entry_id(std::string str){
         int sequence_num = std::stoi(str.substr(ind_separator+1));
         return std::make_pair(millisecond_time, sequence_num);
     } catch (const std::invalid_argument& e) {
+        std::cout << "invalid " << e.what();
         return std::make_pair(-1L, -1);
     } catch (const std::out_of_range& e) {
         return std::make_pair(-1L, -1);
