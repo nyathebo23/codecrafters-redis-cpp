@@ -216,13 +216,27 @@ void CommandProcessing::config(std::vector<std::string> extras, int dest_fd, std
 
 std::pair<unsigned long, unsigned int> CommandProcessing::split_entry_id_num(std::string str){
     size_t ind_separator = str.find("-");
+    if (ind_separator == std::string::npos)
+        return std::make_pair(std::stol(str), 0);
     return std::make_pair(std::stol(str.substr(0, ind_separator)), std::stoi(str.substr(ind_separator+1)));
 }
 
 void CommandProcessing::xrange(std::vector<std::string> extras, int dest_fd) {
     std::string entry_key = extras[0];
-    auto range_inf_id = split_entry_id_num(extras[1]);
-    auto range_sup_id = split_entry_id_num(extras[2]);
+    std::pair<unsigned long, unsigned int> range_inf_id;
+    std::pair<unsigned long, unsigned int> range_sup_id;
+    if (extras[1] == "-"){
+        range_inf_id = std::make_pair(0, 0);
+        range_sup_id = split_entry_id_num(extras[2]);
+    }
+    else if (extras[2] == "+"){
+        range_inf_id = split_entry_id_num(extras[1]);
+        range_sup_id = std::make_pair(get_now_time_milliseconds() + 5000000, 0);
+    }
+    else {
+        range_inf_id = split_entry_id_num(extras[1]);
+        range_sup_id = split_entry_id_num(extras[2]);
+    }
     int index_entry = GlobalDatas::get_entry_index(entry_key);
     VectorMapEntries entry_data_filtered;
     if (index_entry < GlobalDatas::entries.size()){
