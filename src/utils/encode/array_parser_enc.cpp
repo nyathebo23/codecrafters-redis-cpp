@@ -39,6 +39,7 @@ std::string parse_encode_array_of_array(const VectorMapEntries data){
         std::map<std::string, std::string>::iterator it = map_entry.begin();
         entry_encoded += parse_encode_bulk_string(it->second);
         std::vector<std::any> keys_vals_list;
+        ++it;
         while (it != map_entry.end()){
             keys_vals_list.push_back(it->first);
             keys_vals_list.push_back(it->second);
