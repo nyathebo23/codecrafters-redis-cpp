@@ -251,14 +251,15 @@ void CommandProcessing::xrange(std::vector<std::string> extras, int dest_fd) {
             }     
             else break;        
         }
-        while ((it != entry_data.end()) && ((elt_id.first < range_sup_id.first) || 
-        ((elt_id.first == range_sup_id.first) && (elt_id.second <= range_sup_id.second))))
-        {    
-            auto elt = *it;
-            elt_id = split_entry_id_num(elt["id"]);
-            entry_data_filtered.push_back(elt);
-            ++it;
-        }
+        if (it != entry_data.end())
+            while ((elt_id.first < range_sup_id.first) || ((elt_id.first == range_sup_id.first) && (elt_id.second <= range_sup_id.second)))
+            {    
+                entry_data_filtered.push_back(*it);
+                ++it;
+                if (it != entry_data.end())
+                    elt_id = split_entry_id_num((*it)["id"]);
+                else break;
+            }
     }
     std::string resp = parse_encode_array_of_array(entry_data_filtered);
     send_data(resp, dest_fd);
