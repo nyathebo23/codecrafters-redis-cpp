@@ -229,20 +229,24 @@ void CommandProcessing::xrange(std::vector<std::string> extras, int dest_fd) {
         auto entry_data = GlobalDatas::entries[index_entry].second;
         VectorMapEntries::iterator it = entry_data.begin();
         auto elt_id = split_entry_id_num((*it)["id"]);
-        while (it != entry_data.end() && (elt_id.first < range_inf_id.first || 
-            ((elt_id.first == range_inf_id.first) && (elt_id.second < range_inf_id.second))))
+        while ((elt_id.first < range_inf_id.first) || ((elt_id.first == range_inf_id.first) && (elt_id.second < range_inf_id.second)))
         {
             ++it;
-            elt_id = split_entry_id_num((*it)["id"]);
+            if (it != entry_data.end()){
+                elt_id = split_entry_id_num((*it)["id"]);
+            }     
+            else break;        
         }
-        while (it != entry_data.end() && (elt_id.first < range_sup_id.first || 
-            ((elt_id.first == range_sup_id.first) && (elt_id.second <= range_sup_id.second))))
-        {
-            ++it;    
-            auto elt = *it;
-            elt_id = split_entry_id_num(elt["id"]);
-            entry_data_filtered.push_back(elt);
-        }
+        if (it != entry_data.end())
+            while ((elt_id.first < range_sup_id.first) || ((elt_id.first == range_sup_id.first) && (elt_id.second <= range_sup_id.second)))
+            {    
+                ++it;
+                if (it != entry_data.end()){
+                    auto elt = *it;
+                    elt_id = split_entry_id_num(elt["id"]);
+                    entry_data_filtered.push_back(elt);
+                } else break;
+            }
 
     }
     std::string resp = parse_encode_array_of_array(entry_data_filtered);
