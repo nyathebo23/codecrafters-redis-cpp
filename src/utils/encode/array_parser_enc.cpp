@@ -36,13 +36,14 @@ std::string parse_encode_array_of_array(const VectorMapEntries data){
     std::string entry_encoded = "*" + std::to_string(vector_map_size) +  "\r\n";
     for (auto map_entry: data){
         entry_encoded += "*2\r\n";
-        std::map<std::string, std::string>::iterator it = map_entry.begin();
-        entry_encoded += parse_encode_bulk_string(it->second);
+        entry_encoded += parse_encode_bulk_string(map_entry["id"]);
         std::vector<std::any> keys_vals_list;
-        ++it;
+        std::map<std::string, std::string>::iterator it = map_entry.begin();
         while (it != map_entry.end()){
-            keys_vals_list.push_back(it->first);
-            keys_vals_list.push_back(it->second);
+            if (it->first != "id"){
+                keys_vals_list.push_back(it->first);
+                keys_vals_list.push_back(it->second);
+            }
             ++it;
         }
         entry_encoded += parse_encode_array(keys_vals_list);
