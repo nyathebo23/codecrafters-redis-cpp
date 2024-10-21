@@ -58,7 +58,10 @@ void SocketManagement::handle_connection(const int& clientfd){
             StreamCommandsProcessing::xrange(extra_params, clientfd);
         }
         else if (cmd == "xread"){
-            StreamCommandsProcessing::xread(extra_params, clientfd);
+            if (extra_params[1] == "block")
+                StreamCommandsProcessing::xread_with_block(extra_params, clientfd);
+            else
+                StreamCommandsProcessing::xread(extra_params, clientfd);
         }
         else if (cmd == "get"){
             CommandProcessing::get(extra_params, clientfd, extra_args["dir"] + "/" + extra_args["dbfilename"]);

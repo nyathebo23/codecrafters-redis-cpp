@@ -121,6 +121,7 @@ void StreamCommandsProcessing::xrange(std::vector<std::string> extras, int dest_
 };
 
 void StreamCommandsProcessing::xread(std::vector<std::string> extras, int dest_fd) {
+
     unsigned short nb_keys = (extras.size() - 1) / 2;
     std::vector<std::pair<std::string, VectorMapEntries>> keys_and_vectors_map;
 
@@ -151,6 +152,15 @@ void StreamCommandsProcessing::xread(std::vector<std::string> extras, int dest_f
     }
     std::string resp = parse_encode_array_for_xread(keys_and_vectors_map);
     CommandProcessing::send_data(resp, dest_fd);
+};
+
+
+void StreamCommandsProcessing::xread_with_block(std::vector<std::string> extras, int dest_fd) {
+    std::string delay = std::stoi(extras[1]);
+    std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+    auto first_elt = extras.begin();
+    extras.erase(first_elt, first_elt+2);
+    xread(extras, dest_fd);
 };
 
 std::pair<std::string, std::string> StreamCommandsProcessing::split_entry_id(std::string str){
