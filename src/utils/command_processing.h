@@ -11,9 +11,9 @@ class CommandProcessing {
     protected:
         static void erase_key(const std::string& key);
         static void execute_after_delay(int delay, const std::string& key);
-        static int64_t get_now_time_milliseconds();
     public:
 
+        static int64_t get_now_time_milliseconds();
         static std::pair<std::string, std::vector<std::string>> get_command_array_from_rawdata(std::string data);
         static std::pair<std::string, std::vector<std::any>> get_command_array_multitypes_from_rawdata(std::string data);
         static void echo(std::vector<std::string> extras, int dest_fd);
@@ -29,13 +29,8 @@ class CommandProcessing {
         static void wait(unsigned int numreplicas, unsigned long timeout, int dest_fd);
         static void psync(std::vector<std::string> extras, int dest_fd);
         static void type(std::string key, int dest_fd);
-        static void xadd(std::vector<std::string> extras, int dest_fd);
-        static void xrange(std::vector<std::string> extras, int dest_fd);
 
         static void config(std::vector<std::string> extras, int dest_fd, std::map<std::string, std::string> args_map);
-
-        static std::pair<std::string, std::string> split_entry_id(std::string str);
-        static std::pair<unsigned long, unsigned int> split_entry_id_num(std::string str);
 
 };
 

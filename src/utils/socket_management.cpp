@@ -19,6 +19,7 @@
 #include "decode/simple_data_parser_dec.h"
 #include "socket_management.h"
 #include "command_processing.h"
+#include "stream_commands_processing.h"
 #include "global_datas.h"
 #include <iomanip>
 
@@ -51,10 +52,13 @@ void SocketManagement::handle_connection(const int& clientfd){
             CommandProcessing::type(extra_params[0], clientfd);
         }
         else if (cmd == "xadd"){
-            CommandProcessing::xadd(extra_params, clientfd);
+            StreamCommandsProcessing::xadd(extra_params, clientfd);
         }
         else if (cmd == "xrange"){
-            CommandProcessing::xrange(extra_params, clientfd);
+            StreamCommandsProcessing::xrange(extra_params, clientfd);
+        }
+        else if (cmd == "xread"){
+            StreamCommandsProcessing::xread(extra_params, clientfd);
         }
         else if (cmd == "get"){
             CommandProcessing::get(extra_params, clientfd, extra_args["dir"] + "/" + extra_args["dbfilename"]);

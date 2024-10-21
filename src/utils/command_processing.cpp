@@ -135,69 +135,6 @@ void CommandProcessing::get(std::vector<std::string> extras, int dest_fd, std::s
 }
 
 
-std::pair<std::string, std::string> CommandProcessing::split_entry_id(std::string str){
-    size_t ind_separator = str.find("-");
-    return std::make_pair(str.substr(0, ind_separator), str.substr(ind_separator+1));
-}
-
-void CommandProcessing::xadd(std::vector<std::string> extras, int dest_fd){
-    int index_entry = GlobalDatas::get_entry_index(extras[0]);
-    std::string id;
-    std::string str_error;
-
-    if (extras[1] == "*"){
-        long timestamp = get_now_time_milliseconds();
-        id = std::to_string(timestamp) + "-0";
-        extras[1] = id;
-    }
-    else {
-        auto new_entry_id_str = split_entry_id(extras[1]);
-        long new_ms_time = std::stol(new_entry_id_str.first);
-        if (new_ms_time == 0 && new_entry_id_str.second != "*" && std::stol(new_entry_id_str.second) == 0){
-            str_error = "ERR The ID specified in XADD must be greater than 0-0";
-            send_data(parse_encode_error_msg(str_error), dest_fd);
-            return;
-        }
-        int index_entry = GlobalDatas::get_entry_index(extras[0]);        
-        if (index_entry < GlobalDatas::entries.size()){
-            auto last_entry = GlobalDatas::entries[index_entry].second.back();
-            auto last_entry_id = split_entry_id(last_entry["id"]);
-            long last_entry_ms_time = std::stol(last_entry_id.first);
-            int last_entry_seq_num = std::stol(last_entry_id.second);
-            if (last_entry_ms_time > new_ms_time){
-                str_error = "ERR The ID specified in XADD is equal or smaller than the target stream top item";
-                send_data(parse_encode_error_msg(str_error), dest_fd);
-                return;
-            }
-            else if (last_entry_ms_time == new_ms_time) {
-                if (new_entry_id_str.second == "*"){
-                    id = new_entry_id_str.first + "-" + std::to_string(last_entry_seq_num+1);
-                    extras[1] = id;
-                } else {
-                    int new_seq_number = std::stoi(new_entry_id_str.second);
-                    if (new_seq_number <= last_entry_seq_num){
-                        str_error = "ERR The ID specified in XADD is equal or smaller than the target stream top item";
-                        send_data(parse_encode_error_msg(str_error), dest_fd);
-                        return;
-                    }  
-                }
-            } else if (new_entry_id_str.second == "*"){
-                 id = new_entry_id_str.first + "-0";
-                 extras[1] = id;
-            } 
-        }
-        else if (new_entry_id_str.second == "*"){
-            id = new_entry_id_str.first + "-" + (new_ms_time == 0 ? "1" : "0");
-            extras[1] = id;
-        }  
-    }
-    GlobalDatas::set_entry(extras);
-    std::string resp = parse_encode_bulk_string(extras[1]);
-    send_data(resp, dest_fd);
-        
-};
-
-
 void CommandProcessing::config(std::vector<std::string> extras, int dest_fd, std::map<std::string, std::string> args_map){
     std::string resp;
     if (extras[0] == "get"){
@@ -213,57 +150,6 @@ void CommandProcessing::config(std::vector<std::string> extras, int dest_fd, std
         send_data(resp, dest_fd);
     }
 }
-
-std::pair<unsigned long, unsigned int> CommandProcessing::split_entry_id_num(std::string str){
-    size_t ind_separator = str.find("-");
-    if (ind_separator == std::string::npos)
-        return std::make_pair(std::stol(str), 0);
-    return std::make_pair(std::stol(str.substr(0, ind_separator)), std::stoi(str.substr(ind_separator+1)));
-}
-
-void CommandProcessing::xrange(std::vector<std::string> extras, int dest_fd) {
-    std::string entry_key = extras[0];
-    std::pair<unsigned long, unsigned int> range_inf_id;
-    std::pair<unsigned long, unsigned int> range_sup_id;
-    if (extras[1] == "-"){
-        range_inf_id = std::make_pair(0, 0);
-        range_sup_id = split_entry_id_num(extras[2]);
-    }
-    else if (extras[2] == "+"){
-        range_inf_id = split_entry_id_num(extras[1]);
-        range_sup_id = std::make_pair(get_now_time_milliseconds() + 5000000, 0);
-    }
-    else {
-        range_inf_id = split_entry_id_num(extras[1]);
-        range_sup_id = split_entry_id_num(extras[2]);
-    }
-    int index_entry = GlobalDatas::get_entry_index(entry_key);
-    VectorMapEntries entry_data_filtered;
-    if (index_entry < GlobalDatas::entries.size()){
-        auto entry_data = GlobalDatas::entries[index_entry].second;
-        VectorMapEntries::iterator it = entry_data.begin();
-        auto elt_id = split_entry_id_num((*it)["id"]);
-        while ((elt_id.first < range_inf_id.first) || ((elt_id.first == range_inf_id.first) && (elt_id.second < range_inf_id.second)))
-        {
-            ++it;
-            if (it != entry_data.end()){
-                elt_id = split_entry_id_num((*it)["id"]);
-            }     
-            else break;        
-        }
-        if (it != entry_data.end())
-            while ((elt_id.first < range_sup_id.first) || ((elt_id.first == range_sup_id.first) && (elt_id.second <= range_sup_id.second)))
-            {    
-                entry_data_filtered.push_back(*it);
-                ++it;
-                if (it != entry_data.end())
-                    elt_id = split_entry_id_num((*it)["id"]);
-                else break;
-            }
-    }
-    std::string resp = parse_encode_array_of_array(entry_data_filtered);
-    send_data(resp, dest_fd);
-};
 
 
 void CommandProcessing::info(std::vector<std::string> extras, int dest_fd, std::string role){
