@@ -55,7 +55,7 @@ std::string parse_encode_array_for_xread(const std::vector<std::pair<std::string
     int vector_size = data.size();
     if (vector_size == 0)
         return "*0\r\n";
-    std::string entry_encoded = "*" + std::to_string(vector_size) +  "\r\n";
+    std::string entry_encoded = "*" + std::to_string(vector_size) + "\r\n";
     for (auto key_vector_map: data) {
         entry_encoded += "*2\r\n";
         entry_encoded += "*" + std::to_string(key_vector_map.second.size()) + "\r\n";
@@ -74,6 +74,6 @@ std::string parse_encode_array_for_xread(const std::vector<std::pair<std::string
             entry_encoded += parse_encode_array(keys_vals_list);
         }
     }
-
+    std::cout << entry_encoded;
     return entry_encoded; 
 }
