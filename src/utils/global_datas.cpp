@@ -15,6 +15,11 @@ void GlobalDatas::set_commands_offset(unsigned short offset){
     GlobalDatas::commands_offset += offset;
 };
 
+std::vector<std::pair<std::string, VectorMapEntries>> GlobalDatas::get_entries() {
+    return entries;
+};
+
+
 std::map<std::string, std::string> GlobalDatas::dict_table;
 
 void GlobalDatas::set(std::string key, std::string value){

@@ -13,6 +13,8 @@ class GlobalDatas {
 
         static std::vector<std::pair<std::string, VectorMapEntries>> entries;
 
+        static std::vector<std::pair<std::string, VectorMapEntries>> get_entries();
+
         static void set_entry(std::vector<std::string> vals);
 
         static int get_entry_index(std::string entry_key);

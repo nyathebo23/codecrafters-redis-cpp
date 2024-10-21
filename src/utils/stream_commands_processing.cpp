@@ -159,20 +159,41 @@ void StreamCommandsProcessing::xread(std::vector<std::string> extras, int dest_f
 
 void StreamCommandsProcessing::xread_with_block(std::vector<std::string> extras, int dest_fd) {
     int delay = std::stoi(extras[1]);
-    std::this_thread::sleep_for(std::chrono::milliseconds(delay));
     auto first_elt = extras.begin();
     extras.erase(first_elt, first_elt+2);
+    unsigned short nb_keys = (extras.size() - 1) / 2;
+    for (int i = 1; i <= nb_keys; i++){
+        if (extras[i+nb_keys] == "$"){
+            int index_entry = GlobalDatas::get_entry_index(extras[i]);
+            if (index_entry < GlobalDatas::entries.size()){
+                auto last_elt = GlobalDatas::entries[index_entry].second.back();
+                extras[i+nb_keys] = last_elt["id"];
+            }
+            else 
+                extras[i+nb_keys] = "0-0";
+        }
+    }
+    if (delay == 0){
+        auto init_entry = GlobalDatas::get_entries();
+        while (init_entry.size() == GlobalDatas::get_entries().size()){
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+    }
+    else {
+        std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+    }
     xread(extras, dest_fd);
+
 };
 
 std::pair<std::string, std::string> StreamCommandsProcessing::split_entry_id(std::string str){
     size_t ind_separator = str.find("-");
     return std::make_pair(str.substr(0, ind_separator), str.substr(ind_separator+1));
-}
+};
 
 std::pair<unsigned long, unsigned int> StreamCommandsProcessing::split_entry_id_num(std::string str){
     size_t ind_separator = str.find("-");
     if (ind_separator == std::string::npos)
         return std::make_pair(std::stol(str), 0);
     return std::make_pair(std::stol(str.substr(0, ind_separator)), std::stoi(str.substr(ind_separator+1)));
-}
+};
