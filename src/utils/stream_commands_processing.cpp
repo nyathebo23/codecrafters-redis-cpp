@@ -176,6 +176,7 @@ void StreamCommandsProcessing::xread_with_block(std::vector<std::string> extras,
     if (delay == 0){
         auto init_entry = GlobalDatas::get_entries();
         while (init_entry.size() == GlobalDatas::get_entries().size()){}
+        std::cout << "aerty,ujyjhgjjjjjjjjjjj";
     }
     else {
         std::this_thread::sleep_for(std::chrono::milliseconds(delay));
