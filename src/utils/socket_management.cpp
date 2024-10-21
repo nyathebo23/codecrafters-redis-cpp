@@ -58,7 +58,7 @@ void SocketManagement::handle_connection(const int& clientfd){
             StreamCommandsProcessing::xrange(extra_params, clientfd);
         }
         else if (cmd == "xread"){
-            if (extra_params[1] == "block")
+            if (extra_params[0] == "block")
                 StreamCommandsProcessing::xread_with_block(extra_params, clientfd);
             else
                 StreamCommandsProcessing::xread(extra_params, clientfd);
