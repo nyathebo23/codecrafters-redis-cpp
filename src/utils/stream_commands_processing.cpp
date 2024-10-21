@@ -11,6 +11,7 @@
 #include <errno.h>
 #include "encode/array_parser_enc.h"
 #include "encode/simple_data_parser_enc.h"
+#include "encode/small_aggregate_parser_enc.h"
 #include "decode/simple_data_parser_dec.h"
 #include "command_processing.h"
 #include "stream_commands_processing.h"
@@ -115,7 +116,7 @@ void StreamCommandsProcessing::xrange(std::vector<std::string> extras, int dest_
                 else break;
             }
     }
-    std::string resp = parse_encode_array_of_array(entry_data_filtered);
+    std::string resp = parse_encode_array_for_xrange(entry_data_filtered);
     CommandProcessing::send_data(resp, dest_fd);
 };
 
@@ -148,7 +149,7 @@ void StreamCommandsProcessing::xread(std::vector<std::string> extras, int dest_f
             keys_and_vectors_map.push_back(std::make_pair(key, entry_data_filtered));
         }
     }
-    std::string resp = parse_encode_array_for_xrange(keys_and_vectors_map);
+    std::string resp = parse_encode_array_for_xread(keys_and_vectors_map);
     CommandProcessing::send_data(resp, dest_fd);
 };
 
