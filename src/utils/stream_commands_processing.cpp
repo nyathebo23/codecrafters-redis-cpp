@@ -148,7 +148,8 @@ void StreamCommandsProcessing::xread(std::vector<std::string> extras, int dest_f
                 entry_data_filtered.push_back(*it);
                 ++it;               
             }
-            keys_and_vectors_map.push_back(std::make_pair(key, entry_data_filtered));
+            if (entry_data_filtered.size() != 0)
+                keys_and_vectors_map.push_back(std::make_pair(key, entry_data_filtered));
         }
     }
     std::string resp = parse_encode_array_for_xread(keys_and_vectors_map);
