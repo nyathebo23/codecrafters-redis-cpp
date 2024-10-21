@@ -156,7 +156,7 @@ void StreamCommandsProcessing::xread(std::vector<std::string> extras, int dest_f
 
 
 void StreamCommandsProcessing::xread_with_block(std::vector<std::string> extras, int dest_fd) {
-    std::string delay = std::stoi(extras[1]);
+    int delay = std::stoi(extras[1]);
     std::this_thread::sleep_for(std::chrono::milliseconds(delay));
     auto first_elt = extras.begin();
     extras.erase(first_elt, first_elt+2);
