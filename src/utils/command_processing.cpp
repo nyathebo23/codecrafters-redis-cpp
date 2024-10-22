@@ -67,7 +67,7 @@ void CommandProcessing::incr(std::string key, int dest_fd){
     else {
         try {
             int new_num = std::stoi(GlobalDatas::get_from_dict_table(key)) + 1;
-            std::string new_num_str = td::to_string(new_num);
+            std::string new_num_str = std::to_string(new_num);
             GlobalDatas::set_on_dict_table(key, new_num_str);
             send_data(parse_encode_integer(new_num), dest_fd);
         }
