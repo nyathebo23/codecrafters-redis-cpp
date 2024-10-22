@@ -133,7 +133,7 @@ void SocketManagement::handle_connection(const int& clientfd){
         }
         else {
             std::string resp = run_command(cmd, extra_params, data, clientfd);
-            CommandProcessing::send_data(data, clientfd);
+            CommandProcessing::send_data(resp, clientfd);
         }
     }
 }
