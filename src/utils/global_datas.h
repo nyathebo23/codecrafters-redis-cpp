@@ -17,8 +17,6 @@ class GlobalDatas {
 
         static void set_entry(std::vector<std::string> vals);
 
-        static VectorMapEntries get_vector_map_entries_by_key(std::string key);
-
         static int get_entry_index(std::string entry_key);
 
         static unsigned int prec_commands_offset;
@@ -29,9 +27,9 @@ class GlobalDatas {
 
         static std::map<std::string, std::string> dict_table;
 
-        static void set(std::string key, std::string value);
+        static void set_on_dict_table(std::string key, std::string value);
 
-        static std::string get(std::string key);
+        static std::string get_from_dict_table(std::string key);
 };
 
 class GlobalMasterDatas {

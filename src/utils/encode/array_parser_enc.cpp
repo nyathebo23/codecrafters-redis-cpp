@@ -75,6 +75,5 @@ std::string parse_encode_array_for_xread(const std::vector<std::pair<std::string
             entry_encoded += parse_encode_array(keys_vals_list);
         }
     }
-    std::cout << entry_encoded;
     return entry_encoded; 
 }

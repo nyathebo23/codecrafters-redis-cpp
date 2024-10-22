@@ -59,6 +59,30 @@ bool CommandProcessing::send_data(std::string data, int dest_fd){
     return false;
 }
 
+void CommandProcessing::incr(std::string key, int dest_fd){
+    if (GlobalDatas::dict_table.count(key) == 0){
+        GlobalDatas::set_on_dict_table(key, "1");
+        send_data(":1\r\n", dest_fd);
+    }
+    else {
+        try {
+            int new_num = std::stoi(GlobalDatas::get_from_dict_table(key)) + 1;
+            std::string new_num_str = td::to_string(new_num);
+            GlobalDatas::set_on_dict_table(key, new_num_str);
+            send_data(parse_encode_integer(new_num), dest_fd);
+        }
+        catch (const std::invalid_argument& e){
+            std::string errmsg = "-ERR value is not an integer or out of range\r\n";
+            send_data(errmsg, dest_fd);
+        }
+        catch (const std::out_of_range& e){
+            std::string errmsg = "-ERR value is not an integer or out of range\r\n";
+            send_data(errmsg, dest_fd);
+        }
+    }
+
+}
+
 void CommandProcessing::echo(std::vector<std::string> extras, int dest_fd){
     if (extras.size() == 1){
         std::string resp = parse_encode_bulk_string(extras[0]);
@@ -74,7 +98,7 @@ void CommandProcessing::ping(int dest_fd){
 bool CommandProcessing::set_without_send(std::vector<std::string> extras){
     if (extras.size() > 1){
         std::string key = extras[0];
-        GlobalDatas::set(key, extras[1]);
+        GlobalDatas::set_on_dict_table(key, extras[1]);
         if (extras.size() == 4){
             std::string param = extras[2];
             if (param == "px"){
@@ -125,7 +149,7 @@ void CommandProcessing::get(std::vector<std::string> extras, int dest_fd, std::s
             if (GlobalDatas::dict_table.count(key) == 0)
                 resp = "$-1\r\n";
             else 
-                resp = parse_encode_bulk_string(GlobalDatas::get(key));
+                resp = parse_encode_bulk_string(GlobalDatas::get_from_dict_table(key));
         }
         else
             resp = parse_encode_bulk_string(std::any_cast<std::string>(keys_values.second[index]));
