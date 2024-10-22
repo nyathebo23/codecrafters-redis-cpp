@@ -71,7 +71,7 @@ std::string SocketManagement::run_command(std::string cmd, std::vector<std::stri
         return CommandProcessing::replconf(extra_params, clientfd);
     }
     else if (cmd == "psync"){
-        return CommandProcessing::psync(extra_params, clientfd);
+        return CommandProcessing::psync(extra_params);
     }
     return "-ERR\r\n";
 };
@@ -287,7 +287,7 @@ void SocketManagement::retrieve_commands_from_master(int bytes_receive, char* bu
             }
             if (arr.second < data.size())
                 data = data.substr(arr.second);
-            std::cout << data;
+            std::cout << "bytes " << bytes_receive << "   " << data;
             GlobalDatas::set_commands_offset(arr.second);
             process_command(cmd, array_cmd);
         }

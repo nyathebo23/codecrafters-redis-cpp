@@ -245,7 +245,7 @@ std::string CommandProcessing::replconf(std::vector<std::string> extras, int des
 
 }
 
-std::string CommandProcessing::psync(std::vector<std::string> extras, int destfd){
+std::string CommandProcessing::psync(std::vector<std::string> extras){
     std::string resp;
     if (extras[0] == "?" && extras[1] == "-1"){
         std::string replication_id = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
