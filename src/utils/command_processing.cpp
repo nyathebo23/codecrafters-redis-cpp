@@ -226,7 +226,7 @@ int64_t CommandProcessing::get_now_time_milliseconds() {
     return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 }
 
-std::string CommandProcessing::replconf(std::vector<std::string> extras){
+std::string CommandProcessing::replconf(std::vector<std::string> extras, int dest_fd){
     std::string resp;
     if (extras[0] == "listening-port" || extras[0] == "capa" && extras.size() > 1){
         resp = parse_encode_simple_string(std::string("OK"));
@@ -245,12 +245,13 @@ std::string CommandProcessing::replconf(std::vector<std::string> extras){
 
 }
 
-std::string CommandProcessing::psync(std::vector<std::string> extras){
+std::string CommandProcessing::psync(std::vector<std::string> extras, int destfd){
     std::string resp;
     if (extras[0] == "?" && extras[1] == "-1"){
         std::string replication_id = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
         resp = parse_encode_simple_string("FULLRESYNC " + replication_id + " 0");
     }   
+    process_file_datas(destfd);
     return resp;
 
 }
