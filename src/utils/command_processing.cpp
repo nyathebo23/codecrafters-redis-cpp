@@ -251,7 +251,6 @@ std::string CommandProcessing::psync(std::vector<std::string> extras, int destfd
         std::string replication_id = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
         resp = parse_encode_simple_string("FULLRESYNC " + replication_id + " 0");
     }   
-    process_file_datas(destfd);
     return resp;
 
 }
