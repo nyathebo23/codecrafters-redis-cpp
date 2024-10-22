@@ -19,7 +19,7 @@
 #include "global_datas.h"
 
 
-void StreamCommandsProcessing::xadd(std::vector<std::string> extras){
+std::string StreamCommandsProcessing::xadd(std::vector<std::string> extras){
     int index_entry = GlobalDatas::get_entry_index(extras[0]);
     std::string id;
     std::string str_error;
@@ -77,7 +77,7 @@ void StreamCommandsProcessing::xadd(std::vector<std::string> extras){
 };
 
 
-void StreamCommandsProcessing::xrange(std::vector<std::string> extras) {
+std::string StreamCommandsProcessing::xrange(std::vector<std::string> extras) {
     std::string entry_key = extras[0];
     std::pair<unsigned long, unsigned int> range_inf_id;
     std::pair<unsigned long, unsigned int> range_sup_id;
@@ -121,7 +121,7 @@ void StreamCommandsProcessing::xrange(std::vector<std::string> extras) {
     return resp;
 };
 
-void StreamCommandsProcessing::xread(std::vector<std::string> extras) {
+std::string StreamCommandsProcessing::xread(std::vector<std::string> extras) {
 
     unsigned short nb_keys = (extras.size() - 1) / 2;
     std::vector<std::pair<std::string, VectorMapEntries>> keys_and_vectors_map;
@@ -157,7 +157,7 @@ void StreamCommandsProcessing::xread(std::vector<std::string> extras) {
 };
 
 
-void StreamCommandsProcessing::xread_with_block(std::vector<std::string> extras) {
+std::string StreamCommandsProcessing::xread_with_block(std::vector<std::string> extras) {
     int delay = std::stoi(extras[1]);
     auto first_elt = extras.begin();
     extras.erase(first_elt, first_elt+2);
