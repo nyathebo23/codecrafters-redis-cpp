@@ -73,7 +73,7 @@ std::string SocketManagement::run_command(std::string cmd, std::vector<std::stri
     else if (cmd == "psync"){
         return CommandProcessing::psync(extra_params, clientfd);
     }
-    return "-ERR\r\n"
+    return "-ERR\r\n";
 };
 
 void SocketManagement::handle_connection(const int& clientfd){
