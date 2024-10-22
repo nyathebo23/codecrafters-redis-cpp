@@ -112,6 +112,8 @@ void SocketManagement::handle_connection(const int& clientfd){
             else if (cmd == "discard") {
                 is_queue_active = false;
                 cmds_to_exec.clear();            
+                CommandProcessing::send_data(parse_encode_simple_string("OK"), clientfd);
+
             }
             else {
                 cmds_to_exec.push_back(data);
