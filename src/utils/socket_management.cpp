@@ -48,6 +48,9 @@ void SocketManagement::handle_connection(const int& clientfd){
         else if (cmd == "set"){
             CommandProcessing::set(extra_params, data, clientfd);
         }
+        else if (cmd == "incr"){
+            CommandProcessing::incr(extra_params[0], clientfd);
+        }
         else if (cmd == "type"){
             CommandProcessing::type(extra_params[0], clientfd);
         }
