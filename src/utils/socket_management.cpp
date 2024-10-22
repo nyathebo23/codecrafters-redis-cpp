@@ -49,8 +49,8 @@ void SocketManagement::handle_connection(const int& clientfd){
             else {
                 GlobalDatas::cmds_to_exec.push_back(data);
                 send(clientfd, "+QUEUED\r\n", 9, 0);
-                continue;
             }
+            continue;
         }
 
         if (cmd == "echo"){

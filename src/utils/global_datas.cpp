@@ -4,10 +4,6 @@
 
 bool GlobalDatas::isMaster = true;
 
-bool GlobalDatas::is_queue_active = false;
-
-std::vector<std::string> GlobalDatas::cmds_to_exec;
-
 unsigned int GlobalDatas::prec_commands_offset = 0;
 
 std::vector<std::pair<std::string, VectorMapEntries>> GlobalDatas::entries;
