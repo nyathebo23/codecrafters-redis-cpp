@@ -17,6 +17,8 @@ class GlobalDatas {
 
         static void set_entry(std::vector<std::string> vals);
 
+        static VectorMapEntries get_vector_map_entries_by_key(std::string key);
+
         static int get_entry_index(std::string entry_key);
 
         static unsigned int prec_commands_offset;

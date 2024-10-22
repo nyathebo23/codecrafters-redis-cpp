@@ -19,6 +19,14 @@ std::vector<std::pair<std::string, VectorMapEntries>> GlobalDatas::get_entries()
     return entries;
 };
 
+VectorMapEntries GlobalDatas::get_vector_map_entries_by_key(std::string key){
+    int index = get_entry_index(key);
+    VectorMapEntries vect_map_entries; 
+    if (index == entries.size())
+        return vect_map_entries;
+    return entries[index].second;
+}
+
 
 std::map<std::string, std::string> GlobalDatas::dict_table;
 

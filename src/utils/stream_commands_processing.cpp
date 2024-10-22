@@ -174,9 +174,24 @@ void StreamCommandsProcessing::xread_with_block(std::vector<std::string> extras,
         }
     }
     if (delay == 0){
-        auto init_entry = GlobalDatas::get_entries();
-        while (init_entry.size() == GlobalDatas::get_entries().size()){}
-        std::cout << "aerty,ujyjhgjjjjjjjjjjj";
+        auto init_entries = GlobalDatas::get_entries();
+        int init_entries_size = init_entries.size();
+        bool new_item_received_on_key = false;
+        while (!new_item_received_on_key){
+            for (int k = 1; k <= nb_keys; k++){
+                int index = 0;
+                while (index < init_entries_size && init_entries[index].first != extras[k]){
+                    index++;
+                }
+                if (index == init_entries_size){
+                    if (GlobalDatas::get_entry_index(extras[k]) != GlobalDatas::entries.size())
+                        new_item_received_on_key = true;
+                }
+                else if (init_entries[index].second.size() != GlobalDatas::entries[index].second.size()){
+                    new_item_received_on_key = true;
+                }
+            }
+        }
     }
     else {
         std::this_thread::sleep_for(std::chrono::milliseconds(delay));
