@@ -25,7 +25,8 @@
 #include <iomanip>
 
 void SocketManagement::handle_connection(const int& clientfd){
-
+    bool is_queue_active = false;
+    std::vector<std::string> cmds_to_exec;
     while (1) {
         char buffer[256];  
         if (recv(clientfd, &buffer, sizeof(buffer), 0) <= 0) {
@@ -39,7 +40,7 @@ void SocketManagement::handle_connection(const int& clientfd){
         std::string cmd = command_elts.first;
         std::vector<std::string> extra_params = command_elts.second;
 
-        if (GlobalDatas::is_queue_active){
+        if (is_queue_active){
             if (cmd == "exec"){
                 TransactionsCmdsProcessing::exec(clientfd);
             }
@@ -47,7 +48,7 @@ void SocketManagement::handle_connection(const int& clientfd){
                 TransactionsCmdsProcessing::discard(clientfd);
             }
             else {
-                GlobalDatas::cmds_to_exec.push_back(data);
+                cmds_to_exec.push_back(data);
                 send(clientfd, "+QUEUED\r\n", 9, 0);
             }
             continue;
@@ -102,13 +103,14 @@ void SocketManagement::handle_connection(const int& clientfd){
             CommandProcessing::psync(extra_params, clientfd);
         }
         else if (cmd == "multi"){
+            is_queue_active = true;
             TransactionsCmdsProcessing::multi(clientfd);
         }
         else if (cmd == "exec"){
-            TransactionsCmdsProcessing::exec(clientfd);
+            TransactionsCmdsProcessing::exec(is_queue_active, cmds_to_exec, clientfd);
         }
         else if (cmd == "discard") {
-            TransactionsCmdsProcessing::discard(clientfd);
+            TransactionsCmdsProcessing::discard(is_queue_active, cmds_to_exec, clientfd);
         }
     }
 }
