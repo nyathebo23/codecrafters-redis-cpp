@@ -287,7 +287,7 @@ void SocketManagement::retrieve_commands_from_master(int bytes_receive, char* bu
             }
             if (arr.second < data.size())
                 data = data.substr(arr.second);
-            std::cout << "bytes " << bytes_receive << "   " << data;
+            std::cout << "bytes " << bytes_received << "   " << data;
             GlobalDatas::set_commands_offset(arr.second);
             process_command(cmd, array_cmd);
         }
