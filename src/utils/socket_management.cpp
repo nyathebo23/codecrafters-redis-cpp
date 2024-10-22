@@ -114,6 +114,7 @@ void SocketManagement::handle_connection(const int& clientfd){
                 cmds_to_exec.clear();            
             }
             else {
+                std::cout << data;
                 cmds_to_exec.push_back(data);
                 send(clientfd, "+QUEUED\r\n", 9, 0);
             }
