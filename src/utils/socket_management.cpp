@@ -42,10 +42,10 @@ void SocketManagement::handle_connection(const int& clientfd){
 
         if (is_queue_active){
             if (cmd == "exec"){
-                TransactionsCmdsProcessing::exec(clientfd);
+                TransactionsCmdsProcessing::exec(is_queue_active, cmds_to_exec, clientfd);
             }
             else if (cmd == "discard") {
-                TransactionsCmdsProcessing::discard(clientfd);
+                TransactionsCmdsProcessing::discard(is_queue_active, cmds_to_exec, clientfd);
             }
             else {
                 cmds_to_exec.push_back(data);
