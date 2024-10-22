@@ -133,7 +133,6 @@ void SocketManagement::handle_connection(const int& clientfd){
         }
         else {
             std::string resp = run_command(cmd, extra_params, data, clientfd);
-            std::cout << resp;
             CommandProcessing::send_data(resp, clientfd);
             if (cmd == "psync")
                 CommandProcessing::process_file_datas(clientfd);
@@ -288,6 +287,7 @@ void SocketManagement::retrieve_commands_from_master(int bytes_receive, char* bu
             }
             if (arr.second < data.size())
                 data = data.substr(arr.second);
+            std::cout << data;
             GlobalDatas::set_commands_offset(arr.second);
             process_command(cmd, array_cmd);
         }

@@ -229,7 +229,7 @@ int64_t CommandProcessing::get_now_time_milliseconds() {
 std::string CommandProcessing::replconf(std::vector<std::string> extras, int dest_fd){
     std::string resp;
     if (extras[0] == "listening-port" || extras[0] == "capa" && extras.size() > 1){
-        resp = parse_encode_simple_string(std::string("OK"));
+        resp = parse_encode_simple_string("OK");
     } else if (extras[0] == "getack" && extras[1] == "*"){
         std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::to_string(GlobalDatas::prec_commands_offset)};
         resp = parse_encode_array(rep);
