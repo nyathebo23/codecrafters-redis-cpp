@@ -32,7 +32,7 @@ void TransactionsCmdsProcessing::exec(int dest_fd){
     }
     else {
         if (GlobalDatas::cmds_to_exec.size() == 0){
-            CommandProcessing::send_data(parse_encode_array(GlobalDatas::cmds_to_exec), dest_fd);
+            CommandProcessing::send_data("*0\r\n", dest_fd);
         }
         else {
 
