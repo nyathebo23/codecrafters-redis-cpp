@@ -19,7 +19,7 @@
 #include "global_datas.h"
 
 
-void StreamCommandsProcessing::xadd(std::vector<std::string> extras, int dest_fd){
+void StreamCommandsProcessing::xadd(std::vector<std::string> extras){
     int index_entry = GlobalDatas::get_entry_index(extras[0]);
     std::string id;
     std::string str_error;
@@ -72,12 +72,12 @@ void StreamCommandsProcessing::xadd(std::vector<std::string> extras, int dest_fd
     }
     GlobalDatas::set_entry(extras);
     std::string resp = parse_encode_bulk_string(extras[1]);
-    CommandProcessing::send_data(resp, dest_fd);
+    return resp;
         
 };
 
 
-void StreamCommandsProcessing::xrange(std::vector<std::string> extras, int dest_fd) {
+void StreamCommandsProcessing::xrange(std::vector<std::string> extras) {
     std::string entry_key = extras[0];
     std::pair<unsigned long, unsigned int> range_inf_id;
     std::pair<unsigned long, unsigned int> range_sup_id;
@@ -118,10 +118,10 @@ void StreamCommandsProcessing::xrange(std::vector<std::string> extras, int dest_
             }
     }
     std::string resp = parse_encode_array_for_xrange(entry_data_filtered);
-    CommandProcessing::send_data(resp, dest_fd);
+    return resp;
 };
 
-void StreamCommandsProcessing::xread(std::vector<std::string> extras, int dest_fd) {
+void StreamCommandsProcessing::xread(std::vector<std::string> extras) {
 
     unsigned short nb_keys = (extras.size() - 1) / 2;
     std::vector<std::pair<std::string, VectorMapEntries>> keys_and_vectors_map;
@@ -153,11 +153,11 @@ void StreamCommandsProcessing::xread(std::vector<std::string> extras, int dest_f
         }
     }
     std::string resp = parse_encode_array_for_xread(keys_and_vectors_map);
-    CommandProcessing::send_data(resp, dest_fd);
+    return resp;
 };
 
 
-void StreamCommandsProcessing::xread_with_block(std::vector<std::string> extras, int dest_fd) {
+void StreamCommandsProcessing::xread_with_block(std::vector<std::string> extras) {
     int delay = std::stoi(extras[1]);
     auto first_elt = extras.begin();
     extras.erase(first_elt, first_elt+2);
@@ -196,7 +196,7 @@ void StreamCommandsProcessing::xread_with_block(std::vector<std::string> extras,
     else {
         std::this_thread::sleep_for(std::chrono::milliseconds(delay));
     }
-    xread(extras, dest_fd);
+    return xread(extras);
 
 };
 

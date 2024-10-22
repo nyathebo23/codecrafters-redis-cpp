@@ -208,11 +208,3 @@ std::pair<int, std::vector<unsigned char>> read_file_sent(char* buffer_data, int
     return std::make_pair(file_content_size, file_content);
 }
 
-
-// int main(int argc, char **argv) {
-//     std::vector<std::any> str = get_keys_values_from_file("rdbfile.rdb");
-//     std::cout << str.size();
-//     for (int i = 0; i < str.size(); i++)
-//         std::cout << std::any_cast<std::string>(str[i]);
-//     return 0;
-// }

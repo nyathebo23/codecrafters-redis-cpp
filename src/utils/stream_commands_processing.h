@@ -10,11 +10,10 @@
 class StreamCommandsProcessing {
 
     public:
-
-        static void xadd(std::vector<std::string> extras, int dest_fd);
-        static void xrange(std::vector<std::string> extras, int dest_fd);
-        static void xread(std::vector<std::string> extras, int dest_fd);
-        static void xread_with_block(std::vector<std::string> extras, int dest_fd);
+        static std::string xadd(std::vector<std::string> extras);
+        static std::string xrange(std::vector<std::string> extras);
+        static std::string xread(std::vector<std::string> extras);
+        static std::string xread_with_block(std::vector<std::string> extras);
         static std::pair<std::string, std::string> split_entry_id(std::string str);
         static std::pair<unsigned long, unsigned int> split_entry_id_num(std::string str);
 

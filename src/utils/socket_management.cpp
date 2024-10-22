@@ -20,9 +20,61 @@
 #include "socket_management.h"
 #include "command_processing.h"
 #include "stream_commands_processing.h"
-#include "transactions_cmds_processing.h"
 #include "global_datas.h"
 #include <iomanip>
+
+
+std::string SocketManagement::run_command(std::string cmd, std::vector<std::string> extra_params, std::string data){
+    if (cmd == "echo"){
+        return CommandProcessing::echo(extra_params);
+    }
+    else if (cmd == "wait"){
+        return CommandProcessing::wait(std::stoi(extra_params[0]), std::stol(extra_params[1]));
+    }
+    else if (cmd == "ping"){
+        return CommandProcessing::ping();
+    }
+    else if (cmd == "incr"){
+        return CommandProcessing::incr(extra_params[0]);
+    }
+    else if (cmd == "type"){
+        return CommandProcessing::type(extra_params[0]);
+    }
+    else if (cmd == "xadd"){
+        return StreamCommandsProcessing::xadd(extra_params);
+    }
+    else if (cmd == "xrange"){
+        return StreamCommandsProcessing::xrange(extra_params);
+    }
+    else if (cmd == "xread"){
+        if (extra_params[0] == "block")
+            return StreamCommandsProcessing::xread_with_block(extra_params);
+        else
+            return StreamCommandsProcessing::xread(extra_params);
+    }
+    else if (cmd == "set") {
+        CommandProcessing::set(extra_params, data);
+    }
+    else if (cmd == "get"){
+        return CommandProcessing::get(extra_params, extra_args["dir"] + "/" + extra_args["dbfilename"]);
+    }
+    else if (cmd == "config"){
+        return CommandProcessing::config(extra_params, extra_args);
+    }
+    else if (cmd == "keys"){
+        return CommandProcessing::keys(extra_params, extra_args["dir"] + "/" + extra_args["dbfilename"]);
+    }
+    else if (cmd == "info"){
+        return CommandProcessing::info(extra_params, GlobalDatas::isMaster ? "master" : "slave");
+    }
+    else if (cmd == "replconf"){
+        return CommandProcessing::replconf(extra_params);
+    }
+    else if (cmd == "psync"){
+        return CommandProcessing::psync(extra_params);
+    }
+    return "-ERR\r\n"
+};
 
 void SocketManagement::handle_connection(const int& clientfd){
     bool is_queue_active = false;
@@ -42,10 +94,25 @@ void SocketManagement::handle_connection(const int& clientfd){
 
         if (is_queue_active){
             if (cmd == "exec"){
-                TransactionsCmdsProcessing::exec(is_queue_active, cmds_to_exec, clientfd);
+                if (cmds_to_exec.size() == 0){
+                    is_queue_active = false;
+                    CommandProcessing::send_data("*0\r\n", clientfd);
+                }
+                else {
+                    std::string resp_array_str = "*" + std::to_string(cmds_to_exec.size());
+                    for (auto cmd_data: cmds_to_exec){
+                        auto command_and_params = CommandProcessing::get_command_array_from_rawdata(data);
+                        resp_array_str += run_command(command_and_params.first, command_and_params.second, cmd_data);
+                    }
+                    resp_array_str += "\r\n";
+                    CommandProcessing::send_data(resp_array_str, clientfd);
+                    is_queue_active = false;
+                    cmds_to_exec.clear();            
+                }        
             }
             else if (cmd == "discard") {
-                TransactionsCmdsProcessing::discard(is_queue_active, cmds_to_exec, clientfd);
+                is_queue_active = false;
+                cmds_to_exec.clear();            
             }
             else {
                 cmds_to_exec.push_back(data);
@@ -53,64 +120,24 @@ void SocketManagement::handle_connection(const int& clientfd){
             }
             continue;
         }
-
-        if (cmd == "echo"){
-            CommandProcessing::echo(extra_params, clientfd);
-        }
-        else if (cmd == "wait"){
-            CommandProcessing::wait(std::stoi(extra_params[0]), std::stol(extra_params[1]), clientfd);
-        }
-        else if (cmd == "ping"){
-            CommandProcessing::ping(clientfd);
-        }
-        else if (cmd == "set"){
-            CommandProcessing::set(extra_params, data, clientfd);
-        }
-        else if (cmd == "incr"){
-            CommandProcessing::incr(extra_params[0], clientfd);
-        }
-        else if (cmd == "type"){
-            CommandProcessing::type(extra_params[0], clientfd);
-        }
-        else if (cmd == "xadd"){
-            StreamCommandsProcessing::xadd(extra_params, clientfd);
-        }
-        else if (cmd == "xrange"){
-            StreamCommandsProcessing::xrange(extra_params, clientfd);
-        }
-        else if (cmd == "xread"){
-            if (extra_params[0] == "block")
-                StreamCommandsProcessing::xread_with_block(extra_params, clientfd);
-            else
-                StreamCommandsProcessing::xread(extra_params, clientfd);
-        }
-        else if (cmd == "get"){
-            CommandProcessing::get(extra_params, clientfd, extra_args["dir"] + "/" + extra_args["dbfilename"]);
-        }
-        else if (cmd == "config"){
-            CommandProcessing::config(extra_params, clientfd, extra_args);
-        }
-        else if (cmd == "keys"){
-            CommandProcessing::keys(extra_params, clientfd, extra_args["dir"] + "/" + extra_args["dbfilename"]);
-        }
-        else if (cmd == "info"){
-            CommandProcessing::info(extra_params, clientfd, GlobalDatas::isMaster ? "master" : "slave");
-        }
-        else if (cmd == "replconf"){
-            CommandProcessing::replconf(extra_params, clientfd);
-        }
-        else if (cmd == "psync"){
-            CommandProcessing::psync(extra_params, clientfd);
-        }
         else if (cmd == "multi"){
             is_queue_active = true;
-            TransactionsCmdsProcessing::multi(clientfd);
+            CommandProcessing::send_data(parse_encode_simple_string("OK"), clientfd);
         }
         else if (cmd == "exec"){
-            TransactionsCmdsProcessing::exec(is_queue_active, cmds_to_exec, clientfd);
+            std::string err_msg = "ERR EXEC without MULTI";
+            CommandProcessing::send_data(parse_encode_error_msg(err_msg), clientfd);
         }
         else if (cmd == "discard") {
-            TransactionsCmdsProcessing::discard(is_queue_active, cmds_to_exec, clientfd);
+            std::string err_msg = "ERR DISCARD without MULTI";
+            CommandProcessing::send_data(parse_encode_error_msg(err_msg), clientfd);        
+        }
+        else {
+            std::string resp = run_command(cmd, extra_params, data);
+            CommandProcessing::send_data(data, clientfd);
+            if (cmd == "psync" && !resp.empty()){
+                CommandProcessing::process_file_datas(clientfd);
+            }
         }
     }
 }

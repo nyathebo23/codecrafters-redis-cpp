@@ -10,6 +10,7 @@
 #include "command_processing.h"
 
 class SocketManagement {
+
     protected:
         int server_fd;
 
@@ -24,6 +25,8 @@ class SocketManagement {
     
     public:
         void handle_connection(const int& clientfd);
+
+        std::string run_command(std::string cmd, std::vector<std::string> extra_params, std::string data);
 
         short socket_family;
 
