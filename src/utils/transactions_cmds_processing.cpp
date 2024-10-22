@@ -19,14 +19,34 @@
 #include "global_datas.h"
 
 
-void TransactionsCmdsProcessing::multi(int dest_fd){
 
+void TransactionsCmdsProcessing::multi(int dest_fd){
+    GlobalDatas::is_queue_active = true;
+    CommandProcessing::send_data(parse_encode_simple_string("OK"), dest_fd);
 };
 
 void TransactionsCmdsProcessing::exec(int dest_fd){
+    if (!GlobalDatas::is_queue_active){
+        std::string err_msg = "ERR EXEC without MULTI";
+        CommandProcessing::send_data(parse_encode_error_msg(err_msg), dest_fd);
+    }
+    else {
+        if (GlobalDatas::cmds_to_exec.size() == 0){
+            CommandProcessing::send_data(parse_encode_array(GlobalDatas::cmds_to_exec), dest_fd);
+        }
+        else {
 
+        }
+    }
 };
 
 void TransactionsCmdsProcessing::discard(int dest_fd){
-
+    if (!GlobalDatas::is_queue_active){
+        std::string err_msg = "ERR DISCARD without MULTI";
+        CommandProcessing::send_data(parse_encode_error_msg(err_msg), dest_fd);
+    }
+    else {
+        GlobalDatas::is_queue_active = false;
+        GlobalDatas::cmds_to_exec.clear();
+    }
 };

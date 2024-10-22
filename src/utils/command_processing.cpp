@@ -60,38 +60,41 @@ bool CommandProcessing::send_data(std::string data, int dest_fd){
 }
 
 void CommandProcessing::incr(std::string key, int dest_fd){
+    std::string resp;
     if (GlobalDatas::dict_table.count(key) == 0){
         GlobalDatas::set_on_dict_table(key, "1");
-        send_data(":1\r\n", dest_fd);
+        resp = parse_encode_integer(1);
     }
     else {
         try {
             int new_num = std::stoi(GlobalDatas::get_from_dict_table(key)) + 1;
             std::string new_num_str = std::to_string(new_num);
             GlobalDatas::set_on_dict_table(key, new_num_str);
-            send_data(parse_encode_integer(new_num), dest_fd);
+            resp = parse_encode_integer(new_num);
         }
         catch (const std::invalid_argument& e){
-            std::string errmsg = "-ERR value is not an integer or out of range\r\n";
-            send_data(errmsg, dest_fd);
+            std::string errmsg = "ERR value is not an integer or out of range";
+            resp = parse_encode_error_msg(errmsg);
         }
         catch (const std::out_of_range& e){
-            std::string errmsg = "-ERR value is not an integer or out of range\r\n";
-            send_data(errmsg, dest_fd);
+            std::string errmsg = "ERR value is not an integer or out of range";
+            resp = parse_encode_error_msg(errmsg);
         }
     }
+    send_data(resp, dest_fd);
 
 }
 
 void CommandProcessing::echo(std::vector<std::string> extras, int dest_fd){
+    std::string resp;
     if (extras.size() == 1){
-        std::string resp = parse_encode_bulk_string(extras[0]);
+        resp = parse_encode_bulk_string(extras[0]);
         send_data(resp, dest_fd);
     }
 }
 
 void CommandProcessing::ping(int dest_fd){
-    std::string resp = parse_encode_bulk_string(std::string("PONG"));
+    std::string resp = parse_encode_bulk_string("PONG");
     send_data(resp, dest_fd);
 }
 

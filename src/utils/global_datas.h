@@ -11,6 +11,10 @@ class GlobalDatas {
     public:
         static bool isMaster;
 
+        static bool is_queue_active;
+
+        static std::vector<std::string> cmds_to_exec;
+
         static std::vector<std::pair<std::string, VectorMapEntries>> entries;
 
         static std::vector<std::pair<std::string, VectorMapEntries>> get_entries();

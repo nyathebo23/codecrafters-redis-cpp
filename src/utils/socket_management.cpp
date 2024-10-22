@@ -20,6 +20,7 @@
 #include "socket_management.h"
 #include "command_processing.h"
 #include "stream_commands_processing.h"
+#include "transactions_cmds_processing.h"
 #include "global_datas.h"
 #include <iomanip>
 
@@ -31,10 +32,18 @@ void SocketManagement::handle_connection(const int& clientfd){
             close(clientfd);
             break;
         }
+
         std::string data(buffer);
+
         auto command_elts = CommandProcessing::get_command_array_from_rawdata(data);
         std::string cmd = command_elts.first;
         std::vector<std::string> extra_params = command_elts.second;
+
+        if (GlobalDatas::is_queue_active && cmd != "exec" && cmd != "discard"){
+            GlobalDatas::cmds_to_exec.push_back(data);
+            send(clientfd, "+QUEUED\r\n", 9, 0);
+            continue;
+        }
 
         if (cmd == "echo"){
             CommandProcessing::echo(extra_params, clientfd);
@@ -83,6 +92,9 @@ void SocketManagement::handle_connection(const int& clientfd){
         }
         else if (cmd == "psync"){
             CommandProcessing::psync(extra_params, clientfd);
+        }
+        else if (cmd == "multi"){
+            TransactionsCmdsProcessing::multi(clientfd);
         }
     }
 }
