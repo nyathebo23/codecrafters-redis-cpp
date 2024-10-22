@@ -39,10 +39,18 @@ void SocketManagement::handle_connection(const int& clientfd){
         std::string cmd = command_elts.first;
         std::vector<std::string> extra_params = command_elts.second;
 
-        if (GlobalDatas::is_queue_active && cmd != "exec" && cmd != "discard"){
-            GlobalDatas::cmds_to_exec.push_back(data);
-            send(clientfd, "+QUEUED\r\n", 9, 0);
-            continue;
+        if (GlobalDatas::is_queue_active){
+            if (cmd == "exec"){
+                TransactionsCmdsProcessing::exec(clientfd);
+            }
+            else if (cmd == "discard") {
+                TransactionsCmdsProcessing::discard(clientfd);
+            }
+            else {
+                GlobalDatas::cmds_to_exec.push_back(data);
+                send(clientfd, "+QUEUED\r\n", 9, 0);
+                continue;
+            }
         }
 
         if (cmd == "echo"){
@@ -95,6 +103,12 @@ void SocketManagement::handle_connection(const int& clientfd){
         }
         else if (cmd == "multi"){
             TransactionsCmdsProcessing::multi(clientfd);
+        }
+        else if (cmd == "exec"){
+            TransactionsCmdsProcessing::exec(clientfd);
+        }
+        else if (cmd == "discard") {
+            TransactionsCmdsProcessing::discard(clientfd);
         }
     }
 }

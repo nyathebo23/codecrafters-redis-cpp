@@ -32,10 +32,12 @@ void TransactionsCmdsProcessing::exec(int dest_fd){
     }
     else {
         if (GlobalDatas::cmds_to_exec.size() == 0){
+            GlobalDatas::is_queue_active = false;
             CommandProcessing::send_data("*0\r\n", dest_fd);
         }
         else {
-
+            GlobalDatas::is_queue_active = false;
+            GlobalDatas::cmds_to_exec.clear();            
         }
     }
 };
