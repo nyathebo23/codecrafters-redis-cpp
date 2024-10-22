@@ -53,7 +53,7 @@ std::string SocketManagement::run_command(std::string cmd, std::vector<std::stri
             return StreamCommandsProcessing::xread(extra_params);
     }
     else if (cmd == "set") {
-        CommandProcessing::set(extra_params, data);
+        return CommandProcessing::set(extra_params, data);
     }
     else if (cmd == "get"){
         return CommandProcessing::get(extra_params, extra_args["dir"] + "/" + extra_args["dbfilename"]);
@@ -114,7 +114,6 @@ void SocketManagement::handle_connection(const int& clientfd){
                 cmds_to_exec.clear();            
             }
             else {
-                std::cout << data;
                 cmds_to_exec.push_back(data);
                 send(clientfd, "+QUEUED\r\n", 9, 0);
             }
