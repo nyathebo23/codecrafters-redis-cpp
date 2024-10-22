@@ -24,7 +24,7 @@
 #include <iomanip>
 
 
-std::string SocketManagement::run_command(std::string cmd, std::vector<std::string> extra_params, std::string data, int clienfd){
+std::string SocketManagement::run_command(std::string cmd, std::vector<std::string> extra_params, std::string data, int clientfd){
     if (cmd == "echo"){
         return CommandProcessing::echo(extra_params);
     }
@@ -71,7 +71,7 @@ std::string SocketManagement::run_command(std::string cmd, std::vector<std::stri
         return CommandProcessing::replconf(extra_params, clientfd);
     }
     else if (cmd == "psync"){
-        return CommandProcessing::psync(extra_params);
+        return CommandProcessing::psync(extra_params, clientfd);
     }
     return "-ERR\r\n"
 };
@@ -102,7 +102,7 @@ void SocketManagement::handle_connection(const int& clientfd){
                     std::string resp_array_str = "*" + std::to_string(cmds_to_exec.size());
                     for (auto cmd_data: cmds_to_exec){
                         auto command_and_params = CommandProcessing::get_command_array_from_rawdata(data);
-                        resp_array_str += run_command(command_and_params.first, command_and_params.second, cmd_data);
+                        resp_array_str += run_command(command_and_params.first, command_and_params.second, cmd_data, clientfd);
                     }
                     resp_array_str += "\r\n";
                     CommandProcessing::send_data(resp_array_str, clientfd);

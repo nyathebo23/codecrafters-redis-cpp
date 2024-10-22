@@ -19,7 +19,7 @@ class CommandProcessing {
         static std::pair<std::string, std::vector<std::any>> get_command_array_multitypes_from_rawdata(std::string data);
         static std::string echo(std::vector<std::string> extras);
         static bool send_data(std::string data, int dest_fd);
-        static std::string send_replconf_getack(int dest_fd);
+        static void send_replconf_getack(int dest_fd);
         static std::string ping();
         static std::string set(std::vector<std::string> extras, std::string data);
         static bool set_without_send(std::vector<std::string> extras);

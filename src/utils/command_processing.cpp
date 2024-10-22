@@ -295,6 +295,6 @@ std::pair<std::string, std::vector<std::any>> CommandProcessing::get_command_arr
     return std::make_pair(cmd, array_cmd);
 };
 
-std::string CommandProcessing::send_replconf_getack(int dest_fd){
+void CommandProcessing::send_replconf_getack(int dest_fd){
     send_data(REPLCONF_GETACK_CMD, dest_fd);
 };
