@@ -99,12 +99,11 @@ void SocketManagement::handle_connection(const int& clientfd){
                     CommandProcessing::send_data("*0\r\n", clientfd);
                 }
                 else {
-                    std::string resp_array_str = "*" + std::to_string(cmds_to_exec.size());
+                    std::string resp_array_str = "*" + std::to_string(cmds_to_exec.size()) + "\r\n";
                     for (auto cmd_data: cmds_to_exec){
-                        auto command_and_params = CommandProcessing::get_command_array_from_rawdata(data);
+                        auto command_and_params = CommandProcessing::get_command_array_from_rawdata(cmd_data);
                         resp_array_str += run_command(command_and_params.first, command_and_params.second, cmd_data, clientfd);
                     }
-                    resp_array_str += "\r\n";
                     CommandProcessing::send_data(resp_array_str, clientfd);
                     is_queue_active = false;
                     cmds_to_exec.clear();            
