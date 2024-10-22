@@ -19,14 +19,14 @@
 #include "global_datas.h"
 
 
-static void TransactionsCmdsProcessing::multi(int dest_fd){
-    
-};
-
-static void TransactionsCmdsProcessing::exec(int dest_fd){
+void TransactionsCmdsProcessing::multi(int dest_fd){
 
 };
 
-static void TransactionsCmdsProcessing::discard(int dest_fd){
+void TransactionsCmdsProcessing::exec(int dest_fd){
+
+};
+
+void TransactionsCmdsProcessing::discard(int dest_fd){
 
 };
