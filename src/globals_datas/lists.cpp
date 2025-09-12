@@ -86,5 +86,5 @@ std::vector<std::string> Lists::left_pop_list(std::string list_key, std::size_t 
 };
 
 bool Lists::exist(std::string list_key) {
-    this->lists_map.count(list_key) != 0;
+    return this->lists_map.count(list_key) != 0;
 }
