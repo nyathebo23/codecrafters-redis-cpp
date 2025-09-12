@@ -7,7 +7,7 @@
 #include <netdb.h>
 #include <map>
 #include "utils/socket_management.h"
-#include "utils/global_datas.h"
+#include "globals_datas/global_datas.h"
 
 int main(int argc, char **argv) {
   std::map<std::string, std::string> args_map;
