@@ -7,7 +7,7 @@
 #include "array_parser_enc.h"
 #include "simple_data_parser_enc.h"
 #include "small_aggregate_parser_enc.h"
-#include "../global_datas.h"
+#include "../../globals_datas/global_datas.h"
 
 std::string parse_encode_array(const std::vector<std::any>& msg){
     if (msg.size() == 0)
