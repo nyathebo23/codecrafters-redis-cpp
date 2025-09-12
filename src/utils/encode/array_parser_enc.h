@@ -7,7 +7,7 @@
 #include <vector>
 #include <map>
 #include <any>
-#include "../global_datas.h"
+#include "globals_datas/stream.h"
 
 // Déclaration des fonctions
 std::string parse_encode_array(const std::vector<std::any>&);

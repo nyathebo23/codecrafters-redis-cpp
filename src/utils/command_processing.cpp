@@ -20,7 +20,7 @@
 #include "process_rdbfile_datas.h"
 #include "decode/simple_data_parser_dec.h"
 #include "command_processing.h"
-#include "global_datas.h"
+#include "globals_datas/global_datas.h"
 
 
 
@@ -29,7 +29,7 @@ std::vector<std::any> vect_getack = {std::string("REPLCONF"), std::string("GETAC
 std::string REPLCONF_GETACK_CMD = parse_encode_array(vect_getack);
 
 void CommandProcessing::erase_key(const std::string& key) {
-    GlobalDatas::dict_table.erase(key);
+    GlobalDatas::datasDict.erase(key);
 }
 
 void CommandProcessing::execute_after_delay(int delay, const std::string& key) {
@@ -39,11 +39,15 @@ void CommandProcessing::execute_after_delay(int delay, const std::string& key) {
 
 std::string CommandProcessing::type(std::string key){
     std::string resp;
-    if (GlobalDatas::dict_table.count(key) != 0)
+    if (GlobalDatas::datasDict.exist(key))
         resp = parse_encode_simple_string("string");
-    else if (GlobalDatas::get_entry_index(key) != GlobalDatas::entries.size()){
+    else if (GlobalDatas::streamList.exist(key)){
         resp = parse_encode_simple_string("stream");
-    } else  {
+    } 
+    else if (GlobalDatas::lists.exist(key)){
+        resp = parse_encode_simple_string("list");
+    } 
+    else {
         resp = parse_encode_simple_string("none");
     }
     return resp;
@@ -63,15 +67,15 @@ bool CommandProcessing::send_data(std::string data, int dest_fd){
 
 std::string CommandProcessing::incr(std::string key){
     std::string resp;
-    if (GlobalDatas::dict_table.count(key) == 0){
-        GlobalDatas::set_on_dict_table(key, "1");
+    if (!GlobalDatas::datasDict.exist(key)){
+        GlobalDatas::datasDict.set(key, "1");
         resp = parse_encode_integer(1);
     }
     else {
         try {
-            int new_num = std::stoi(GlobalDatas::get_from_dict_table(key)) + 1;
+            int new_num = std::stoi(GlobalDatas::datasDict.get(key)) + 1;
             std::string new_num_str = std::to_string(new_num);
-            GlobalDatas::set_on_dict_table(key, new_num_str);
+            GlobalDatas::datasDict.set(key, new_num_str);
             resp = parse_encode_integer(new_num);
         }
         catch (const std::invalid_argument& e){
@@ -102,7 +106,7 @@ std::string CommandProcessing::ping(){
 bool CommandProcessing::set_without_send(std::vector<std::string> extras){
     if (extras.size() > 1){
         std::string key = extras[0];
-        GlobalDatas::set_on_dict_table(key, extras[1]);
+        GlobalDatas::datasDict.set(key, extras[1]);
         if (extras.size() == 4){
             std::string param = extras[2];
             if (param == "px"){
@@ -152,10 +156,10 @@ std::string CommandProcessing::get(std::vector<std::string> extras, std::string 
             index++;
         }
         if (index >= size || size == 0){
-            if (GlobalDatas::dict_table.count(key) == 0)
+            if (!GlobalDatas::datasDict.exist(key))
                 resp = "$-1\r\n";
             else 
-                resp = parse_encode_bulk_string(GlobalDatas::get_from_dict_table(key));
+                resp = parse_encode_bulk_string(GlobalDatas::datasDict.get(key));
         }
         else
             resp = parse_encode_bulk_string(std::any_cast<std::string>(keys_values.second[index]));
@@ -231,7 +235,7 @@ std::string CommandProcessing::replconf(std::vector<std::string> extras, int des
     if (extras[0] == "listening-port" || extras[0] == "capa" && extras.size() > 1){
         resp = parse_encode_simple_string("OK");
     } else if (extras[0] == "getack" && extras[1] == "*"){
-        std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::to_string(GlobalDatas::prec_commands_offset)};
+        std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::to_string(GlobalDatas::cmdsOffset.get_prec_cmd_offset())};
         //resp = parse_encode_array(rep);
         send_data(parse_encode_array(rep), dest_fd);
     }
@@ -253,7 +257,6 @@ std::string CommandProcessing::psync(std::vector<std::string> extras){
         resp = parse_encode_simple_string("FULLRESYNC " + replication_id + " 0");
     }   
     return resp;
-
 }
 
 void CommandProcessing::process_file_datas(int dest_fd){

@@ -20,7 +20,8 @@
 #include "socket_management.h"
 #include "command_processing.h"
 #include "stream_commands_processing.h"
-#include "global_datas.h"
+#include "list_commands_processing.h"
+#include "globals_datas/global_datas.h"
 #include <iomanip>
 
 
@@ -51,6 +52,9 @@ std::string SocketManagement::run_command(std::string cmd, std::vector<std::stri
             return StreamCommandsProcessing::xread_with_block(extra_params);
         else
             return StreamCommandsProcessing::xread(extra_params);
+    }
+    else if (cmd == "rpush") {
+        return ListCommandsProcessing::rpush(extra_params);
     }
     else if (cmd == "set") {
         return CommandProcessing::set(extra_params, data);
@@ -113,7 +117,6 @@ void SocketManagement::handle_connection(const int& clientfd){
                 is_queue_active = false;
                 cmds_to_exec.clear();            
                 CommandProcessing::send_data(parse_encode_simple_string("OK"), clientfd);
-
             }
             else {
                 cmds_to_exec.push_back(data);
@@ -290,7 +293,7 @@ void SocketManagement::retrieve_commands_from_master(int bytes_receive, char* bu
             if (arr.second < data.size())
                 data = data.substr(arr.second);
             std::cout << "bytes " << bytes_received << "   " << data;
-            GlobalDatas::set_commands_offset(arr.second);
+            GlobalDatas::cmdsOffset.set(arr.second);
             process_command(cmd, array_cmd);
         }
         pos = 0;

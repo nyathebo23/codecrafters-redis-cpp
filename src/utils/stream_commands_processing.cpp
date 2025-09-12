@@ -5,9 +5,6 @@
 #include <any>
 #include <thread>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netdb.h>
 #include <unistd.h>
 #include <errno.h>
 #include "encode/array_parser_enc.h"
@@ -16,11 +13,11 @@
 #include "decode/simple_data_parser_dec.h"
 #include "command_processing.h"
 #include "stream_commands_processing.h"
-#include "global_datas.h"
+#include "globals_datas/global_datas.h"
 
 
 std::string StreamCommandsProcessing::xadd(std::vector<std::string> extras){
-    int index_entry = GlobalDatas::get_entry_index(extras[0]);
+    //int index_stream = GlobalDatas::get_entry_index(extras[0]);
     std::string id;
     std::string str_error;
 
@@ -36,9 +33,9 @@ std::string StreamCommandsProcessing::xadd(std::vector<std::string> extras){
             str_error = "ERR The ID specified in XADD must be greater than 0-0";
             return parse_encode_error_msg(str_error);
         }
-        int index_entry = GlobalDatas::get_entry_index(extras[0]);        
-        if (index_entry < GlobalDatas::entries.size()){
-            auto last_entry = GlobalDatas::entries[index_entry].second.back();
+        int index_stream = GlobalDatas::streamList.get_stream_index(extras[0]);        
+        if (index_stream < GlobalDatas::streamList.size()){
+            auto last_entry = GlobalDatas::streamList.get_by_index(index_stream).last_entry();
             auto last_entry_id = split_entry_id(last_entry["id"]);
             long last_entry_ms_time = std::stol(last_entry_id.first);
             int last_entry_seq_num = std::stol(last_entry_id.second);
@@ -68,7 +65,7 @@ std::string StreamCommandsProcessing::xadd(std::vector<std::string> extras){
             extras[1] = id;
         }  
     }
-    GlobalDatas::set_entry(extras);
+    GlobalDatas::streamList.set_entry(extras);
     std::string resp = parse_encode_bulk_string(extras[1]);
     return resp;
         
@@ -91,10 +88,10 @@ std::string StreamCommandsProcessing::xrange(std::vector<std::string> extras) {
         range_inf_id = split_entry_id_num(extras[1]);
         range_sup_id = split_entry_id_num(extras[2]);
     }
-    int index_entry = GlobalDatas::get_entry_index(entry_key);
+    int index_stream = GlobalDatas::streamList.get_stream_index(entry_key);
     VectorMapEntries entry_data_filtered;
-    if (index_entry < GlobalDatas::entries.size()){
-        auto entry_data = GlobalDatas::entries[index_entry].second;
+    if (index_stream < GlobalDatas::streamList.size()){
+        auto entry_data = GlobalDatas::streamList.get_by_index(index_stream).get_entries();
         VectorMapEntries::iterator it = entry_data.begin();
         auto elt_id = split_entry_id_num((*it)["id"]);
         while ((elt_id.first < range_inf_id.first) || ((elt_id.first == range_inf_id.first) && (elt_id.second < range_inf_id.second)))
@@ -128,10 +125,10 @@ std::string StreamCommandsProcessing::xread(std::vector<std::string> extras) {
         std::string key = extras[i];
         std::string value = extras[i+nb_keys];
         auto key_value_pair = split_entry_id_num(value);
-        int index_entry = GlobalDatas::get_entry_index(key);
+        int index_stream = GlobalDatas::streamList.get_stream_index(key);
         VectorMapEntries entry_data_filtered;
-        if (index_entry < GlobalDatas::entries.size()){
-            auto entry_data = GlobalDatas::entries[index_entry].second;
+        if (index_stream < GlobalDatas::streamList.size()){
+            auto entry_data = GlobalDatas::streamList.get_by_index(index_stream).get_entries();
             VectorMapEntries::iterator it = entry_data.begin();
             auto elt_id = split_entry_id_num((*it)["id"]);
             while ((elt_id.first < key_value_pair.first) || ((elt_id.first == key_value_pair.first) && (elt_id.second <= key_value_pair.second)))
@@ -162,9 +159,9 @@ std::string StreamCommandsProcessing::xread_with_block(std::vector<std::string> 
     unsigned short nb_keys = (extras.size() - 1) / 2;
     for (int i = 1; i <= nb_keys; i++){
         if (extras[i+nb_keys] == "$"){
-            int index_entry = GlobalDatas::get_entry_index(extras[i]);
-            if (index_entry < GlobalDatas::entries.size()){
-                auto last_elt = GlobalDatas::entries[index_entry].second.back();
+            int index_stream = GlobalDatas::streamList.get_stream_index(extras[i]);
+            if (index_stream < GlobalDatas::streamList.size()){
+                auto last_elt = GlobalDatas::streamList.get_by_index(index_stream).last_entry();
                 extras[i+nb_keys] = last_elt["id"];
             }
             else 
@@ -172,20 +169,20 @@ std::string StreamCommandsProcessing::xread_with_block(std::vector<std::string> 
         }
     }
     if (delay == 0){
-        auto init_entries = GlobalDatas::get_entries();
-        int init_entries_size = init_entries.size();
+        auto init_streams = GlobalDatas::streamList.get_stream_list();
+        int init_streams_size = init_streams.size();
         bool new_item_received_on_key = false;
         while (!new_item_received_on_key){
             for (int k = 1; k <= nb_keys; k++){
                 int index = 0;
-                while (index < init_entries_size && init_entries[index].first != extras[k]){
+                while (index < init_streams_size && init_streams[index].get_key() != extras[k]){
                     index++;
                 }
-                if (index == init_entries_size){
-                    if (GlobalDatas::get_entry_index(extras[k]) != GlobalDatas::entries.size())
+                if (index == init_streams_size){
+                    if (GlobalDatas::streamList.get_stream_index(extras[k]) != GlobalDatas::streamList.size())
                         new_item_received_on_key = true;
                 }
-                else if (init_entries[index].second.size() != GlobalDatas::entries[index].second.size()){
+                else if (init_streams[index].get_entries().size() != GlobalDatas::streamList.get_by_index(index).get_entries().size()){
                     new_item_received_on_key = true;
                 }
             }

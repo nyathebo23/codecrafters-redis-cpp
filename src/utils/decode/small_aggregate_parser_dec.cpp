@@ -19,7 +19,7 @@ std::pair<std::string, bool> parse_decode_bulk_string(const std::string& msg){
          return std::make_pair("Error", false);
 
     const std::string strnum =  msg.substr(1, start_symbol_pos - 1);
-    const std:: string text = msg.substr(start_symbol_pos + 2, end_symbol_pos - start_symbol_pos - 2);
+    const std::string text = msg.substr(start_symbol_pos + 2, end_symbol_pos - start_symbol_pos - 2);
 
     try {
         int number = std::stoi(strnum);
