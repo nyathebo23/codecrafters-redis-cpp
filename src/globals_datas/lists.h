@@ -7,13 +7,6 @@
 #include <deque>
 #include <optional>
 
-template <typename T>
-struct OpResult
-{
-    value: T,
-    error: std::string
-};
-
 
 class Lists {
     public:
