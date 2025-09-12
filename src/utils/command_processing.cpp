@@ -99,7 +99,7 @@ std::string CommandProcessing::echo(std::vector<std::string> extras){
 }
 
 std::string CommandProcessing::ping(){
-    std::string resp = parse_encode_bulk_string("PONG");
+    std::string resp = parse_encode_simple_string("PONG");
     return resp;
 }
 
