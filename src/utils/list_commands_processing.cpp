@@ -27,6 +27,7 @@ std::string ListCommandsProcessing::lrange(std::vector<std::any> extras) {
     int start = std::any_cast<int>(extras[1]);
     int end = std::any_cast<int>(extras[2]);
     std::vector<std::string> result = GlobalDatas::lists.left_range(list_key, start, end);
+    return "";
     //return parse_encode_array(result);
 }
 
@@ -38,13 +39,16 @@ std::string ListCommandsProcessing::lpush(std::vector<std::string> extras) {
 }
 
 std::string ListCommandsProcessing::llen(std::vector<std::string> extras) {
+    return "";
 
 }
 
 std::string ListCommandsProcessing::lpop(std::vector<std::any> extras) {
+    return "";
 
 }
 
 std::string ListCommandsProcessing::blpop(std::vector<std::any> extras) {
+    return "";
 
 }

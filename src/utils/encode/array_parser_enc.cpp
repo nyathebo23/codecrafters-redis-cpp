@@ -54,7 +54,7 @@ std::string parse_encode_array_for_xrange(const VectorMapEntries data){
 std::string parse_encode_array_for_xread(const std::vector<std::pair<std::string, VectorMapEntries>> data){
     int vector_size = data.size();
     if (vector_size == 0)
-        return "$-1\r\n";
+        return "*-1\r\n";
     std::string entry_encoded = "*" + std::to_string(vector_size) + "\r\n";
     for (auto key_vector_map: data) {
         entry_encoded += "*2\r\n";
