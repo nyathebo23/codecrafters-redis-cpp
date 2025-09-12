@@ -13,7 +13,7 @@
 #include "decode/simple_data_parser_dec.h"
 #include "command_processing.h"
 #include "list_commands_processing.h"
-#include "globals_datas/global_datas.h"
+#include "../globals_datas/global_datas.h"
 
 std::string ListCommandsProcessing::rpush(std::vector<std::string> extras) {
     std::vector<std::string> values;
@@ -38,7 +38,7 @@ std::string ListCommandsProcessing::lpush(std::vector<std::string> extras) {
 }
 
 std::string ListCommandsProcessing::llen(std::vector<std::string> extras) {
-    
+
 }
 
 std::string ListCommandsProcessing::lpop(std::vector<std::any> extras) {

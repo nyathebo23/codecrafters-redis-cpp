@@ -21,7 +21,7 @@
 #include "command_processing.h"
 #include "stream_commands_processing.h"
 #include "list_commands_processing.h"
-#include "globals_datas/global_datas.h"
+#include "../globals_datas/global_datas.h"
 #include <iomanip>
 
 

@@ -13,7 +13,7 @@
 #include "decode/simple_data_parser_dec.h"
 #include "command_processing.h"
 #include "stream_commands_processing.h"
-#include "globals_datas/global_datas.h"
+#include "../globals_datas/global_datas.h"
 
 
 std::string StreamCommandsProcessing::xadd(std::vector<std::string> extras){

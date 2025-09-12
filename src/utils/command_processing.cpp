@@ -20,7 +20,7 @@
 #include "process_rdbfile_datas.h"
 #include "decode/simple_data_parser_dec.h"
 #include "command_processing.h"
-#include "globals_datas/global_datas.h"
+#include "../globals_datas/global_datas.h"
 
 
 
