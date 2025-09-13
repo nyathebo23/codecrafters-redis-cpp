@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 #include <vector>
-
+#include "decode/decoders.h"
 
 class ListCommandsProcessing {
 
