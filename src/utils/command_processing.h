@@ -15,7 +15,7 @@ class CommandProcessing {
 
     public:
         static int64_t get_now_time_milliseconds();
-        static std::pair<std::string, std::vector<DecodedResult&>> get_command_array_from_rawdata(std::string data);
+        static std::pair<std::string, std::vector<DecodedResult*>> get_command_array_from_rawdata(std::string data);
         static std::string echo(std::vector<std::string> extras);
         static bool send_data(std::string data, int dest_fd);
         static void send_replconf_getack(int dest_fd);

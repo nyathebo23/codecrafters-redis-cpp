@@ -15,7 +15,7 @@ class DecodedResult
         virtual std::string asString() = 0;
         virtual long asInteger() = 0;
         virtual double asDouble() = 0;
-        virtual std::vector<DecodedResult&> asArray() = 0;
+        virtual std::vector<DecodedResult*> asArray() = 0;
 };
 
 class StringDecodeResult: public DecodedResult {
@@ -52,7 +52,7 @@ class StringDecodeResult: public DecodedResult {
             }      
         }
 
-        std::vector<DecodedResult&> asArray() override {
+        std::vector<DecodedResult*> asArray() override {
             throw CastException("string cannot be converted into Array");
         }
 };
@@ -74,7 +74,7 @@ class IntDecodeResult: public DecodedResult {
         double asDouble() override{
             return (double)this->value;
         }
-        std::vector<DecodedResult&> asArray() override {
+        std::vector<DecodedResult*> asArray() override {
             throw CastException("integer cannot be converted into Array");
         }
 };
@@ -97,7 +97,7 @@ class DoubleDecodeResult: public DecodedResult {
         double asDouble() override{
             return this->value;
         }  
-        std::vector<DecodedResult&> asArray() override {
+        std::vector<DecodedResult*> asArray() override {
             throw CastException("double cannot be converted into Array");
         }
 };
@@ -120,17 +120,17 @@ class BooleanDecodeResult: public DecodedResult {
         double asDouble() override {
             throw CastException("boolean cannot be converted into double");
         };
-        std::vector<DecodedResult&> asArray() override {
+        std::vector<DecodedResult*> asArray() override {
             throw CastException("boolean cannot be converted into Array");
         }
 };
 
 class ArrayDecodeResult: public DecodedResult {
     private:
-        std::vector<DecodedResult&> value;
+        std::vector<DecodedResult*> value;
         int charEndIndex;
     public:
-        ArrayDecodeResult(std::vector<DecodedResult&> value, int charEndInd): DecodedResult(std::nullopt) {
+        ArrayDecodeResult(std::vector<DecodedResult*> value, int charEndInd): DecodedResult(std::nullopt) {
             this->charEndIndex = charEndInd;
             this->value = value;
         };  
@@ -147,7 +147,7 @@ class ArrayDecodeResult: public DecodedResult {
         double asDouble() {
             throw CastException("Array cannot be converted into double");
         };
-        std::vector<DecodedResult&> asArray() {
+        std::vector<DecodedResult*> asArray() {
             this->value;
         };
 };

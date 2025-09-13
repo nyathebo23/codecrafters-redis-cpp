@@ -25,9 +25,9 @@
 #include "resp_constants.h"
 #include <iomanip>
 
-std::vector<std::string> SocketManagement::lower_str_params_decoded(std::vector<DecodedResult&> params) {
+std::vector<std::string> SocketManagement::lower_str_params_decoded(std::vector<DecodedResult*> params) {
     std::vector<std::string> result;
-    for (DecodedResult& param: params) {
+    for (DecodedResult* param: params) {
         std::string param_str = param.asString();
         std::transform(param_str.begin(), param_str.end(), param_str.begin(), ::tolower);
         result.push_back(param_str);
@@ -35,7 +35,7 @@ std::vector<std::string> SocketManagement::lower_str_params_decoded(std::vector<
     return result;
 }
 
-std::string SocketManagement::run_command(std::string cmd, std::vector<DecodedResult&> extra_params, std::string data, int clientfd){
+std::string SocketManagement::run_command(std::string cmd, std::vector<DecodedResult*> extra_params, std::string data, int clientfd){
     if (cmd == "echo"){
         return CommandProcessing::echo(lower_str_params_decoded(extra_params));
     }
@@ -108,7 +108,7 @@ void SocketManagement::handle_connection(const int& clientfd){
 
         auto command_elts = CommandProcessing::get_command_array_from_rawdata(data);
         std::string cmd = command_elts.first;
-        std::vector<DecodedResult&> extra_params = command_elts.second;
+        std::vector<DecodedResult*> extra_params = command_elts.second;
 
         if (is_queue_active){
             if (cmd == "exec"){
@@ -206,19 +206,19 @@ void SocketManagement::handshake_and_check_incoming_master_connections(int port)
     if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
         std::cout << "Connect to master failed";
     }
-    std::vector<Encoder&> ping = {BulkStringEncoder("PING")};
+    std::vector<Encoder*> ping = {&BulkStringEncoder("PING")};
     if(send_receive_msg_by_command(parse_encode_array(ping), "PONG") < 0)
         std::cout << "PING failed";
 
-    std::vector<Encoder&> replconf_msg1 = {replconfEnc, portListeningEnc, BulkStringEncoder(std::to_string(port))}; 
+    std::vector<Encoder*> replconf_msg1 = {replconfEnc, portListeningEnc, BulkStringEncoder(std::to_string(port))}; 
     if(send_receive_msg_by_command(parse_encode_array(replconf_msg1), "OK") < 0)
         std::cout << "REPLCONF failed";
     
-    std::vector<Encoder&> replconf_msg2 = {replconfEnc, capaEnc, psync2Enc};
+    std::vector<Encoder*> replconf_msg2 = {replconfEnc, capaEnc, psync2Enc};
     if(send_receive_msg_by_command(parse_encode_array(replconf_msg2), "OK") < 0)
         std::cout << "REPLCONF failed";
 
-    std::vector<Encoder&> psync_msg = {psyncEnc, questionMarkEnc, minusOneEnc};
+    std::vector<Encoder*> psync_msg = {psyncEnc, questionMarkEnc, minusOneEnc};
     std::string tosend = parse_encode_array(psync_msg);
     if (send(server_fd, tosend.c_str(), tosend.length(), 0) < 0){
         std::cout << "Send "+ tosend + " handshake failed";

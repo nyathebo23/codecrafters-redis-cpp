@@ -15,7 +15,7 @@ class DecodedResult
         virtual std::string asString() = 0;
         virtual long asInteger() = 0;
         virtual double asDouble() = 0;
-        virtual std::vector<DecodedResult&> asArray() = 0;
+        virtual std::vector<DecodedResult*> asArray() = 0;
 };
 
 class StringDecodeResult: public DecodedResult {
@@ -27,7 +27,7 @@ class StringDecodeResult: public DecodedResult {
         std::string asString();
         long asInteger();
         double asDouble();
-        std::vector<DecodedResult&> asArray();
+        std::vector<DecodedResult*> asArray();
 };
 
 class IntDecodeResult: public DecodedResult {
@@ -39,7 +39,7 @@ class IntDecodeResult: public DecodedResult {
         std::string asString();
         long asInteger();
         double asDouble();
-        std::vector<DecodedResult&> asArray();
+        std::vector<DecodedResult*> asArray();
 };
 
 class DoubleDecodeResult: public DecodedResult {
@@ -51,7 +51,7 @@ class DoubleDecodeResult: public DecodedResult {
         std::string asString();
         long asInteger();
         double asDouble();
-        std::vector<DecodedResult&> asArray();
+        std::vector<DecodedResult*> asArray();
 };
 
 class BooleanDecodeResult: public DecodedResult {
@@ -63,22 +63,22 @@ class BooleanDecodeResult: public DecodedResult {
         std::string asString();
         long asInteger();
         double asDouble();
-        std::vector<DecodedResult&> asArray();
+        std::vector<DecodedResult*> asArray();
 
 };
 
 class ArrayDecodeResult: public DecodedResult {
     private:
-        std::vector<DecodedResult&> value;
+        std::vector<DecodedResult*> value;
         int charEndIndex;
     public:
-        ArrayDecodeResult(std::vector<DecodedResult&> value, int charEndInd); 
+        ArrayDecodeResult(std::vector<DecodedResult*> value, int charEndInd); 
         ArrayDecodeResult(std::string error); 
         int getCharEndIndex();
         std::string asString();
         long asInteger();
         double asDouble();
-        std::vector<DecodedResult&> asArray();
+        std::vector<DecodedResult*> asArray();
 };
 
 

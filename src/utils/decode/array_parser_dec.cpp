@@ -20,7 +20,7 @@ ArrayDecodeResult parse_decode_array(const std::string& msg){
     } catch (const std::out_of_range& e) {
         return ArrayDecodeResult("Array length out of range (too big)");
     }
-    std::vector<DecodedResult&> elements;
+    std::vector<DecodedResult*> elements;
     int start_pos = end_symbol_pos + 2;
     int count_elements = 0;
     const int msglen = msg.length();
@@ -33,7 +33,7 @@ ArrayDecodeResult parse_decode_array(const std::string& msg){
                 auto decodedVal = parse_decode_integer(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
                 if (decodedVal.getError())
                     return ArrayDecodeResult("Error when parsing integer at index "+ elements.size());
-                elements.push_back(decodedVal);
+                elements.push_back(&decodedVal);
                 count_elements++;
                 break;
             }
@@ -50,7 +50,7 @@ ArrayDecodeResult parse_decode_array(const std::string& msg){
                 }
                 if (decodedVal.getError())
                     return ArrayDecodeResult("Error when parsing bulk string at index "+ elements.size());
-                elements.push_back(decodedVal);
+                elements.push_back(&decodedVal);
                 count_elements++;
                 break; 
             }
@@ -60,7 +60,7 @@ ArrayDecodeResult parse_decode_array(const std::string& msg){
             //     if (decodedVal.getError())
             //         return ArrayDecodeResult("Array format error");
             //     end_symbol_pos = start_pos + decodedVal.getCharEndIndex();
-            //     elements.push_back(decodedVal);
+            //     elements.push_back(&decodedVal);
             //     count_elements++;
             //     break;
             // }
@@ -68,7 +68,7 @@ ArrayDecodeResult parse_decode_array(const std::string& msg){
             // {
             //     const std::string str = msg.substr(start_pos, end_symbol_pos - start_pos + 2);
             //     if (str.compare("_\r\n") == 0){
-            //         elements.push_back(nullptr);
+            //         elements.push_back(&nullptr);
             //         count_elements++;
             //     }
             //     else
@@ -80,7 +80,7 @@ ArrayDecodeResult parse_decode_array(const std::string& msg){
                 auto decodedVal = parse_decode_boolean(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
                 if (decodedVal.getError())
                     return ArrayDecodeResult("Error when parsing boolean at index "+ elements.size());
-                elements.push_back(decodedVal);
+                elements.push_back(&decodedVal);
                 count_elements++;
                 break;
             }
@@ -89,7 +89,7 @@ ArrayDecodeResult parse_decode_array(const std::string& msg){
                 auto decodedVal = parse_decode_double(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
                 if (decodedVal.getError())
                     return ArrayDecodeResult("Error when parsing double at index "+ elements.size());
-                elements.push_back(decodedVal); 
+                elements.push_back(&decodedVal); 
                 count_elements++;           
                 break;
             }
@@ -98,7 +98,7 @@ ArrayDecodeResult parse_decode_array(const std::string& msg){
                 auto decodedVal = parse_decode_big_number(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
                 if (decodedVal.getError())
                     return ArrayDecodeResult("Error when parsing big num at index "+ elements.size());
-                elements.push_back(decodedVal);     
+                elements.push_back(&decodedVal);     
                 count_elements++;          
                 break;
             }
@@ -110,7 +110,7 @@ ArrayDecodeResult parse_decode_array(const std::string& msg){
             //     auto decodedVal = parse_decode_bulk_error(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
             //     if (!decodedVal.second)
             //         return std::make_pair("Error on bulk error", false);
-            //     elements.push_back(decodedVal.first);    
+            //     elements.push_back(&decodedVal.first);    
             //     count_elements++;           
             //     break;
             // }

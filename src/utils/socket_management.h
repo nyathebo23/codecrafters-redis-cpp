@@ -19,7 +19,7 @@ class SocketManagement {
         int send_receive_msg_by_command(std::string tosend, std::string toreceive);
 
         void process_command(std::string, std::vector<std::string>);
-        std::vector<std::string> lower_str_params_decoded(std::vector<DecodedResult&> params);
+        std::vector<std::string> lower_str_params_decoded(std::vector<DecodedResult*> params);
     
     public:
         void handle_connection(const int& clientfd);

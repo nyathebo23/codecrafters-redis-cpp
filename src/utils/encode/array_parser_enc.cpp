@@ -9,7 +9,7 @@
 #include "small_aggregate_parser_enc.h"
 #include "../../globals_datas/global_datas.h"
 
-std::string parse_encode_array(const std::vector<Encoder&>& msg){
+std::string parse_encode_array(const std::vector<Encoder*>& msg){
     if (msg.size() == 0)
         return "*0\r\n";
     const std::string startenc = "*" + std::to_string(msg.size()) + "\r\n";
@@ -30,14 +30,14 @@ std::string parse_encode_array_for_xrange(const VectorMapEntries data){
     for (auto map_entry: data){
         entry_encoded += "*2\r\n";
         entry_encoded += parse_encode_bulk_string(map_entry["id"]);
-        std::vector<Encoder&> keys_vals_list;
+        std::vector<Encoder*> keys_vals_list;
         std::map<std::string, std::string>::iterator it = map_entry.begin();
         while (it != map_entry.end()){
             if (it->first != "id"){
                 BulkStringEncoder firstEnc = BulkStringEncoder(it->first);
-                keys_vals_list.push_back(firstEnc);
+                keys_vals_list.push_back(&firstEnc);
                 BulkStringEncoder secondEnc = BulkStringEncoder(it->second);
-                keys_vals_list.push_back(secondEnc);
+                keys_vals_list.push_back(&secondEnc);
             }
             ++it;
         }
@@ -58,14 +58,14 @@ std::string parse_encode_array_for_xread(const std::vector<std::pair<std::string
         for (auto map_entry: key_vector_map.second) {
             entry_encoded += "*2\r\n";
             entry_encoded += parse_encode_bulk_string(map_entry["id"]);
-            std::vector<Encoder&> keys_vals_list;
+            std::vector<Encoder*> keys_vals_list;
             std::map<std::string, std::string>::iterator it = map_entry.begin();
             while (it != map_entry.end()){
                 if (it->first != "id"){
                     BulkStringEncoder firstEnc = BulkStringEncoder(it->first);
-                    keys_vals_list.push_back(firstEnc);
+                    keys_vals_list.push_back(&firstEnc);
                     BulkStringEncoder secondEnc = BulkStringEncoder(it->second);
-                    keys_vals_list.push_back(secondEnc);
+                    keys_vals_list.push_back(&secondEnc);
                 }
                 ++it;
             }

@@ -24,7 +24,7 @@
 
 
 
-std::vector<Encoder&> vect_getack = {replconfEnc, getackEnc, starEnc};
+std::vector<Encoder*> vect_getack = {&replconfEnc, &getackEnc, &starEnc};
 std::string REPLCONF_GETACK_CMD = parse_encode_array(vect_getack);
 
 void CommandProcessing::erase_key(const std::string& key) {
@@ -270,12 +270,12 @@ void CommandProcessing::process_file_datas(int dest_fd){
     }
 }
 
-std::pair<std::string, std::vector<DecodedResult&>> CommandProcessing::get_command_array_from_rawdata(std::string data){
+std::pair<std::string, std::vector<DecodedResult*>> CommandProcessing::get_command_array_from_rawdata(std::string data){
     ArrayDecodeResult arr_resp = parse_decode_array(data);
     auto arr = arr_resp.asArray();
     std::string cmd = arr[0].asString();
     std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
-    std::vector<DecodedResult&> array_cmd;
+    std::vector<DecodedResult*> array_cmd;
     for (int i = 1; i < arr.size(); i++){
         array_cmd.push_back(arr[i]);
     }
