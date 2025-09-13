@@ -265,7 +265,6 @@ void SocketManagement::check_incoming_clients_connections(){
   int client_addr_len = sizeof(client_addr);
   std::cout << "Waiting for a client to connect...\n";
   while (1){
-      printf("00000000000");
       int client_fd = accept(server_fd, (struct sockaddr *) &client_addr, (socklen_t *) &client_addr_len); 
       std::cout << "Client connected \n";
       std::thread connection([this](int clientfd){handle_connection(clientfd);}, client_fd);
