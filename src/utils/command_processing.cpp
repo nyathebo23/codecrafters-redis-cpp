@@ -235,7 +235,7 @@ std::string CommandProcessing::replconf(std::vector<std::string> extras, int des
     if (extras[0] == "listening-port" || extras[0] == "capa" && extras.size() > 1){
         resp = okResp;
     } else if (extras[0] == "getack" && extras[1] == "*"){
-        std::vector<std::any> rep = {replconfEnc, ackEnc, std::to_string(GlobalDatas::cmdsOffset.get_prec_cmd_offset())};
+        std::vector<Encoder*> rep = {replconfEnc, ackEnc, &BulkStringEncoder(std::to_string(GlobalDatas::cmdsOffset.get_prec_cmd_offset()))};
         //resp = parse_encode_array(rep);
         send_data(parse_encode_array(rep), dest_fd);
     }
