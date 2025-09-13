@@ -2,7 +2,6 @@
 #include <string>
 #include <cstring>
 #include <thread>
-#include <variant>
 #include <map>
 #include <algorithm>
 #include <sys/socket.h>

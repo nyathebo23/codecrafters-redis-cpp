@@ -10,7 +10,6 @@
 #include "globals_datas/global_datas.h"
 
 int main(int argc, char **argv) {
-    std::cout << "Waiting for a client to connect...\n";
 
   std::map<std::string, std::string> args_map;
   for (int i = 1; i < argc-1; i+=2){

@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <sys/types.h>
 #include <unistd.h>
-#include <errno.h>
 
 #include "encode/array_parser_enc.h"
 #include "encode/simple_data_parser_enc.h"

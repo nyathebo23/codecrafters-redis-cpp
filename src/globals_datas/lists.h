@@ -10,7 +10,6 @@
 
 class Lists {
     public:
-        //void set(std::string list_key, std::vector<std::string> values);
         bool exist(std::string list_key);
         long append_right(std::string list_key, std::vector<std::string> values);
         long append_left(std::string list_key, std::vector<std::string> values);
