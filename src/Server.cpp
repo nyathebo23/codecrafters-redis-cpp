@@ -61,7 +61,8 @@ int main(int argc, char **argv) {
       connection.detach();
       //master_socket_management.check_incoming_master_connections();
   }
-    socket_management.check_incoming_clients_connections();
+  printf("11111111111111");
+  socket_management.check_incoming_clients_connections();
 
 
 
