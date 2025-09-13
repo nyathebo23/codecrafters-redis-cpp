@@ -24,7 +24,7 @@ class IntegerEncoder: public Encoder {
     private:
         int value;
     public:
-        IntegerEncoder(int value);
+        IntegerEncoder(long value);
         std::string encode();
 };
 

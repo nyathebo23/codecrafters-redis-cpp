@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include <cmath>
-#include <variant>
 #include "small_aggregate_parser_dec.h"
 
 std::string encError = "Error in encoding";

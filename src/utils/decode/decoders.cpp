@@ -1,153 +1,124 @@
 #include "decoders.h"
 #include <iostream>
 
-class DecodedResult
-{
-    private:
-        std::optional<std::string> error;
-    public:
-        std::optional<std::string> getError() {
-            return this->getError();
-        };
-        DecodedResult(std::optional<std::string> error) {
-            this->error = error;
-        };
-        virtual std::string asString() = 0;
-        virtual long asInteger() = 0;
-        virtual double asDouble() = 0;
-        virtual std::vector<DecodedResult*> asArray() = 0;
+std::optional<std::string> DecodedResult::getError() {
+    return this->error;
+};
+DecodedResult::DecodedResult(std::optional<std::string> error) {
+    this->error = error;
 };
 
-class StringDecodeResult: public DecodedResult {
-    private:
-        std::string value;
-    public:
-        StringDecodeResult(std::string value, std::optional<std::string> error): DecodedResult(std::nullopt) {
-            this->value = value;
-        }  
-        StringDecodeResult(std::string error): DecodedResult(error) {}
-        std::string asString() override {
-            return value;
-        }
-        long asInteger() override {
-            try {
-                int val_int = std::stoi(this->value);
-            }
-            catch (const std::invalid_argument& e) {
-                throw CastException(this->value + " can't be converted into integer");
-            } 
-            catch (const std::out_of_range& e) {
-                throw CastException(this->value + " is too big to be converted into integer");
-            }        
-        }
-        double asDouble() override{
-            try {
-                double val_double = std::stod(this->value);
-            }
-            catch (const std::invalid_argument& e) {
-                throw CastException(this->value + " can't be converted into double");
-            } 
-            catch (const std::out_of_range& e) {
-                throw CastException(this->value + " is too big to be converted into double");
-            }      
-        }
+StringDecodeResult::StringDecodeResult(std::string value, std::optional<std::string> error): DecodedResult(std::nullopt) {
+    this->value = value;
+}
 
-        std::vector<DecodedResult*> asArray() override {
-            throw CastException("string cannot be converted into Array");
-        }
+StringDecodeResult::StringDecodeResult(std::string error): DecodedResult(error) {}
+
+std::string StringDecodeResult::asString() {
+    return value;
+}
+
+long StringDecodeResult::asInteger() {
+    try {
+        int val_int = std::stoi(this->value);
+    }
+    catch (const std::invalid_argument& e) {
+        throw CastException(this->value + " can't be converted into integer");
+    } 
+    catch (const std::out_of_range& e) {
+        throw CastException(this->value + " is too big to be converted into integer");
+    }        
+}
+
+double StringDecodeResult::asDouble() {
+    try {
+        double val_double = std::stod(this->value);
+    }
+    catch (const std::invalid_argument& e) {
+        throw CastException(this->value + " can't be converted into double");
+    } 
+    catch (const std::out_of_range& e) {
+        throw CastException(this->value + " is too big to be converted into double");
+    }      
+}
+
+std::vector<DecodedResult*> StringDecodeResult::asArray() {
+    throw CastException("string cannot be converted into Array");
+}
+
+
+IntDecodeResult::IntDecodeResult(long value): DecodedResult(std::nullopt) {
+    this->value = value;
+};  
+IntDecodeResult::IntDecodeResult(std::string error): DecodedResult(error) {}
+std::string IntDecodeResult::asString() {
+    return std::to_string(this->value);
+}
+long IntDecodeResult::asInteger() {
+    return this->value;
+}
+double IntDecodeResult::asDouble() {
+    return (double)this->value;
+}
+std::vector<DecodedResult*> IntDecodeResult::asArray() {
+    throw CastException("integer cannot be converted into Array");
+}
+
+DoubleDecodeResult::DoubleDecodeResult(double value): DecodedResult(std::nullopt) {
+    this->value = value;
+};  
+DoubleDecodeResult::DoubleDecodeResult(std::string error): DecodedResult(error) {}
+
+std::string DoubleDecodeResult::asString() {
+    return std::to_string(this->value);
+}
+long DoubleDecodeResult::asInteger() {
+    return (long)this->value;
+}
+double DoubleDecodeResult::asDouble() {
+    return this->value;
+}  
+std::vector<DecodedResult*> DoubleDecodeResult::asArray() {
+    throw CastException("double cannot be converted into Array");
+}
+
+
+
+BooleanDecodeResult::BooleanDecodeResult(bool value): DecodedResult(std::nullopt) {
+    this->value = value;
+};  
+BooleanDecodeResult::BooleanDecodeResult(std::string error): DecodedResult(error) {}
+
+std::string BooleanDecodeResult::asString() {
+    return std::to_string(this->value);
 };
-
-class IntDecodeResult: public DecodedResult {
-    private:
-        long value;
-    public:
-        IntDecodeResult(long value): DecodedResult(std::nullopt) {
-            this->value = value;
-        };  
-        IntDecodeResult(std::string error): DecodedResult(error) {}
-        std::string asString() override{
-            return std::to_string(this->value);
-        }
-        long asInteger() override{
-            return this->value;
-        }
-        double asDouble() override{
-            return (double)this->value;
-        }
-        std::vector<DecodedResult*> asArray() override {
-            throw CastException("integer cannot be converted into Array");
-        }
+long BooleanDecodeResult::asInteger() {
+    throw CastException("boolean cannot be converted into integer");
 };
-
-class DoubleDecodeResult: public DecodedResult {
-    private:
-        double value;
-    public:
-        DoubleDecodeResult(double value): DecodedResult(std::nullopt) {
-            this->value = value;
-        };  
-        DoubleDecodeResult(std::string error): DecodedResult(error) {}
-
-        std::string asString() override{
-            return std::to_string(this->value);
-        }
-        long asInteger() override{
-            return (int)this->value;
-        }
-        double asDouble() override{
-            return this->value;
-        }  
-        std::vector<DecodedResult*> asArray() override {
-            throw CastException("double cannot be converted into Array");
-        }
+double BooleanDecodeResult::asDouble() {
+    throw CastException("boolean cannot be converted into double");
 };
+std::vector<DecodedResult*> BooleanDecodeResult::asArray() {
+    throw CastException("boolean cannot be converted into Array");
+}
 
-class BooleanDecodeResult: public DecodedResult {
-    private:
-        bool value;
-    public:
-        BooleanDecodeResult(bool value): DecodedResult(std::nullopt) {
-            this->value = value;
-        };  
-        BooleanDecodeResult(std::string error): DecodedResult(error) {}
-
-        std::string asString() override {
-            return std::to_string(this->value);
-        };
-        long asInteger() override {
-            throw CastException("boolean cannot be converted into integer");
-        };
-        double asDouble() override {
-            throw CastException("boolean cannot be converted into double");
-        };
-        std::vector<DecodedResult*> asArray() override {
-            throw CastException("boolean cannot be converted into Array");
-        }
+ArrayDecodeResult::ArrayDecodeResult(std::vector<DecodedResult*> value, int charEndInd): DecodedResult(std::nullopt) {
+    this->charEndIndex = charEndInd;
+    this->value = value;
+};  
+ArrayDecodeResult::ArrayDecodeResult(std::string error): DecodedResult(error) {}
+int ArrayDecodeResult::getCharEndIndex() {
+    return this->charEndIndex;
+}
+std::string ArrayDecodeResult::asString() {
+    throw CastException("Array cannot be converted into string");
 };
-
-class ArrayDecodeResult: public DecodedResult {
-    private:
-        std::vector<DecodedResult*> value;
-        int charEndIndex;
-    public:
-        ArrayDecodeResult(std::vector<DecodedResult*> value, int charEndInd): DecodedResult(std::nullopt) {
-            this->charEndIndex = charEndInd;
-            this->value = value;
-        };  
-        ArrayDecodeResult(std::string error): DecodedResult(error) {}
-        int getCharEndIndex() {
-            return this->charEndIndex;
-        }
-        std::string asString() {
-            throw CastException("Array cannot be converted into string");
-        };
-        int asInt() {
-            throw CastException("Array cannot be converted into int");
-        };
-        double asDouble() {
-            throw CastException("Array cannot be converted into double");
-        };
-        std::vector<DecodedResult*> asArray() {
-            this->value;
-        };
+long ArrayDecodeResult::asInteger() {
+    throw CastException("Array cannot be converted into int");
+};
+double ArrayDecodeResult::asDouble() {
+    throw CastException("Array cannot be converted into double");
+};
+std::vector<DecodedResult*> ArrayDecodeResult::asArray() {
+    this->value;
 };

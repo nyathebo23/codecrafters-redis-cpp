@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include <cmath>
-#include <variant>
 #include "simple_data_parser_enc.h"
 
 

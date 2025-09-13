@@ -237,7 +237,6 @@ std::string CommandProcessing::replconf(std::vector<std::string> extras, int des
     } else if (extras[0] == "getack" && extras[1] == "*"){
         BulkStringEncoder cmdOffsetEnc = BulkStringEncoder(std::to_string(GlobalDatas::cmdsOffset.get_prec_cmd_offset()));
         std::vector<Encoder*> rep = {&replconfEnc, &ackEnc, &cmdOffsetEnc};
-        //resp = parse_encode_array(rep);
         send_data(parse_encode_array(rep), dest_fd);
     }
     else if (extras[0] == "ack" && extras.size() == 2){

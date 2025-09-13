@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include <cmath>
-#include <variant>
 #include "simple_data_parser_dec.h"
 
 bool detect_wrong_char_in_substring(const std::string& str){

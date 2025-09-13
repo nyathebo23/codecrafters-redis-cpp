@@ -3,7 +3,6 @@
 
 #include <utility>
 #include <string>
-#include <variant>
 
 std::string parse_encode_simple_string(const std::string&);
 std::string parse_encode_error_msg(const std::string&);

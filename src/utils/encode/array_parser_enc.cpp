@@ -1,8 +1,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <variant>
-#include <any>
 #include <cmath>
 #include "array_parser_enc.h"
 #include "simple_data_parser_enc.h"
