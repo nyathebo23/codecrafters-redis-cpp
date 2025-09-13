@@ -46,10 +46,10 @@ std::string SocketManagement::run_command(std::string cmd, std::vector<DecodedRe
         return CommandProcessing::ping();
     }
     else if (cmd == "incr"){
-        return CommandProcessing::incr(extra_params);
+        return CommandProcessing::incr(lower_str_params_decoded(extra_params));
     }
     else if (cmd == "type"){
-        return CommandProcessing::type(extra_params);
+        return CommandProcessing::type(lower_str_params_decoded(extra_params));
     }
     else if (cmd == "xadd"){
         return StreamCommandsProcessing::xadd(lower_str_params_decoded(extra_params));
@@ -303,7 +303,7 @@ void SocketManagement::retrieve_commands_from_master(int bytes_receive, char* bu
                 std::transform(param_str.begin(), param_str.end(), param_str.begin(), ::tolower);
                 array_cmd.push_back(param_str);
             }
-            if (arr_resp.getCharEndIndex().second < data.size())
+            if (arr_resp.getCharEndIndex() < data.size())
                 data = data.substr(arr_resp.getCharEndIndex());
             std::cout << "bytes " << bytes_received << "   " << data;
             GlobalDatas::cmdsOffset.set(arr_resp.getCharEndIndex());
