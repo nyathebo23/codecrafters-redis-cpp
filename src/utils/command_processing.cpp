@@ -141,7 +141,7 @@ std::string CommandProcessing::keys(std::vector<std::string> extras, std::string
     if (extras.size() == 1 && extras[0] == "*"){
         auto keys_values = get_keys_values_from_file(filepath);
         auto keys = keys_values.first;
-        resp = parse_encode_array(keys);
+        resp = parse_encode_array(stringlist_to_encoderslist(keys));
     }
     return resp;
 }
@@ -173,12 +173,12 @@ std::string CommandProcessing::config(std::vector<std::string> extras, std::map<
     if (extras[0] == "get"){
         std::string key = extras[1];
         if (key == "dir"){
-            std::vector<std::any> values = {key, args_map["dir"]};
-            resp = parse_encode_array(values);
+            std::vector<std::string> values = {key, args_map["dir"]};
+            resp = parse_encode_array(stringlist_to_encoderslist(values));
         }
         else if (key == "dbfilename"){
-            std::vector<std::any> values = {key, args_map["dbfilename"]};
-            resp = parse_encode_array(values);          
+            std::vector<std::string> values = {key, args_map["dbfilename"]};
+            resp = parse_encode_array(stringlist_to_encoderslist(values));
         }
     }
     return resp;
