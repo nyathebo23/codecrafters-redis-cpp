@@ -8,19 +8,19 @@ bool detect_wrong_char_in_substring(const std::string& str){
         return true;
     return false;
 };
-std::string encError = "Error in encoding";
+std::string encodError = "Error in encoding";
 
 StringDecodeResult parse_decode_simple_string(const std::string& msg){
     const std::string str = msg.substr(1, msg.length()-3);
     if (detect_wrong_char_in_substring(str))
-        return StringDecodeResult(encError);
+        return StringDecodeResult(encodError);
     return StringDecodeResult(str, std::nullopt);
 }
 
 StringDecodeResult parse_decode_error_msg(const std::string& msg){
     const std::string str = msg.substr(1, msg.length()-3);
     if (detect_wrong_char_in_substring(str))
-        return StringDecodeResult(encError);
+        return StringDecodeResult(encodError);
     return StringDecodeResult(str, std::nullopt);
 }
 
@@ -41,7 +41,7 @@ BooleanDecodeResult parse_decode_boolean(const std::string& msg){
         return BooleanDecodeResult(true);
     else if (msg.compare("#f\r\n") == 0)
         return BooleanDecodeResult(false);
-    else return BooleanDecodeResult(encError);
+    else return BooleanDecodeResult(encodError);
 }
 
 DoubleDecodeResult parse_decode_double(const std::string& msg){

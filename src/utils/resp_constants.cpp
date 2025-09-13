@@ -19,11 +19,3 @@ const std::string streamTypeResp = parse_encode_simple_string("stream");
 const std::string listTypeResp = parse_encode_simple_string("list");
 const std::string noneTypeResp = parse_encode_simple_string("none");
 
-std::vector<Encoder*> stringlist_to_encoderslist(std::vector<std::string> strlist) {
-    std::vector<Encoder*> encoded_list;
-    for (std::string item: strlist) {
-        BulkStringEncoder enc = BulkStringEncoder(item);
-        encoded_list.push_back(&enc);
-    }
-    return encoded_list;
-};
