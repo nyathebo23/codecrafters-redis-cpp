@@ -24,7 +24,7 @@
 
 
 
-std::vector<Encoder*> vect_getack = {replconfEnc, getackEnc, starEnc};
+std::vector<Encoder*> vect_getack = {&replconfEnc, &getackEnc, &starEnc};
 std::string REPLCONF_GETACK_CMD = parse_encode_array(vect_getack);
 
 void CommandProcessing::erase_key(const std::string& key) {
