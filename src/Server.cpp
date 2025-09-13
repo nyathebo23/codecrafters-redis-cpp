@@ -10,6 +10,8 @@
 #include "globals_datas/global_datas.h"
 
 int main(int argc, char **argv) {
+  printf("55555555555");
+
   std::map<std::string, std::string> args_map;
   for (int i = 1; i < argc-1; i+=2){
      args_map[std::string(argv[i]).substr(2)] = std::string(argv[i+1]);
