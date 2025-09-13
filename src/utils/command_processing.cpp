@@ -24,7 +24,7 @@
 
 
 
-std::vector<const Encoder*> vect_getack = {replconfEnc, getackEnc, starEnc};
+std::vector<Encoder*> vect_getack = {replconfEnc, getackEnc, starEnc};
 std::string REPLCONF_GETACK_CMD = parse_encode_array(vect_getack);
 
 void CommandProcessing::erase_key(const std::string& key) {
@@ -235,8 +235,8 @@ std::string CommandProcessing::replconf(std::vector<std::string> extras, int des
     if (extras[0] == "listening-port" || extras[0] == "capa" && extras.size() > 1){
         resp = okResp;
     } else if (extras[0] == "getack" && extras[1] == "*"){
-        const Encoder* cmdOffsetEnc = &BulkStringEncoder(std::to_string(GlobalDatas::cmdsOffset.get_prec_cmd_offset()))
-        std::vector<const Encoder*> rep = {replconfEnc, ackEnc, cmdOffsetEnc};
+        Encoder* cmdOffsetEnc = &BulkStringEncoder(std::to_string(GlobalDatas::cmdsOffset.get_prec_cmd_offset()))
+        std::vector<Encoder*> rep = {replconfEnc, ackEnc, cmdOffsetEnc};
         //resp = parse_encode_array(rep);
         send_data(parse_encode_array(rep), dest_fd);
     }
