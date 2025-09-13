@@ -206,19 +206,20 @@ void SocketManagement::handshake_and_check_incoming_master_connections(int port)
     if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
         std::cout << "Connect to master failed";
     }
-    std::vector<Encoder*> ping = {&BulkStringEncoder("PING")};
+    std::vector<Encoder*> ping = {&pingEnc};
     if(send_receive_msg_by_command(parse_encode_array(ping), "PONG") < 0)
         std::cout << "PING failed";
 
-    std::vector<Encoder*> replconf_msg1 = {replconfEnc, portListeningEnc, &BulkStringEncoder(std::to_string(port))}; 
+    BulkStringEncoder portEnc = BulkStringEncoder(std::to_string(port));
+    std::vector<Encoder*> replconf_msg1 = {&replconfEnc, &portListeningEnc, &portEnc}; 
     if(send_receive_msg_by_command(parse_encode_array(replconf_msg1), "OK") < 0)
         std::cout << "REPLCONF failed";
     
-    std::vector<Encoder*> replconf_msg2 = {replconfEnc, capaEnc, psync2Enc};
+    std::vector<Encoder*> replconf_msg2 = {&replconfEnc, &capaEnc, &psync2Enc};
     if(send_receive_msg_by_command(parse_encode_array(replconf_msg2), "OK") < 0)
         std::cout << "REPLCONF failed";
 
-    std::vector<Encoder*> psync_msg = {psyncEnc, questionMarkEnc, minusOneEnc};
+    std::vector<Encoder*> psync_msg = {&psyncEnc, &questionMarkEnc, &minusOneEnc};
     std::string tosend = parse_encode_array(psync_msg);
     if (send(server_fd, tosend.c_str(), tosend.length(), 0) < 0){
         std::cout << "Send "+ tosend + " handshake failed";
@@ -294,11 +295,11 @@ void SocketManagement::retrieve_commands_from_master(int bytes_receive, char* bu
             arr_resp = parse_decode_array(data);
             auto command = arr_resp.asArray();
             pos += arr_resp.getCharEndIndex();
-            std::string cmd = command[0].asString();
+            std::string cmd = command[0]->asString();
             std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
             std::vector<std::string> array_cmd;
             for (int i = 1; i < command.size(); i++){
-                std::string param_str = command[i].asString();
+                std::string param_str = command[i]->asString();
                 std::transform(param_str.begin(), param_str.end(), param_str.begin(), ::tolower);
                 array_cmd.push_back(param_str);
             }

@@ -10,7 +10,7 @@ class ListCommandsProcessing {
 
     public:
         static std::string rpush(std::vector<std::string> extras);
-        static std::string lrange(std::vector<DecodedResult&> extras);
+        static std::string lrange(std::vector<DecodedResult*> extras);
         static std::string lpush(std::vector<std::string> extras);
         static std::string llen(std::vector<std::string> extras);
         static std::string lpop(std::vector<std::string> extras);

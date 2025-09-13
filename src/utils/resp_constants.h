@@ -5,16 +5,17 @@
 
 extern const std::string okResp;
 extern const std::string pongResp;
-extern Encoder* replconfEnc;
-extern Encoder* ackEnc;
-extern Encoder* getackEnc;
-extern Encoder* capaEnc;
-extern Encoder* portListeningEnc;
-extern Encoder* psync2Enc;
-extern Encoder* psyncEnc;
-extern Encoder* questionMarkEnc;
-extern Encoder* minusOneEnc;
-extern Encoder* starEnc;
+extern BulkStringEncoder replconfEnc;
+extern BulkStringEncoder ackEnc;
+extern BulkStringEncoder getackEnc;
+extern BulkStringEncoder capaEnc;
+extern BulkStringEncoder portListeningEnc;
+extern BulkStringEncoder psync2Enc;
+extern BulkStringEncoder psyncEnc;
+extern BulkStringEncoder questionMarkEnc;
+extern BulkStringEncoder minusOneEnc;
+extern BulkStringEncoder starEnc;
+extern BulkStringEncoder pingEnc;
 extern const std::string stringTypeResp;
 extern const std::string streamTypeResp;
 extern const std::string listTypeResp;

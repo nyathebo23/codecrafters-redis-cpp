@@ -24,7 +24,7 @@
 
 
 
-std::vector<Encoder*> vect_getack = {replconfEnc, getackEnc, starEnc};
+std::vector<Encoder*> vect_getack = {&replconfEnc, &getackEnc, &starEnc};
 std::string REPLCONF_GETACK_CMD = parse_encode_array(vect_getack);
 
 void CommandProcessing::erase_key(const std::string& key) {
@@ -235,8 +235,8 @@ std::string CommandProcessing::replconf(std::vector<std::string> extras, int des
     if (extras[0] == "listening-port" || extras[0] == "capa" && extras.size() > 1){
         resp = okResp;
     } else if (extras[0] == "getack" && extras[1] == "*"){
-        Encoder* cmdOffsetEnc = &BulkStringEncoder(std::to_string(GlobalDatas::cmdsOffset.get_prec_cmd_offset()));
-        std::vector<Encoder*> rep = {replconfEnc, ackEnc, cmdOffsetEnc};
+        BulkStringEncoder cmdOffsetEnc = BulkStringEncoder(std::to_string(GlobalDatas::cmdsOffset.get_prec_cmd_offset()));
+        std::vector<Encoder*> rep = {&replconfEnc, &ackEnc, &cmdOffsetEnc};
         //resp = parse_encode_array(rep);
         send_data(parse_encode_array(rep), dest_fd);
     }
@@ -274,7 +274,7 @@ void CommandProcessing::process_file_datas(int dest_fd){
 std::pair<std::string, std::vector<DecodedResult*>> CommandProcessing::get_command_array_from_rawdata(std::string data){
     ArrayDecodeResult arr_resp = parse_decode_array(data);
     auto arr = arr_resp.asArray();
-    std::string cmd = arr[0].asString();
+    std::string cmd = arr[0]->asString();
     std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
     std::vector<DecodedResult*> array_cmd;
     for (int i = 1; i < arr.size(); i++){
