@@ -1,7 +1,7 @@
 #include "lists.h"
 #include <algorithm> 
 
-int Lists::append_right(std::string list_key, std::vector<std::string> values) {
+long Lists::append_right(std::string list_key, std::vector<std::string> values) {
     if (this->lists_map.count(list_key) == 0) {
         std::deque list(values.begin(), values.end());
         this->lists_map[list_key] = list;
@@ -14,7 +14,7 @@ int Lists::append_right(std::string list_key, std::vector<std::string> values) {
     return this->lists_map[list_key].size();
 };
 
-int Lists::append_left(std::string list_key, std::vector<std::string> values) {
+long Lists::append_left(std::string list_key, std::vector<std::string> values) {
     if (this->lists_map.count(list_key) == 0) {
         std::reverse(values.begin(), values.end());
         std::deque list(values.begin(), values.end());
@@ -28,15 +28,15 @@ int Lists::append_left(std::string list_key, std::vector<std::string> values) {
     return this->lists_map[list_key].size();
 };
 
-std::vector<std::string> Lists::left_range(std::string list_key, int start_ind, int end_ind) {
+std::vector<std::string> Lists::left_range(std::string list_key, long start_ind, long end_ind) {
     if (this->lists_map.count(list_key) == 0) {
         return std::vector<std::string>();
     }
     std::deque<std::string> list = this->lists_map[list_key];
-    int list_size = list.size();
+    long list_size = list.size();
     std::vector<std::string> result;
-    int start = start_ind < 0 ? list_size + start_ind : start_ind;
-    int end = end_ind < 0 ? list_size + end_ind : end_ind;
+    long start = start_ind < 0 ? list_size + start_ind : start_ind;
+    long end = end_ind < 0 ? list_size + end_ind : end_ind;
     start = start < 0 ? 0: start;
     end = end >= list_size ? list_size - 1 : end;
 
@@ -50,7 +50,7 @@ std::vector<std::string> Lists::left_range(std::string list_key, int start_ind, 
     return result;
 };
 
-int Lists::get_size(std::string list_key) {
+long Lists::get_size(std::string list_key) {
     if (this->lists_map.count(list_key) == 0) {
         return 0;
     }

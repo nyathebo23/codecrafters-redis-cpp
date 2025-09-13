@@ -88,7 +88,7 @@ std::string decode_str_length(int& index, std::vector<unsigned char>& buffer){
     }
 }
 
-void get_key_value_pair(std::vector<unsigned char>& buffer, int &index, std::vector<std::any>& keys, std::vector<std::any>& values){
+void get_key_value_pair(std::vector<unsigned char>& buffer, int &index, std::vector<std::string>& keys, std::vector<std::string>& values){
     if (buffer[index] == 0x00){
         index++;
         keys.push_back(decode_str_length(index, buffer));
@@ -125,7 +125,7 @@ void skip_key(std::vector<unsigned char>& buffer, int& ind, byte_space nb){
     decode_str_length(ind, buffer);
 }
 
-std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_file(std::string filepath){
+std::pair<std::vector<std::string>, std::vector<std::string>> get_keys_values_from_file(std::string filepath){
     std::ifstream input_file(filepath, std::ios::binary);
     if (std::filesystem::is_directory(filepath) || !input_file.is_open())
         return {};
@@ -135,8 +135,8 @@ std::pair<std::vector<std::any>, std::vector<std::any>> get_keys_values_from_fil
     input_file.close();
 
     std::stringstream ss;
-    std::vector<std::any> keys;
-    std::vector<std::any> values;
+    std::vector<std::string> keys;
+    std::vector<std::string> values;
     
     int index = 0, buffer_size = buffer.size();
     while (index < buffer_size && buffer[index] != 0xFE){

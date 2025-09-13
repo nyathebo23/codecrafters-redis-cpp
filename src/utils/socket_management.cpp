@@ -22,15 +22,25 @@
 #include "stream_commands_processing.h"
 #include "list_commands_processing.h"
 #include "../globals_datas/global_datas.h"
+#include "resp_constants.h"
 #include <iomanip>
 
+std::vector<std::string> SocketManagement::lower_str_params_decoded(std::vector<DecodedResult&> params) {
+    std::vector<std::string> result;
+    for (DecodedResult& param: params) {
+        std::string param_str = param.asString();
+        std::transform(param_str.begin(), param_str.end(), param_str.begin(), ::tolower);
+        result.push_back(param_str);
+    }
+    return result;
+}
 
-std::string SocketManagement::run_command(std::string cmd, std::vector<std::string> extra_params, std::string data, int clientfd){
+std::string SocketManagement::run_command(std::string cmd, std::vector<DecodedResult&> extra_params, std::string data, int clientfd){
     if (cmd == "echo"){
-        return CommandProcessing::echo(extra_params);
+        return CommandProcessing::echo(lower_str_params_decoded(extra_params));
     }
     else if (cmd == "wait"){
-        return CommandProcessing::wait(std::stoi(extra_params[0]), std::stol(extra_params[1]));
+        return CommandProcessing::wait(extra_params[0].asInteger(), extra_params[1].asInteger());
     }
     else if (cmd == "ping"){
         return CommandProcessing::ping();
@@ -42,40 +52,44 @@ std::string SocketManagement::run_command(std::string cmd, std::vector<std::stri
         return CommandProcessing::type(extra_params[0]);
     }
     else if (cmd == "xadd"){
-        return StreamCommandsProcessing::xadd(extra_params);
+        return StreamCommandsProcessing::xadd(lower_str_params_decoded(extra_params));
     }
     else if (cmd == "xrange"){
-        return StreamCommandsProcessing::xrange(extra_params);
+        return StreamCommandsProcessing::xrange(lower_str_params_decoded(extra_params));
     }
     else if (cmd == "xread"){
-        if (extra_params[0] == "block")
-            return StreamCommandsProcessing::xread_with_block(extra_params);
+        std::vector<std::string>> extras = lower_str_params_decoded(extra_params);
+        if (extras[0] == "block")
+            return StreamCommandsProcessing::xread_with_block(extras);
         else
-            return StreamCommandsProcessing::xread(extra_params);
+            return StreamCommandsProcessing::xread(extras);
     }
     else if (cmd == "rpush") {
-        return ListCommandsProcessing::rpush(extra_params);
+        return ListCommandsProcessing::rpush(lower_str_params_decoded(extra_params));
+    }
+    else if (cmd == "lrange") {
+        return ListCommandsProcessing::lrange(extra_params);
     }
     else if (cmd == "set") {
-        return CommandProcessing::set(extra_params, data);
+        return CommandProcessing::set(lower_str_params_decoded(extra_params), data);
     }
     else if (cmd == "get"){
-        return CommandProcessing::get(extra_params, extra_args["dir"] + "/" + extra_args["dbfilename"]);
+        return CommandProcessing::get(lower_str_params_decoded(extra_params), extra_args["dir"] + "/" + extra_args["dbfilename"]);
     }
     else if (cmd == "config"){
-        return CommandProcessing::config(extra_params, extra_args);
+        return CommandProcessing::config(lower_str_params_decoded(extra_params), extra_args);
     }
     else if (cmd == "keys"){
-        return CommandProcessing::keys(extra_params, extra_args["dir"] + "/" + extra_args["dbfilename"]);
+        return CommandProcessing::keys(lower_str_params_decoded(extra_params), extra_args["dir"] + "/" + extra_args["dbfilename"]);
     }
     else if (cmd == "info"){
-        return CommandProcessing::info(extra_params, GlobalDatas::isMaster ? "master" : "slave");
+        return CommandProcessing::info(lower_str_params_decoded(extra_params), GlobalDatas::isMaster ? "master" : "slave");
     }
     else if (cmd == "replconf"){
-        return CommandProcessing::replconf(extra_params, clientfd);
+        return CommandProcessing::replconf(lower_str_params_decoded(extra_params), clientfd);
     }
     else if (cmd == "psync"){
-        return CommandProcessing::psync(extra_params);
+        return CommandProcessing::psync(lower_str_params_decoded(extra_params));
     }
     return "-ERR\r\n";
 };
@@ -94,7 +108,7 @@ void SocketManagement::handle_connection(const int& clientfd){
 
         auto command_elts = CommandProcessing::get_command_array_from_rawdata(data);
         std::string cmd = command_elts.first;
-        std::vector<std::string> extra_params = command_elts.second;
+        std::vector<DecodedResult&> extra_params = command_elts.second;
 
         if (is_queue_active){
             if (cmd == "exec"){
@@ -129,11 +143,11 @@ void SocketManagement::handle_connection(const int& clientfd){
             CommandProcessing::send_data(parse_encode_simple_string("OK"), clientfd);
         }
         else if (cmd == "exec"){
-            std::string err_msg = "ERR EXEC without MULTI";
+            std::string err_msg = "EXEC without MULTI";
             CommandProcessing::send_data(parse_encode_error_msg(err_msg), clientfd);
         }
         else if (cmd == "discard") {
-            std::string err_msg = "ERR DISCARD without MULTI";
+            std::string err_msg = "DISCARD without MULTI";
             CommandProcessing::send_data(parse_encode_error_msg(err_msg), clientfd);        
         }
         else {
@@ -192,19 +206,19 @@ void SocketManagement::handshake_and_check_incoming_master_connections(int port)
     if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
         std::cout << "Connect to master failed";
     }
-    std::vector<std::any> ping = {std::string("PING")};
+    std::vector<Encoder&> ping = {BulkStringEncoder("PING")};
     if(send_receive_msg_by_command(parse_encode_array(ping), "PONG") < 0)
         std::cout << "PING failed";
 
-    std::vector<std::any> replconf_msg1 = {std::string("REPLCONF"), std::string("listening-port"), std::to_string(port)}; 
+    std::vector<Encoder&> replconf_msg1 = {replconfEnc, portListeningEnc, BulkStringEncoder(std::to_string(port))}; 
     if(send_receive_msg_by_command(parse_encode_array(replconf_msg1), "OK") < 0)
         std::cout << "REPLCONF failed";
     
-    std::vector<std::any> replconf_msg2 = {std::string("REPLCONF"), std::string("capa"), std::string("psync2")};
+    std::vector<Encoder&> replconf_msg2 = {replconfEnc, capaEnc, psync2Enc};
     if(send_receive_msg_by_command(parse_encode_array(replconf_msg2), "OK") < 0)
         std::cout << "REPLCONF failed";
 
-    std::vector<std::any> psync_msg = {std::string("PSYNC"), std::string("?"), std::string("-1")};
+    std::vector<Encoder&> psync_msg = {psyncEnc, questionMarkEnc, minusOneEnc};
     std::string tosend = parse_encode_array(psync_msg);
     if (send(server_fd, tosend.c_str(), tosend.length(), 0) < 0){
         std::cout << "Send "+ tosend + " handshake failed";
@@ -275,25 +289,23 @@ void SocketManagement::retrieve_commands_from_master(int bytes_receive, char* bu
     int pos = p;
     while (bytes_received > 0){
         std::string data(buffer + pos);
-        ArrayResp arr_resp;
-        ArrayAndInd arr;
+        ArrayDecodeResult arr_resp;
         while (pos < bytes_received){
             arr_resp = parse_decode_array(data);
-            arr = std::get<ArrayAndInd>(arr_resp.first);
-            auto command = arr.first;
-            pos += arr.second;
-            std::string cmd = std::any_cast<std::string>(command[0]);
+            auto command = arr_resp.asArray();
+            pos += arr_resp.getCharEndIndex();
+            std::string cmd = command[0].asString();
             std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
             std::vector<std::string> array_cmd;
             for (int i = 1; i < command.size(); i++){
-                std::string param = std::any_cast<std::string>(command[i]);
-                std::transform(param.begin(), param.end(), param.begin(), ::tolower);
-                array_cmd.push_back(param);
+                std::string param_str = command[i].asString();
+                std::transform(param_str.begin(), param_str.end(), param_str.begin(), ::tolower);
+                array_cmd.push_back(param_str);
             }
-            if (arr.second < data.size())
-                data = data.substr(arr.second);
+            if (arr_resp.getCharEndIndex().second < data.size())
+                data = data.substr(arr_resp.getCharEndIndex());
             std::cout << "bytes " << bytes_received << "   " << data;
-            GlobalDatas::cmdsOffset.set(arr.second);
+            GlobalDatas::cmdsOffset.set(arr_resp.getCharEndIndex());
             process_command(cmd, array_cmd);
         }
         pos = 0;

@@ -12,10 +12,10 @@ class Lists {
     public:
         //void set(std::string list_key, std::vector<std::string> values);
         bool exist(std::string list_key);
-        int append_right(std::string list_key, std::vector<std::string> values);
-        int append_left(std::string list_key, std::vector<std::string> values);
-        int get_size(std::string list_key);
-        std::vector<std::string> left_range(std::string list_key, int start_ind, int end_ind);
+        long append_right(std::string list_key, std::vector<std::string> values);
+        long append_left(std::string list_key, std::vector<std::string> values);
+        long get_size(std::string list_key);
+        std::vector<std::string> left_range(std::string list_key, long start_ind, long end_ind);
         std::optional<std::string> left_pop(std::string list_key);
         std::vector<std::string> left_pop_list(std::string list_key, std::size_t count);
 

@@ -4,7 +4,6 @@
 #include <thread>
 #include <vector>
 #include <map>
-#include <any>
 #include <algorithm>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -21,11 +20,11 @@
 #include "decode/simple_data_parser_dec.h"
 #include "command_processing.h"
 #include "../globals_datas/global_datas.h"
+#include "resp_constants.h"
 
 
 
-
-std::vector<std::any> vect_getack = {std::string("REPLCONF"), std::string("GETACK"), std::string("*")};
+std::vector<Encoder&> vect_getack = {replconfEnc, getackEnc, starEnc};
 std::string REPLCONF_GETACK_CMD = parse_encode_array(vect_getack);
 
 void CommandProcessing::erase_key(const std::string& key) {
@@ -37,18 +36,19 @@ void CommandProcessing::execute_after_delay(int delay, const std::string& key) {
     erase_key(key);
 }
 
-std::string CommandProcessing::type(std::string key){
+std::string CommandProcessing::type(std::vector<std::string> extras){
     std::string resp;
+    std::string key = extras[0];
     if (GlobalDatas::datasDict.exist(key))
-        resp = parse_encode_simple_string("string");
+        resp = stringTypeResp;
     else if (GlobalDatas::streamList.exist(key)){
-        resp = parse_encode_simple_string("stream");
+        resp = streamTypeResp;
     } 
     else if (GlobalDatas::lists.exist(key)){
-        resp = parse_encode_simple_string("list");
+        resp = listTypeResp;
     } 
     else {
-        resp = parse_encode_simple_string("none");
+        resp = noneTypeResp;
     }
     return resp;
 }
@@ -65,8 +65,9 @@ bool CommandProcessing::send_data(std::string data, int dest_fd){
     return false;
 }
 
-std::string CommandProcessing::incr(std::string key){
+std::string CommandProcessing::incr(std::vector<std::string> extras){
     std::string resp;
+    std::string key = extras[0];
     if (!GlobalDatas::datasDict.exist(key)){
         GlobalDatas::datasDict.set(key, "1");
         resp = parse_encode_integer(1);
@@ -79,11 +80,11 @@ std::string CommandProcessing::incr(std::string key){
             resp = parse_encode_integer(new_num);
         }
         catch (const std::invalid_argument& e){
-            std::string errmsg = "ERR value is not an integer or out of range";
+            std::string errmsg = "value is not an integer or out of range";
             resp = parse_encode_error_msg(errmsg);
         }
         catch (const std::out_of_range& e){
-            std::string errmsg = "ERR value is not an integer or out of range";
+            std::string errmsg = "value is not an integer or out of range";
             resp = parse_encode_error_msg(errmsg);
         }
     }
@@ -99,8 +100,7 @@ std::string CommandProcessing::echo(std::vector<std::string> extras){
 }
 
 std::string CommandProcessing::ping(){
-    std::string resp = parse_encode_simple_string("PONG");
-    return resp;
+    return pongResp;
 }
 
 bool CommandProcessing::set_without_send(std::vector<std::string> extras){
@@ -131,7 +131,7 @@ std::string CommandProcessing::set(std::vector<std::string> extras, std::string 
     }
     std::string resp;
     if (set_without_send(extras)){
-        resp = parse_encode_simple_string("OK");
+        resp = okResp;
     }
     return resp;
 }
@@ -152,8 +152,8 @@ std::string CommandProcessing::get(std::vector<std::string> extras, std::string 
         std::string key = extras[0];
         auto keys_values = get_keys_values_from_file(filepath);
         int index = 0, size = keys_values.first.size();
-        while (index < size && std::any_cast<std::string>(keys_values.first[index]) != key){
-            index++;
+        while (index < size && keys_values.first[index] != key){
+            index++; 
         }
         if (index >= size || size == 0){
             if (!GlobalDatas::datasDict.exist(key))
@@ -162,7 +162,7 @@ std::string CommandProcessing::get(std::vector<std::string> extras, std::string 
                 resp = parse_encode_bulk_string(GlobalDatas::datasDict.get(key));
         }
         else
-            resp = parse_encode_bulk_string(std::any_cast<std::string>(keys_values.second[index]));
+            resp = parse_encode_bulk_string(keys_values.second[index]);
     }
     return resp;    
 }
@@ -233,9 +233,9 @@ int64_t CommandProcessing::get_now_time_milliseconds() {
 std::string CommandProcessing::replconf(std::vector<std::string> extras, int dest_fd){
     std::string resp;
     if (extras[0] == "listening-port" || extras[0] == "capa" && extras.size() > 1){
-        resp = parse_encode_simple_string("OK");
+        resp = okResp;
     } else if (extras[0] == "getack" && extras[1] == "*"){
-        std::vector<std::any> rep = {std::string("REPLCONF"), std::string("ACK"), std::to_string(GlobalDatas::cmdsOffset.get_prec_cmd_offset())};
+        std::vector<std::any> rep = {replconfEnc, ackEnc, std::to_string(GlobalDatas::cmdsOffset.get_prec_cmd_offset())};
         //resp = parse_encode_array(rep);
         send_data(parse_encode_array(rep), dest_fd);
     }
@@ -270,30 +270,14 @@ void CommandProcessing::process_file_datas(int dest_fd){
     }
 }
 
-std::pair<std::string, std::vector<std::string>> CommandProcessing::get_command_array_from_rawdata(std::string data){
-    ArrayResp arr_resp = parse_decode_array(data);
-    auto arr = std::get<ArrayAndInd>(arr_resp.first);
-    auto command = arr.first;
-    std::string cmd = std::any_cast<std::string>(command[0]);
+std::pair<std::string, std::vector<DecodedResult&>> CommandProcessing::get_command_array_from_rawdata(std::string data){
+    ArrayDecodeResult arr_resp = parse_decode_array(data);
+    auto arr = arr_resp.asArray();
+    std::string cmd = arr[0].asString();
     std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
-    std::vector<std::string> array_cmd;
-    for (int i = 1; i < command.size(); i++){
-        std::string param = std::any_cast<std::string>(command[i]);
-        std::transform(param.begin(), param.end(), param.begin(), ::tolower);
-        array_cmd.push_back(param);
-    }
-    return std::make_pair(cmd, array_cmd);
-};
-
-std::pair<std::string, std::vector<std::any>> CommandProcessing::get_command_array_multitypes_from_rawdata(std::string data){
-    ArrayResp arr_resp = parse_decode_array(data);
-    auto arr = std::get<ArrayAndInd>(arr_resp.first);
-    auto command = arr.first;
-    std::string cmd = std::any_cast<std::string>(command[0]);
-    std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
-    std::vector<std::any> array_cmd;
-    for (int i = 1; i < command.size(); i++){
-        array_cmd.push_back(command[i]);
+    std::vector<DecodedResult&> array_cmd;
+    for (int i = 1; i < arr.size(); i++){
+        array_cmd.push_back(arr[i]);
     }
     return std::make_pair(cmd, array_cmd);
 };
