@@ -3,9 +3,6 @@
 
 
 bool GlobalDatas::isMaster = true;
-
-
-
 CommandsOffset GlobalDatas::cmdsOffset = CommandsOffset();
 StreamList GlobalDatas::streamList = StreamList();
 RDBDatasDict GlobalDatas::datasDict = RDBDatasDict();
