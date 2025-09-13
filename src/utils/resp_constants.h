@@ -21,6 +21,4 @@ extern const std::string streamTypeResp;
 extern const std::string listTypeResp;
 extern const std::string noneTypeResp;
 
-std::vector<Encoder*> stringlist_to_encoderslist(std::vector<std::string> strlist);
-
 #endif

@@ -28,7 +28,7 @@
 std::vector<std::string> SocketManagement::lower_str_params_decoded(std::vector<DecodedResult*> params) {
     std::vector<std::string> result;
     for (DecodedResult* param: params) {
-        std::string param_str = param.asString();
+        std::string param_str = param->asString();
         std::transform(param_str.begin(), param_str.end(), param_str.begin(), ::tolower);
         result.push_back(param_str);
     }

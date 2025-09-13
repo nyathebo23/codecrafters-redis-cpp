@@ -28,5 +28,6 @@ class IntegerEncoder: public Encoder {
         std::string encode();
 };
 
+std::vector<Encoder*> stringlist_to_encoderslist(std::vector<std::string> strlist);
 
 #endif

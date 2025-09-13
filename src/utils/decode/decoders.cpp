@@ -20,7 +20,8 @@ std::string StringDecodeResult::asString() {
 
 long StringDecodeResult::asInteger() {
     try {
-        int val_int = std::stoi(this->value);
+        long val_int = std::stol(this->value);
+        return val_int;
     }
     catch (const std::invalid_argument& e) {
         throw CastException(this->value + " can't be converted into integer");
@@ -33,6 +34,7 @@ long StringDecodeResult::asInteger() {
 double StringDecodeResult::asDouble() {
     try {
         double val_double = std::stod(this->value);
+        return val_double;
     }
     catch (const std::invalid_argument& e) {
         throw CastException(this->value + " can't be converted into double");
@@ -120,5 +122,5 @@ double ArrayDecodeResult::asDouble() {
     throw CastException("Array cannot be converted into double");
 };
 std::vector<DecodedResult*> ArrayDecodeResult::asArray() {
-    this->value;
+    return this->value;
 };

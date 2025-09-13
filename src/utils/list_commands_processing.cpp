@@ -5,9 +5,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>
+
 #include "encode/array_parser_enc.h"
 #include "encode/simple_data_parser_enc.h"
 #include "encode/small_aggregate_parser_enc.h"
+#include "encode/encoders.h"
 #include "decode/simple_data_parser_dec.h"
 #include "command_processing.h"
 #include "list_commands_processing.h"
@@ -24,12 +26,7 @@ std::string ListCommandsProcessing::lrange(std::vector<DecodedResult*> extras) {
     std::string list_key = extras[0]->asString();
     std::transform(list_key.begin(), list_key.end(), list_key.begin(), ::tolower);
     std::vector<std::string> result = GlobalDatas::lists.left_range(list_key, extras[1]->asInteger(), extras[2]->asInteger());
-    std::vector<Encoder*> encoded_list;
-    for (std::string item: result) {
-        BulkStringEncoder enc = BulkStringEncoder(item);
-        encoded_list.push_back(&enc);
-    }
-    return parse_encode_array(encoded_list);
+    return parse_encode_array(stringlist_to_encoderslist(result));
 }
 
 std::string ListCommandsProcessing::lpush(std::vector<std::string> extras) {

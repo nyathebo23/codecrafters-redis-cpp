@@ -24,7 +24,7 @@ class SocketManagement {
     public:
         void handle_connection(const int& clientfd);
 
-        std::string run_command(std::string cmd, std::vector<std::string> extra_params, std::string data, int clientfd);
+        std::string run_command(std::string cmd, std::vector<DecodedResult*> extra_params, std::string data, int clientfd);
 
         short socket_family;
 
