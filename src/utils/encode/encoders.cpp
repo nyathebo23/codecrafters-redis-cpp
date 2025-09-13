@@ -33,3 +33,12 @@ class IntegerEncoder: public Encoder {
             return parse_encode_integer(this->value); 
         };
 };
+
+std::vector<Encoder*> stringlist_to_encoderslist(std::vector<std::string> strlist) {
+    std::vector<Encoder*> encoded_list;
+    for (std::string item: strlist) {
+        BulkStringEncoder enc = BulkStringEncoder(item);
+        encoded_list.push_back(&enc);
+    }
+    return encoded_list;
+};

@@ -24,10 +24,10 @@ std::string ListCommandsProcessing::lrange(std::vector<DecodedResult&> extras) {
     std::string list_key = extras[0].asString();
     std::transform(list_key.begin(), list_key.end(), list_key.begin(), ::tolower);
     std::vector<std::string> result = GlobalDatas::lists.left_range(list_key, extras[1].asInteger(), extras[2].asInteger());
-    std::vector<Encoder&> encoded_list;
+    std::vector<Encoder*> encoded_list;
     for (std::string item: result) {
         BulkStringEncoder enc = BulkStringEncoder(item);
-        encoded_list.push_back(enc);
+        encoded_list.push_back(&enc);
     }
     return parse_encode_array(encoded_list);
 }

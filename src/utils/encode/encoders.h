@@ -3,7 +3,7 @@
 
 #include <string>
 #include <optional>
-
+#include <vector>
 
 class Encoder {
     public:
@@ -27,5 +27,7 @@ class IntegerEncoder: public Encoder {
         IntegerEncoder(int value);
         std::string encode();
 };
+
+//std::vector<Encoder*> stringlist_to_encoderslist(std::vector<std::string> strlist);
 
 #endif

@@ -1,11 +1,10 @@
-#ifndef SIMPLE_DATA_PARSER_ENC_H // Prévention des inclusions multiples
+#ifndef SIMPLE_DATA_PARSER_ENC_H 
 #define SIMPLE_DATA_PARSER_ENC_H
 
 #include <utility>
 #include <string>
 #include <variant>
 
-// Déclaration des fonctions
 std::string parse_encode_simple_string(const std::string&);
 std::string parse_encode_error_msg(const std::string&);
 std::string parse_encode_integer(const long&);
