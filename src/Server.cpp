@@ -14,6 +14,7 @@ int main(int argc, char **argv) {
   for (int i = 1; i < argc-1; i+=2){
      args_map[std::string(argv[i]).substr(2)] = std::string(argv[i+1]);
   }
+  printf("55555555555");
 
   SocketManagement socket_management(AF_INET, SOCK_STREAM, args_map);
 
