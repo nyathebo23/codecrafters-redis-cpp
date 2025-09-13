@@ -198,7 +198,9 @@ std::string CommandProcessing::info(std::vector<std::string> extras, std::string
     return resp;  
 }
 
-std::string CommandProcessing::wait(unsigned int numreplicas, unsigned long timeout){
+std::string CommandProcessing::wait(std::vector<DecodedResult*> extras){
+    unsigned int numreplicas = extras[0]->asInteger(); 
+    unsigned long timeout = extras[1]->asInteger();
     int nb_replicas_updated = 0;
     if (GlobalMasterDatas::prec_commands_offset == GlobalMasterDatas::commands_offset){
         for (auto& replica_pair: GlobalMasterDatas::replicas_offsets)

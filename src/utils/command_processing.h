@@ -26,7 +26,7 @@ class CommandProcessing {
         static std::string keys(std::vector<std::string> extras, std::string filepath);
         static std::string info(std::vector<std::string> extras, std::string role);
         static std::string replconf(std::vector<std::string> extras, int destfd);
-        static std::string wait(unsigned int numreplicas, unsigned long timeout);
+        static std::string wait(std::vector<DecodedResult*> extras);
         static std::string psync(std::vector<std::string> extras);
         static std::string type(std::vector<std::string> extras);
         static std::string incr(std::vector<std::string> extras);

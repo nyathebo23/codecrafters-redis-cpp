@@ -40,16 +40,16 @@ std::string SocketManagement::run_command(std::string cmd, std::vector<DecodedRe
         return CommandProcessing::echo(lower_str_params_decoded(extra_params));
     }
     else if (cmd == "wait"){
-        return CommandProcessing::wait(extra_params[0].asInteger(), extra_params[1].asInteger());
+        return CommandProcessing::wait(extra_params);
     }
     else if (cmd == "ping"){
         return CommandProcessing::ping();
     }
     else if (cmd == "incr"){
-        return CommandProcessing::incr(extra_params[0]);
+        return CommandProcessing::incr(extra_params);
     }
     else if (cmd == "type"){
-        return CommandProcessing::type(extra_params[0]);
+        return CommandProcessing::type(extra_params);
     }
     else if (cmd == "xadd"){
         return StreamCommandsProcessing::xadd(lower_str_params_decoded(extra_params));
