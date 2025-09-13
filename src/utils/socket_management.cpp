@@ -193,7 +193,7 @@ int SocketManagement::send_receive_msg_by_command(std::string tosend, std::strin
         return -1;
     }
     std::string data(buffer);
-    std::string data_decoded = parse_decode_simple_string(data);
+    StringDecodeResult data_decoded = parse_decode_simple_string(data);
     // if (data_decoded != toreceive){
     //     std::cout << "Bad message receive to " + tosend + " which is " + data_decoded;
     //     return -1;
