@@ -58,7 +58,7 @@ std::string SocketManagement::run_command(std::string cmd, std::vector<DecodedRe
         return StreamCommandsProcessing::xrange(lower_str_params_decoded(extra_params));
     }
     else if (cmd == "xread"){
-        std::vector<std::string>> extras = lower_str_params_decoded(extra_params);
+        std::vector<std::string> extras = lower_str_params_decoded(extra_params);
         if (extras[0] == "block")
             return StreamCommandsProcessing::xread_with_block(extras);
         else
@@ -193,7 +193,7 @@ int SocketManagement::send_receive_msg_by_command(std::string tosend, std::strin
         return -1;
     }
     std::string data(buffer);
-    std::string data_decoded = parse_decode_simple_string(data).first;
+    std::string data_decoded = parse_decode_simple_string(data);
     // if (data_decoded != toreceive){
     //     std::cout << "Bad message receive to " + tosend + " which is " + data_decoded;
     //     return -1;
@@ -290,7 +290,7 @@ void SocketManagement::retrieve_commands_from_master(int bytes_receive, char* bu
     int pos = p;
     while (bytes_received > 0){
         std::string data(buffer + pos);
-        ArrayDecodeResult arr_resp;
+        ArrayDecodeResult arr_resp = ArrayDecodeResult(std::vector<DecodedResult*>(), 0);
         while (pos < bytes_received){
             arr_resp = parse_decode_array(data);
             auto command = arr_resp.asArray();
