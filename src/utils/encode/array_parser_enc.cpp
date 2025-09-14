@@ -7,14 +7,26 @@
 #include "small_aggregate_parser_enc.h"
 #include "../../globals_datas/global_datas.h"
 
-std::string parse_encode_array(const std::vector<Encoder*>& msg){
+std::string parse_encode_array(const std::vector<EncoderPtr>& msg){
     if (msg.size() == 0)
         return "*0\r\n";
     const std::string startenc = "*" + std::to_string(msg.size()) + "\r\n";
     std::string encode_text = ""; 
 
-    for (Encoder* encoder: msg){
+    for (EncoderPtr encoder: msg){
         encode_text += encoder->encode();
+    }
+    return startenc + encode_text; 
+}
+
+std::string parse_encode_string_array(const std::vector<std::string>& msg){
+    if (msg.size() == 0)
+        return "*0\r\n";
+    const std::string startenc = "*" + std::to_string(msg.size()) + "\r\n";
+    std::string encode_text = ""; 
+
+    for (std::string item: msg){
+        encode_text += parse_encode_bulk_string(item);
     }
     return startenc + encode_text; 
 }
@@ -28,18 +40,16 @@ std::string parse_encode_array_for_xrange(const VectorMapEntries data){
     for (auto map_entry: data){
         entry_encoded += "*2\r\n";
         entry_encoded += parse_encode_bulk_string(map_entry["id"]);
-        std::vector<Encoder*> keys_vals_list;
+        std::vector<std::string> keys_vals_list;
         std::map<std::string, std::string>::iterator it = map_entry.begin();
         while (it != map_entry.end()){
             if (it->first != "id"){
-                BulkStringEncoder firstEnc = BulkStringEncoder(it->first);
-                keys_vals_list.push_back(&firstEnc);
-                BulkStringEncoder secondEnc = BulkStringEncoder(it->second);
-                keys_vals_list.push_back(&secondEnc);
+                keys_vals_list.push_back(it->first);
+                keys_vals_list.push_back(it->second);
             }
             ++it;
         }
-        entry_encoded += parse_encode_array(keys_vals_list);
+        entry_encoded += parse_encode_string_array(keys_vals_list);
     }
     return entry_encoded; 
 }
@@ -56,18 +66,16 @@ std::string parse_encode_array_for_xread(const std::vector<std::pair<std::string
         for (auto map_entry: key_vector_map.second) {
             entry_encoded += "*2\r\n";
             entry_encoded += parse_encode_bulk_string(map_entry["id"]);
-            std::vector<Encoder*> keys_vals_list;
+            std::vector<std::string> keys_vals_list;
             std::map<std::string, std::string>::iterator it = map_entry.begin();
             while (it != map_entry.end()){
                 if (it->first != "id"){
-                    BulkStringEncoder firstEnc = BulkStringEncoder(it->first);
-                    keys_vals_list.push_back(&firstEnc);
-                    BulkStringEncoder secondEnc = BulkStringEncoder(it->second);
-                    keys_vals_list.push_back(&secondEnc);
+                    keys_vals_list.push_back(it->first);
+                    keys_vals_list.push_back(it->second);
                 }
                 ++it;
             }
-            entry_encoded += parse_encode_array(keys_vals_list);
+            entry_encoded += parse_encode_string_array(keys_vals_list);
         }
     }
     return entry_encoded; 

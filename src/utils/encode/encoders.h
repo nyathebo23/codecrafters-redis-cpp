@@ -4,6 +4,7 @@
 #include <string>
 #include <optional>
 #include <vector>
+#include <memory>
 
 class Encoder {
     public:
@@ -11,6 +12,8 @@ class Encoder {
         virtual std::string encode() = 0;
 
 };
+
+using EncoderPtr = std::shared_ptr<Encoder>;
 
 class BulkStringEncoder: public Encoder {
     private:
@@ -28,6 +31,6 @@ class IntegerEncoder: public Encoder {
         std::string encode();
 };
 
-std::vector<Encoder*> stringlist_to_encoderslist(std::vector<std::string> strlist);
+std::vector<EncoderPtr> stringlist_to_encoderslist(std::vector<std::string> strlist);
 
 #endif

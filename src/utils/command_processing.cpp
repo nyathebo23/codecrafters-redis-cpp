@@ -25,9 +25,6 @@
 
 
 
-std::vector<Encoder*> vect_getack = {&replconfEnc, &getackEnc, &starEnc};
-std::string REPLCONF_GETACK_CMD = parse_encode_array(vect_getack);
-
 void CommandProcessing::erase_key(const std::string& key) {
     GlobalDatas::datasDict.erase(key);
 }
@@ -142,7 +139,7 @@ std::string CommandProcessing::keys(std::vector<std::string> extras, std::string
     if (extras.size() == 1 && extras[0] == "*"){
         auto keys_values = get_keys_values_from_file(filepath);
         auto keys = keys_values.first;
-        resp = parse_encode_array(stringlist_to_encoderslist(keys));
+        resp = parse_encode_string_array(keys);
     }
     return resp;
 }
@@ -158,7 +155,7 @@ std::string CommandProcessing::get(std::vector<std::string> extras, std::string 
         }
         if (index >= size || size == 0){
             if (!GlobalDatas::datasDict.exist(key))
-                resp = "$-1\r\n";
+                resp = NULL_BULK_STRING;
             else 
                 resp = parse_encode_bulk_string(GlobalDatas::datasDict.get(key));
         }
@@ -175,11 +172,11 @@ std::string CommandProcessing::config(std::vector<std::string> extras, std::map<
         std::string key = extras[1];
         if (key == "dir"){
             std::vector<std::string> values = {key, args_map["dir"]};
-            resp = parse_encode_array(stringlist_to_encoderslist(values));
+            resp = parse_encode_string_array(values);
         }
         else if (key == "dbfilename"){
             std::vector<std::string> values = {key, args_map["dbfilename"]};
-            resp = parse_encode_array(stringlist_to_encoderslist(values));
+            resp = parse_encode_string_array(values);
         }
     }
     return resp;
@@ -198,7 +195,7 @@ std::string CommandProcessing::info(std::vector<std::string> extras, std::string
     return resp;  
 }
 
-std::string CommandProcessing::wait(std::vector<DecodedResult*> extras){
+std::string CommandProcessing::wait(const std::vector<DecodedResultPtr>& extras){
     unsigned int numreplicas = extras[0]->asInteger(); 
     unsigned long timeout = extras[1]->asInteger();
     int nb_replicas_updated = 0;
@@ -206,7 +203,7 @@ std::string CommandProcessing::wait(std::vector<DecodedResult*> extras){
         for (auto& replica_pair: GlobalMasterDatas::replicas_offsets)
             CommandProcessing::send_replconf_getack(replica_pair.first);
         if (GlobalMasterDatas::prec_commands_offset != 0)
-            GlobalMasterDatas::set_commands_offset(REPLCONF_GETACK_CMD.size(), false);
+            GlobalMasterDatas::set_commands_offset(replconfGetackCmd.size(), false);
     }
     std::vector<int> list_replicas_fd;
     for (auto&  replica_pair: GlobalMasterDatas::replicas_offsets)
@@ -238,9 +235,8 @@ std::string CommandProcessing::replconf(std::vector<std::string> extras, int des
     if (extras[0] == "listening-port" || extras[0] == "capa" && extras.size() > 1){
         resp = okResp;
     } else if (extras[0] == "getack" && extras[1] == "*"){
-        BulkStringEncoder cmdOffsetEnc = BulkStringEncoder(std::to_string(GlobalDatas::cmdsOffset.get_prec_cmd_offset()));
-        std::vector<Encoder*> rep = {&replconfEnc, &ackEnc, &cmdOffsetEnc};
-        send_data(parse_encode_array(rep), dest_fd);
+        std::string cmdOffsetEnc = parse_encode_bulk_string(std::to_string(GlobalDatas::cmdsOffset.get_prec_cmd_offset()));
+        send_data(replconfAckPartEnc + cmdOffsetEnc, dest_fd);
     }
     else if (extras[0] == "ack" && extras.size() == 2){
         try {
@@ -273,18 +269,25 @@ void CommandProcessing::process_file_datas(int dest_fd){
     }
 }
 
-std::pair<std::string, std::vector<DecodedResult*>> CommandProcessing::get_command_array_from_rawdata(std::string data){
+Command CommandProcessing::get_command_array_from_rawdata(std::string data){
     ArrayDecodeResult arr_resp = parse_decode_array(data);
-    auto arr = arr_resp.asArray();
+
+    if (arr_resp.getError().has_value()){
+        return Command(arr_resp.getError().value());
+    }
+    if (arr_resp.getCharEndIndex() != data.length()){
+        return Command("Command encode format error");
+    }
+    std::vector<DecodedResultPtr> arr = arr_resp.asArray();
     std::string cmd = arr[0]->asString();
     std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
-    std::vector<DecodedResult*> array_cmd;
+    std::vector<DecodedResultPtr> array_cmd;
     for (int i = 1; i < arr.size(); i++){
         array_cmd.push_back(arr[i]);
     }
-    return std::make_pair(cmd, array_cmd);
+    return Command(cmd, array_cmd);
 };
 
 void CommandProcessing::send_replconf_getack(int dest_fd){
-    send_data(REPLCONF_GETACK_CMD, dest_fd);
+    send_data(replconfGetackCmd, dest_fd);
 };

@@ -44,7 +44,7 @@ double StringDecodeResult::asDouble() {
     }      
 }
 
-std::vector<DecodedResult*> StringDecodeResult::asArray() {
+std::vector<DecodedResultPtr> StringDecodeResult::asArray() {
     throw CastException("string cannot be converted into Array");
 }
 
@@ -62,7 +62,7 @@ long IntDecodeResult::asInteger() {
 double IntDecodeResult::asDouble() {
     return (double)this->value;
 }
-std::vector<DecodedResult*> IntDecodeResult::asArray() {
+std::vector<DecodedResultPtr> IntDecodeResult::asArray() {
     throw CastException("integer cannot be converted into Array");
 }
 
@@ -80,7 +80,7 @@ long DoubleDecodeResult::asInteger() {
 double DoubleDecodeResult::asDouble() {
     return this->value;
 }  
-std::vector<DecodedResult*> DoubleDecodeResult::asArray() {
+std::vector<DecodedResultPtr> DoubleDecodeResult::asArray() {
     throw CastException("double cannot be converted into Array");
 }
 
@@ -100,11 +100,11 @@ long BooleanDecodeResult::asInteger() {
 double BooleanDecodeResult::asDouble() {
     throw CastException("boolean cannot be converted into double");
 };
-std::vector<DecodedResult*> BooleanDecodeResult::asArray() {
+std::vector<DecodedResultPtr> BooleanDecodeResult::asArray() {
     throw CastException("boolean cannot be converted into Array");
 }
 
-ArrayDecodeResult::ArrayDecodeResult(std::vector<DecodedResult*> value, int charEndInd): DecodedResult(std::nullopt) {
+ArrayDecodeResult::ArrayDecodeResult(std::vector<DecodedResultPtr> value, int charEndInd): DecodedResult(std::nullopt) {
     this->charEndIndex = charEndInd;
     this->value = value;
 };  
@@ -121,6 +121,6 @@ long ArrayDecodeResult::asInteger() {
 double ArrayDecodeResult::asDouble() {
     throw CastException("Array cannot be converted into double");
 };
-std::vector<DecodedResult*> ArrayDecodeResult::asArray() {
+std::vector<DecodedResultPtr> ArrayDecodeResult::asArray() {
     return this->value;
 };

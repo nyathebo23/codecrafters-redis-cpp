@@ -7,6 +7,15 @@
 #include <cstdint>
 #include "decode/decoders.h"
 
+class Command {
+    public:
+        std::string name;
+        std::vector<DecodedResultPtr> args;
+        std::optional<std::string> error;
+        Command(std::string name, std::vector<DecodedResultPtr> params): name(name), args(params), error(std::nullopt) {}
+        Command(std::string error): error(error) {}    
+};
+
 class CommandProcessing {
 
     protected:
@@ -15,7 +24,7 @@ class CommandProcessing {
 
     public:
         static int64_t get_now_time_milliseconds();
-        static std::pair<std::string, std::vector<DecodedResult*>> get_command_array_from_rawdata(std::string data);
+        static Command get_command_array_from_rawdata(std::string data);
         static std::string echo(std::vector<std::string> extras);
         static bool send_data(std::string data, int dest_fd);
         static void send_replconf_getack(int dest_fd);
@@ -26,7 +35,7 @@ class CommandProcessing {
         static std::string keys(std::vector<std::string> extras, std::string filepath);
         static std::string info(std::vector<std::string> extras, std::string role);
         static std::string replconf(std::vector<std::string> extras, int destfd);
-        static std::string wait(std::vector<DecodedResult*> extras);
+        static std::string wait(const std::vector<DecodedResultPtr>& extras);
         static std::string psync(std::vector<std::string> extras);
         static std::string type(std::vector<std::string> extras);
         static std::string incr(std::vector<std::string> extras);
@@ -34,5 +43,6 @@ class CommandProcessing {
         static void process_file_datas(int dest_fd);
 
 };
+
 
 #endif

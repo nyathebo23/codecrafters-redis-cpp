@@ -3,19 +3,16 @@
 
 #include "encode/encoders.h"
 
+extern const std::string NULL_BULK_STRING;
 extern const std::string okResp;
 extern const std::string pongResp;
-extern BulkStringEncoder replconfEnc;
-extern BulkStringEncoder ackEnc;
-extern BulkStringEncoder getackEnc;
-extern BulkStringEncoder capaEnc;
-extern BulkStringEncoder portListeningEnc;
-extern BulkStringEncoder psync2Enc;
-extern BulkStringEncoder psyncEnc;
-extern BulkStringEncoder questionMarkEnc;
-extern BulkStringEncoder minusOneEnc;
-extern BulkStringEncoder starEnc;
-extern BulkStringEncoder pingEnc;
+extern const std::string queueResp;
+extern const std::string replconfGetackCmd;
+extern const std::string replconfAckPartEnc;
+extern const std::string replconfMsg2Enc;
+extern const std::string replconfMsg1PartEnc;
+extern const std::string psyncMsgEnc;
+extern const std::string pingAsListEnc;
 extern const std::string stringTypeResp;
 extern const std::string streamTypeResp;
 extern const std::string listTypeResp;

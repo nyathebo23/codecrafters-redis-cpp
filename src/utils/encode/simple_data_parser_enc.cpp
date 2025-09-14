@@ -9,7 +9,7 @@ std::string parse_encode_simple_string(const std::string& msg){
 }
 
 std::string parse_encode_error_msg(const std::string& msg){
-    return "-ERR" + msg + "\r\n";
+    return "-ERR " + msg + "\r\n";
 }
 
 std::string parse_encode_integer(const long& msg){

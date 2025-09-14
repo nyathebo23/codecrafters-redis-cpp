@@ -18,7 +18,7 @@ ArrayDecodeResult parse_decode_array(const std::string& msg){
     } catch (const std::out_of_range& e) {
         return ArrayDecodeResult("Array length out of range (too big)");
     }
-    std::vector<DecodedResult*> elements;
+    std::vector<DecodedResultPtr> elements;
     int start_pos = end_symbol_pos + 2;
     int count_elements = 0;
     const int msglen = msg.length();
@@ -29,15 +29,15 @@ ArrayDecodeResult parse_decode_array(const std::string& msg){
             case ':':
             {
                 auto decodedVal = parse_decode_integer(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
-                if (decodedVal.getError())
-                    return ArrayDecodeResult("Error when parsing integer at index "+ elements.size());
-                elements.push_back(&decodedVal);
+                if (decodedVal->getError())
+                    return ArrayDecodeResult("Error when parsing integer at index "+ std::to_string(elements.size()));
+                elements.push_back(DecodedResultPtr(decodedVal));
                 count_elements++;
                 break;
             }
             case '$':
             {
-                StringDecodeResult decodedVal("");
+                StringDecodeResult* decodedVal = new StringDecodeResult("");
                 if (msg[start_pos+1] == '-')
                     decodedVal = parse_decode_bulk_string(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
                 else {
@@ -46,16 +46,16 @@ ArrayDecodeResult parse_decode_array(const std::string& msg){
                         return ArrayDecodeResult("End not found");
                     decodedVal = parse_decode_bulk_string(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
                 }
-                if (decodedVal.getError())
-                    return ArrayDecodeResult("Error when parsing bulk string at index "+ elements.size());
-                elements.push_back(&decodedVal);
+                if (decodedVal->getError())
+                    return ArrayDecodeResult("Error when parsing bulk string at index "+ std::to_string(elements.size()));
+                elements.push_back(DecodedResultPtr(decodedVal));
                 count_elements++;
                 break; 
             }
             // case '*':
             // {
             //     auto decodedVal = parse_decode_array(msg.substr(start_pos));
-            //     if (decodedVal.getError())
+            //     if (decodedVal->getError())
             //         return ArrayDecodeResult("Array format error");
             //     end_symbol_pos = start_pos + decodedVal.getCharEndIndex();
             //     elements.push_back(&decodedVal);
@@ -76,27 +76,27 @@ ArrayDecodeResult parse_decode_array(const std::string& msg){
             case '#':
             {
                 auto decodedVal = parse_decode_boolean(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
-                if (decodedVal.getError())
-                    return ArrayDecodeResult("Error when parsing boolean at index "+ elements.size());
-                elements.push_back(&decodedVal);
+                if (decodedVal->getError())
+                    return ArrayDecodeResult("Error when parsing boolean at index "+ std::to_string(elements.size()));
+                elements.push_back(DecodedResultPtr(decodedVal));
                 count_elements++;
                 break;
             }
             case ',':
             {
                 auto decodedVal = parse_decode_double(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
-                if (decodedVal.getError())
-                    return ArrayDecodeResult("Error when parsing double at index "+ elements.size());
-                elements.push_back(&decodedVal); 
+                if (decodedVal->getError())
+                    return ArrayDecodeResult("Error when parsing double at index "+ std::to_string(elements.size()));
+                elements.push_back(DecodedResultPtr(decodedVal));
                 count_elements++;           
                 break;
             }
             case '(':
             {
                 auto decodedVal = parse_decode_big_number(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
-                if (decodedVal.getError())
-                    return ArrayDecodeResult("Error when parsing big num at index "+ elements.size());
-                elements.push_back(&decodedVal);     
+                if (decodedVal->getError())
+                    return ArrayDecodeResult("Error when parsing big num at index "+ std::to_string(elements.size()));
+                elements.push_back(DecodedResultPtr(decodedVal));
                 count_elements++;          
                 break;
             }
@@ -131,9 +131,9 @@ ArrayDecodeResult parse_decode_array(const std::string& msg){
     }
 
     if (count_elements == length)
-        return ArrayDecodeResult("End not found");
-    else
         return ArrayDecodeResult(elements, start_pos);
+    else
+        return ArrayDecodeResult("End not found");
 }
 
 // int main(int argc, char **argv) {

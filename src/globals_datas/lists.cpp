@@ -61,7 +61,7 @@ std::optional<std::string> Lists::left_pop(std::string list_key) {
     if (this->lists_map.count(list_key) == 0 || this->lists_map[list_key].size() == 0) {
         return std::nullopt;
     }
-    std::deque<std::string> list_datas = this->lists_map[list_key];
+    std::deque<std::string>& list_datas = this->lists_map[list_key];
     std::string element = list_datas.front();
     list_datas.pop_front();
     return element;
@@ -71,7 +71,7 @@ std::vector<std::string> Lists::left_pop_list(std::string list_key, std::size_t 
     if (this->lists_map.count(list_key) == 0 || this->lists_map[list_key].size() == 0) {
         return std::vector<std::string>();
     }
-    std::deque<std::string> list_datas = this->lists_map[list_key];
+    std::deque<std::string>& list_datas = this->lists_map[list_key];
     if (list_datas.size() <= count ) {
         std::vector<std::string> result = std::vector<std::string>(list_datas.begin(), list_datas.end());
         list_datas.clear();

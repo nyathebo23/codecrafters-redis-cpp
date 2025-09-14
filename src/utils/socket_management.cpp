@@ -5,7 +5,6 @@
 #include <map>
 #include <algorithm>
 #include <sys/socket.h>
-#include <sys/select.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <unistd.h>
@@ -24,9 +23,9 @@
 #include "resp_constants.h"
 #include <iomanip>
 
-std::vector<std::string> SocketManagement::lower_str_params_decoded(std::vector<DecodedResult*> params) {
+std::vector<std::string> SocketManagement::lower_str_params_decoded(const std::vector<DecodedResultPtr>& params) {
     std::vector<std::string> result;
-    for (DecodedResult* param: params) {
+    for (DecodedResultPtr param: params) {
         std::string param_str = param->asString();
         std::transform(param_str.begin(), param_str.end(), param_str.begin(), ::tolower);
         result.push_back(param_str);
@@ -34,7 +33,8 @@ std::vector<std::string> SocketManagement::lower_str_params_decoded(std::vector<
     return result;
 }
 
-std::string SocketManagement::run_command(std::string cmd, std::vector<DecodedResult*> extra_params, std::string data, int clientfd){
+std::string SocketManagement::run_command(std::string cmd, const std::vector<DecodedResultPtr>& extra_params, 
+    std::string data, int clientfd){
     if (cmd == "echo"){
         return CommandProcessing::echo(lower_str_params_decoded(extra_params));
     }
@@ -66,8 +66,20 @@ std::string SocketManagement::run_command(std::string cmd, std::vector<DecodedRe
     else if (cmd == "rpush") {
         return ListCommandsProcessing::rpush(lower_str_params_decoded(extra_params));
     }
+    else if (cmd == "lpush") {
+        return ListCommandsProcessing::lpush(lower_str_params_decoded(extra_params));
+    }
     else if (cmd == "lrange") {
         return ListCommandsProcessing::lrange(extra_params);
+    }
+    else if (cmd == "lpop") {
+        return ListCommandsProcessing::lpop(extra_params);
+    }
+    else if (cmd == "blpop") {
+        return ListCommandsProcessing::blpop(lower_str_params_decoded(extra_params));
+    }
+    else if (cmd == "llen") {
+        return ListCommandsProcessing::llen(lower_str_params_decoded(extra_params));
     }
     else if (cmd == "set") {
         return CommandProcessing::set(lower_str_params_decoded(extra_params), data);
@@ -97,18 +109,23 @@ void SocketManagement::handle_connection(const int& clientfd){
     bool is_queue_active = false;
     std::vector<std::string> cmds_to_exec;
     while (1) {
-        char buffer[256];  
-        if (recv(clientfd, &buffer, sizeof(buffer), 0) <= 0) {
+        char buffer[1024] = {0};  
+        int bytesReceived = recv(clientfd, &buffer, sizeof(buffer) - 1, 0);
+        if (bytesReceived <= 0) {
             close(clientfd);
             break;
         }
 
+        buffer[bytesReceived] = '\0';
+
         std::string data(buffer);
 
-        auto command_elts = CommandProcessing::get_command_array_from_rawdata(data);
-        std::string cmd = command_elts.first;
-        std::vector<DecodedResult*> extra_params = command_elts.second;
-
+        auto command = CommandProcessing::get_command_array_from_rawdata(data);
+        if (command.error.has_value()){
+            CommandProcessing::send_data(parse_encode_error_msg(command.error.value()), clientfd);
+            continue;
+        }
+        std::string cmd = command.name;
         if (is_queue_active){
             if (cmd == "exec"){
                 if (cmds_to_exec.size() == 0){
@@ -119,7 +136,7 @@ void SocketManagement::handle_connection(const int& clientfd){
                     std::string resp_array_str = "*" + std::to_string(cmds_to_exec.size()) + "\r\n";
                     for (auto cmd_data: cmds_to_exec){
                         auto command_and_params = CommandProcessing::get_command_array_from_rawdata(cmd_data);
-                        resp_array_str += run_command(command_and_params.first, command_and_params.second, cmd_data, clientfd);
+                        resp_array_str += run_command(command_and_params.name, command_and_params.args, cmd_data, clientfd);
                     }
                     CommandProcessing::send_data(resp_array_str, clientfd);
                     is_queue_active = false;
@@ -129,17 +146,17 @@ void SocketManagement::handle_connection(const int& clientfd){
             else if (cmd == "discard") {
                 is_queue_active = false;
                 cmds_to_exec.clear();            
-                CommandProcessing::send_data(parse_encode_simple_string("OK"), clientfd);
+                CommandProcessing::send_data(okResp, clientfd);
             }
             else {
                 cmds_to_exec.push_back(data);
-                send(clientfd, "+QUEUED\r\n", 9, 0);
+                CommandProcessing::send_data(queueResp, clientfd);
             }
             continue;
         }
         else if (cmd == "multi"){
             is_queue_active = true;
-            CommandProcessing::send_data(parse_encode_simple_string("OK"), clientfd);
+            CommandProcessing::send_data(okResp, clientfd);
         }
         else if (cmd == "exec"){
             std::string err_msg = "EXEC without MULTI";
@@ -150,7 +167,7 @@ void SocketManagement::handle_connection(const int& clientfd){
             CommandProcessing::send_data(parse_encode_error_msg(err_msg), clientfd);        
         }
         else {
-            std::string resp = run_command(cmd, extra_params, data, clientfd);
+            std::string resp = run_command(cmd, command.args, data, clientfd);
             CommandProcessing::send_data(resp, clientfd);
             if (cmd == "psync")
                 CommandProcessing::process_file_datas(clientfd);
@@ -192,7 +209,7 @@ int SocketManagement::send_receive_msg_by_command(std::string tosend, std::strin
         return -1;
     }
     std::string data(buffer);
-    StringDecodeResult data_decoded = parse_decode_simple_string(data);
+    StringDecodeResult* data_decoded = parse_decode_simple_string(data);
     // if (data_decoded != toreceive){
     //     std::cout << "Bad message receive to " + tosend + " which is " + data_decoded;
     //     return -1;
@@ -205,23 +222,19 @@ void SocketManagement::handshake_and_check_incoming_master_connections(int port)
     if (connect(server_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0){
         std::cout << "Connect to master failed";
     }
-    std::vector<Encoder*> ping = {&pingEnc};
-    if(send_receive_msg_by_command(parse_encode_array(ping), "PONG") < 0)
+
+    if(send_receive_msg_by_command(pingAsListEnc, "PONG") < 0)
         std::cout << "PING failed";
 
-    BulkStringEncoder portEnc = BulkStringEncoder(std::to_string(port));
-    std::vector<Encoder*> replconf_msg1 = {&replconfEnc, &portListeningEnc, &portEnc}; 
-    if(send_receive_msg_by_command(parse_encode_array(replconf_msg1), "OK") < 0)
+    std::string replconfMsg1Enc = replconfMsg1PartEnc + parse_encode_bulk_string(std::to_string(port));
+    if(send_receive_msg_by_command(replconfMsg1Enc, "OK") < 0)
         std::cout << "REPLCONF failed";
     
-    std::vector<Encoder*> replconf_msg2 = {&replconfEnc, &capaEnc, &psync2Enc};
-    if(send_receive_msg_by_command(parse_encode_array(replconf_msg2), "OK") < 0)
+    if(send_receive_msg_by_command(replconfMsg2Enc, "OK") < 0)
         std::cout << "REPLCONF failed";
 
-    std::vector<Encoder*> psync_msg = {&psyncEnc, &questionMarkEnc, &minusOneEnc};
-    std::string tosend = parse_encode_array(psync_msg);
-    if (send(server_fd, tosend.c_str(), tosend.length(), 0) < 0){
-        std::cout << "Send "+ tosend + " handshake failed";
+    if (send(server_fd, psyncMsgEnc.c_str(), psyncMsgEnc.length(), 0) < 0){
+        std::cout << "Send "+ psyncMsgEnc + " handshake failed";
     }
 
     const int SIZE = 256;
@@ -289,7 +302,7 @@ void SocketManagement::retrieve_commands_from_master(int bytes_receive, char* bu
     int pos = p;
     while (bytes_received > 0){
         std::string data(buffer + pos);
-        ArrayDecodeResult arr_resp = ArrayDecodeResult(std::vector<DecodedResult*>(), 0);
+        ArrayDecodeResult arr_resp = ArrayDecodeResult(std::vector<DecodedResultPtr>(), 0);
         while (pos < bytes_received){
             arr_resp = parse_decode_array(data);
             auto command = arr_resp.asArray();

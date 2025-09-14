@@ -20,11 +20,10 @@ std::string IntegerEncoder::encode() {
     return parse_encode_integer(this->value); 
 };
 
-std::vector<Encoder*> stringlist_to_encoderslist(std::vector<std::string> strlist) {
-    std::vector<Encoder*> encoded_list;
+std::vector<EncoderPtr> stringlist_to_encoderslist(std::vector<std::string> strlist) {
+    std::vector<EncoderPtr> encoded_list;
     for (std::string item: strlist) {
-        BulkStringEncoder enc = BulkStringEncoder(item);
-        encoded_list.push_back(&enc);
+        encoded_list.push_back(std::make_shared<BulkStringEncoder>(item) );
     }
     return encoded_list;
 };

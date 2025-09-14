@@ -6,8 +6,8 @@
 #include "decoders.h"
 
 // Déclaration des fonctions
-extern StringDecodeResult parse_decode_bulk_string(const std::string&);
-extern StringDecodeResult parse_decode_bulk_error(const std::string& );
-extern StringDecodeResult parse_decode_verbatim_string(const std::string&);
+StringDecodeResult* parse_decode_bulk_string(const std::string&);
+StringDecodeResult* parse_decode_bulk_error(const std::string& );
+StringDecodeResult* parse_decode_verbatim_string(const std::string&);
 
 #endif

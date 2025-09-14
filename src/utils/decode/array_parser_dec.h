@@ -10,6 +10,6 @@
 #include "decoders.h"
 
 
-extern ArrayDecodeResult parse_decode_array(const std::string&);
+ArrayDecodeResult parse_decode_array(const std::string&);
 
 #endif
