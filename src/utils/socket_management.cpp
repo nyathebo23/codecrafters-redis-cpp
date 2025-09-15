@@ -23,20 +23,10 @@
 #include "resp_constants.h"
 #include <iomanip>
 
-std::vector<std::string> SocketManagement::lower_str_params_decoded(const std::vector<DecodedResultPtr>& params) {
-    std::vector<std::string> result;
-    for (DecodedResultPtr param: params) {
-        std::string param_str = param->asString();
-        std::transform(param_str.begin(), param_str.end(), param_str.begin(), ::tolower);
-        result.push_back(param_str);
-    }
-    return result;
-}
 
-std::string SocketManagement::run_command(std::string cmd, const std::vector<DecodedResultPtr>& extra_params, 
-    std::string data, int clientfd){
+std::string SocketManagement::run_command(std::string cmd, std::vector<std::string> extra_params, std::string data, int clientfd){
     if (cmd == "echo"){
-        return CommandProcessing::echo(lower_str_params_decoded(extra_params));
+        return CommandProcessing::echo(extra_params);
     }
     else if (cmd == "wait"){
         return CommandProcessing::wait(extra_params);
@@ -45,29 +35,22 @@ std::string SocketManagement::run_command(std::string cmd, const std::vector<Dec
         return CommandProcessing::ping();
     }
     else if (cmd == "incr"){
-        return CommandProcessing::incr(lower_str_params_decoded(extra_params));
+        return CommandProcessing::incr(extra_params);
     }
     else if (cmd == "type"){
-        return CommandProcessing::type(lower_str_params_decoded(extra_params));
+        return CommandProcessing::type(extra_params);
     }
     else if (cmd == "xadd"){
-        return StreamCommandsProcessing::xadd(lower_str_params_decoded(extra_params));
+        return StreamCommandsProcessing::xadd(extra_params);
     }
     else if (cmd == "xrange"){
-        return StreamCommandsProcessing::xrange(lower_str_params_decoded(extra_params));
+        return StreamCommandsProcessing::xrange(extra_params);
     }
     else if (cmd == "xread"){
-        std::vector<std::string> extras = lower_str_params_decoded(extra_params);
-        if (extras[0] == "block")
-            return StreamCommandsProcessing::xread_with_block(extras);
+        if (extra_params.size() >= 1 && extra_params[0] == "block")
+            return StreamCommandsProcessing::xread_with_block(extra_params);
         else
-            return StreamCommandsProcessing::xread(extras);
-    }
-    else if (cmd == "rpush") {
-        return ListCommandsProcessing::rpush(lower_str_params_decoded(extra_params));
-    }
-    else if (cmd == "lpush") {
-        return ListCommandsProcessing::lpush(lower_str_params_decoded(extra_params));
+            return StreamCommandsProcessing::xread(extra_params);
     }
     else if (cmd == "lrange") {
         return ListCommandsProcessing::lrange(extra_params);
@@ -75,32 +58,29 @@ std::string SocketManagement::run_command(std::string cmd, const std::vector<Dec
     else if (cmd == "lpop") {
         return ListCommandsProcessing::lpop(extra_params);
     }
-    else if (cmd == "blpop") {
-        return ListCommandsProcessing::blpop(lower_str_params_decoded(extra_params));
-    }
     else if (cmd == "llen") {
-        return ListCommandsProcessing::llen(lower_str_params_decoded(extra_params));
+        return ListCommandsProcessing::llen(extra_params);
     }
     else if (cmd == "set") {
-        return CommandProcessing::set(lower_str_params_decoded(extra_params), data);
+        return CommandProcessing::set(extra_params, data);
     }
     else if (cmd == "get"){
-        return CommandProcessing::get(lower_str_params_decoded(extra_params), extra_args["dir"] + "/" + extra_args["dbfilename"]);
+        return CommandProcessing::get(extra_params, extra_args["dir"] + "/" + extra_args["dbfilename"]);
     }
     else if (cmd == "config"){
-        return CommandProcessing::config(lower_str_params_decoded(extra_params), extra_args);
+        return CommandProcessing::config(extra_params, extra_args);
     }
     else if (cmd == "keys"){
-        return CommandProcessing::keys(lower_str_params_decoded(extra_params), extra_args["dir"] + "/" + extra_args["dbfilename"]);
+        return CommandProcessing::keys(extra_params, extra_args["dir"] + "/" + extra_args["dbfilename"]);
     }
     else if (cmd == "info"){
-        return CommandProcessing::info(lower_str_params_decoded(extra_params), GlobalDatas::isMaster ? "master" : "slave");
+        return CommandProcessing::info(extra_params, GlobalDatas::isMaster ? "master" : "slave");
     }
     else if (cmd == "replconf"){
-        return CommandProcessing::replconf(lower_str_params_decoded(extra_params), clientfd);
+        return CommandProcessing::replconf(extra_params, clientfd);
     }
     else if (cmd == "psync"){
-        return CommandProcessing::psync(lower_str_params_decoded(extra_params));
+        return CommandProcessing::psync(extra_params);
     }
     return "-ERR\r\n";
 };
@@ -154,6 +134,12 @@ void SocketManagement::handle_connection(const int& clientfd){
             }
             continue;
         }
+        else if (cmd == "blpop") {
+            if (command.args.size() != 2) {
+                return parse_encode_error_msg("blpop command format error");
+            }
+            ListCommandsProcessing::blpop(command.args, clientfd);
+        }
         else if (cmd == "multi"){
             is_queue_active = true;
             CommandProcessing::send_data(okResp, clientfd);
@@ -171,6 +157,7 @@ void SocketManagement::handle_connection(const int& clientfd){
             CommandProcessing::send_data(resp, clientfd);
             if (cmd == "psync")
                 CommandProcessing::process_file_datas(clientfd);
+
 
         }
     }

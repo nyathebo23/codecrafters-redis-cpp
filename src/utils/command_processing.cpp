@@ -35,7 +35,9 @@ void CommandProcessing::execute_after_delay(int delay, const std::string& key) {
 }
 
 std::string CommandProcessing::type(std::vector<std::string> extras){
-    std::string resp;
+    std::string resp = parse_encode_error_msg("type command format error");
+    if (extras.size() != 1)
+        return resp;
     std::string key = extras[0];
     if (GlobalDatas::datasDict.exist(key))
         resp = stringTypeResp;
@@ -64,7 +66,9 @@ bool CommandProcessing::send_data(std::string data, int dest_fd){
 }
 
 std::string CommandProcessing::incr(std::vector<std::string> extras){
-    std::string resp;
+    std::string resp = parse_encode_error_msg("incr command format error");
+    if (extras.size() != 1)
+        return resp;
     std::string key = extras[0];
     if (!GlobalDatas::datasDict.exist(key)){
         GlobalDatas::datasDict.set(key, "1");
@@ -78,19 +82,17 @@ std::string CommandProcessing::incr(std::vector<std::string> extras){
             resp = parse_encode_integer(new_num);
         }
         catch (const std::invalid_argument& e){
-            std::string errmsg = "value is not an integer or out of range";
-            resp = parse_encode_error_msg(errmsg);
+            resp = parse_encode_error_msg("value is not an integer or out of range");
         }
         catch (const std::out_of_range& e){
-            std::string errmsg = "value is not an integer or out of range";
-            resp = parse_encode_error_msg(errmsg);
+            resp = parse_encode_error_msg("value is not an integer or out of range");
         }
     }
     return resp;
 }
 
 std::string CommandProcessing::echo(std::vector<std::string> extras){
-    std::string resp;
+    std::string resp = parse_encode_error_msg("echo command format error");
     if (extras.size() == 1){
         resp = parse_encode_bulk_string(extras[0]);
     }
@@ -112,7 +114,8 @@ bool CommandProcessing::set_without_send(std::vector<std::string> extras){
                 std::thread t(execute_after_delay, duration, key);
                 t.detach();
                 return true;
-            } return true;
+            } 
+            return true;
         }
         return true;
     }
@@ -135,7 +138,7 @@ std::string CommandProcessing::set(std::vector<std::string> extras, std::string 
 }
 
 std::string CommandProcessing::keys(std::vector<std::string> extras, std::string filepath) {
-    std::string resp;
+    std::string resp = parse_encode_error_msg("keys command format error");
     if (extras.size() == 1 && extras[0] == "*"){
         auto keys_values = get_keys_values_from_file(filepath);
         auto keys = keys_values.first;
@@ -145,7 +148,7 @@ std::string CommandProcessing::keys(std::vector<std::string> extras, std::string
 }
 
 std::string CommandProcessing::get(std::vector<std::string> extras, std::string filepath){
-    std::string resp;
+    std::string resp = parse_encode_error_msg("get command format error");
     if (extras.size() == 1){
         std::string key = extras[0];
         auto keys_values = get_keys_values_from_file(filepath);
@@ -167,7 +170,7 @@ std::string CommandProcessing::get(std::vector<std::string> extras, std::string 
 
 
 std::string CommandProcessing::config(std::vector<std::string> extras, std::map<std::string, std::string> args_map){
-    std::string resp;
+    std::string resp = parse_encode_error_msg("config command format error");
     if (extras[0] == "get"){
         std::string key = extras[1];
         if (key == "dir"){
@@ -184,8 +187,8 @@ std::string CommandProcessing::config(std::vector<std::string> extras, std::map<
 
 
 std::string CommandProcessing::info(std::vector<std::string> extras, std::string role){
-    std::string resp;
-    if (extras[0] == "replication"){
+    std::string resp = parse_encode_error_msg("info command format error");
+    if (extras.size() == 1 && extras[0] == "replication"){
         std::string replication_id = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
         int replication_offset = 0;
         std::string str = "role:"+role + "\n"+ "master_replid:"+replication_id + 
@@ -195,9 +198,12 @@ std::string CommandProcessing::info(std::vector<std::string> extras, std::string
     return resp;  
 }
 
-std::string CommandProcessing::wait(const std::vector<DecodedResultPtr>& extras){
-    unsigned int numreplicas = extras[0]->asInteger(); 
-    unsigned long timeout = extras[1]->asInteger();
+std::string CommandProcessing::wait(std::vector<std::string> extras){
+    if (extras.size() != 2) {
+        return parse_encode_error_msg("wait command format error");
+    }
+    unsigned long numreplicas = std::stoul(extras[0]); 
+    unsigned long timeout = std::stoul(extras[1]);
     int nb_replicas_updated = 0;
     if (GlobalMasterDatas::prec_commands_offset == GlobalMasterDatas::commands_offset){
         for (auto& replica_pair: GlobalMasterDatas::replicas_offsets)
@@ -231,27 +237,29 @@ int64_t CommandProcessing::get_now_time_milliseconds() {
 }
 
 std::string CommandProcessing::replconf(std::vector<std::string> extras, int dest_fd){
-    std::string resp;
-    if (extras[0] == "listening-port" || extras[0] == "capa" && extras.size() > 1){
+    std::string resp = parse_encode_error_msg("replconf command format error");
+    if (extras.size() != 2) return resp;
+    if (extras[0] == "listening-port" ){
         resp = okResp;
-    } else if (extras[0] == "getack" && extras[1] == "*"){
+    } 
+    else if (extras[0] == "capa" && extras[1] == "psync2"){
+        resp = okResp;
+    }
+    else if (extras[0] == "getack" && extras[1] == "*"){
         std::string cmdOffsetEnc = parse_encode_bulk_string(std::to_string(GlobalDatas::cmdsOffset.get_prec_cmd_offset()));
         send_data(replconfAckPartEnc + cmdOffsetEnc, dest_fd);
     }
-    else if (extras[0] == "ack" && extras.size() == 2){
-        try {
-            int num = stoi(extras[1]);
-            GlobalMasterDatas::replicas_offsets[dest_fd] = num;
-        }
-        catch(std::exception e){}
+    else if (extras[0] == "ack"){
+        int num = stoi(extras[1]);
+        GlobalMasterDatas::replicas_offsets[dest_fd] = num;
     }
     return resp;
 
 }
 
 std::string CommandProcessing::psync(std::vector<std::string> extras){
-    std::string resp;
-    if (extras[0] == "?" && extras[1] == "-1"){
+    std::string resp = parse_encode_error_msg("psync command format error");
+    if (extras.size() == 2 && extras[0] == "?" && extras[1] == "-1"){
         std::string replication_id = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
         resp = parse_encode_simple_string("FULLRESYNC " + replication_id + " 0");
     }   
@@ -281,9 +289,11 @@ Command CommandProcessing::get_command_array_from_rawdata(std::string data){
     std::vector<DecodedResultPtr> arr = arr_resp.asArray();
     std::string cmd = arr[0]->asString();
     std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
-    std::vector<DecodedResultPtr> array_cmd;
+    std::vector<std::string> array_cmd;
     for (int i = 1; i < arr.size(); i++){
-        array_cmd.push_back(arr[i]);
+        std::string param_str = arr[i]->asString();
+        std::transform(param_str.begin(), param_str.end(), param_str.begin(), ::tolower);
+        array_cmd.push_back(param_str);
     }
     return Command(cmd, array_cmd);
 };

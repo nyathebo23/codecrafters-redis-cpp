@@ -7,6 +7,7 @@
 #include "array_parser_dec.h"
 #include "decoders.h"
 
+
 ArrayDecodeResult parse_decode_array(const std::string& msg){
     int end_symbol_pos = msg.find("\r\n");
     const std::string numstr = msg.substr(1, end_symbol_pos - 1);
@@ -26,15 +27,6 @@ ArrayDecodeResult parse_decode_array(const std::string& msg){
         if ((end_symbol_pos = msg.find("\r\n", start_pos)) == std::string::npos)
             return ArrayDecodeResult("End not found");
         switch (msg[start_pos]){
-            case ':':
-            {
-                auto decodedVal = parse_decode_integer(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
-                if (decodedVal->getError())
-                    return ArrayDecodeResult("Error when parsing integer at index "+ std::to_string(elements.size()));
-                elements.push_back(DecodedResultPtr(decodedVal));
-                count_elements++;
-                break;
-            }
             case '$':
             {
                 StringDecodeResult* decodedVal = new StringDecodeResult("");
@@ -51,6 +43,15 @@ ArrayDecodeResult parse_decode_array(const std::string& msg){
                 elements.push_back(DecodedResultPtr(decodedVal));
                 count_elements++;
                 break; 
+            }
+            case ':':
+            {
+                auto decodedVal = parse_decode_integer(msg.substr(start_pos, end_symbol_pos - start_pos + 2));
+                if (decodedVal->getError())
+                    return ArrayDecodeResult("Error when parsing integer at index "+ std::to_string(elements.size()));
+                elements.push_back(DecodedResultPtr(decodedVal));
+                count_elements++;
+                break;
             }
             // case '*':
             // {

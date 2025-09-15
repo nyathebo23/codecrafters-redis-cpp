@@ -10,9 +10,9 @@
 class Command {
     public:
         std::string name;
-        std::vector<DecodedResultPtr> args;
+        std::vector<std::string> args;
         std::optional<std::string> error;
-        Command(std::string name, std::vector<DecodedResultPtr> params): name(name), args(params), error(std::nullopt) {}
+        Command(std::string name, std::vector<std::string> params): name(name), args(params), error(std::nullopt) {}
         Command(std::string error): error(error) {}    
 };
 
@@ -35,7 +35,7 @@ class CommandProcessing {
         static std::string keys(std::vector<std::string> extras, std::string filepath);
         static std::string info(std::vector<std::string> extras, std::string role);
         static std::string replconf(std::vector<std::string> extras, int destfd);
-        static std::string wait(const std::vector<DecodedResultPtr>& extras);
+        static std::string wait(std::vector<std::string> extras);
         static std::string psync(std::vector<std::string> extras);
         static std::string type(std::vector<std::string> extras);
         static std::string incr(std::vector<std::string> extras);

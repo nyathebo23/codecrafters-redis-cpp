@@ -8,13 +8,17 @@
 
 class ListCommandsProcessing {
 
+    protected:
+        static void check_blpop_exec(unsigned long delay, const std::string& list_key, int clientfd);
+
     public:
-        static std::string rpush(std::vector<std::string> extras);
-        static std::string lrange(const std::vector<DecodedResultPtr>& extras);
-        static std::string lpush(std::vector<std::string> extras);
+        static void rpush(std::vector<std::string> extras, int clientfd);
+        static std::string lrange(std::vector<std::string> extras);
+        static void lpush(std::vector<std::string> extras, int clientfd);
         static std::string llen(std::vector<std::string> extras);
-        static std::string lpop(const std::vector<DecodedResultPtr>& extras);
-        static std::string blpop(std::vector<std::string> extras);
+        static std::string lpop(std::vector<std::string> extras);
+        static void blpop(std::vector<std::string> extras, int clientfd);
+        static void try_run_waiting_lpop(std::string list_key);
 
 };
 

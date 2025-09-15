@@ -88,3 +88,29 @@ std::vector<std::string> Lists::left_pop_list(std::string list_key, std::size_t 
 bool Lists::exist(std::string list_key) {
     return this->lists_map.count(list_key) != 0;
 }
+
+bool Lists::isClientWaitingBLPOP(std::string list_key) {
+    return this->exist(list_key) && this->clientfdWaitingBLPOP[list_key].size() != 0;
+};
+
+void Lists::addOnWaitingBLPOPList(std::string list_key, int clientfd) {
+    if (!this->exist(list_key)) this->clientfdWaitingBLPOP[list_key] = std::vector<int>();
+    this->clientfdWaitingBLPOP[list_key].push_back(clientfd);
+};
+
+bool Lists::checkAndDeleteClientWaiting(std::string list_key, int clientfd) {
+    std::vector<int>& clientfdList = this->clientfdWaitingBLPOP[list_key];
+    auto it = std::find(clientfdList.begin(), clientfdList.end(), clientfd);
+    if (it != clientfdList.end()) {
+        clientfdList.erase(it);
+        return true;
+    }
+    return false;
+}
+
+int Lists::getFirstClient(std::string list_key) {
+    std::vector<int>& clientfdList = this->clientfdWaitingBLPOP[list_key];
+    int clientfd = clientfdList.front();
+    clientfdList.erase(clientfdList.begin());
+    return clientfd;
+};

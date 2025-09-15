@@ -19,13 +19,11 @@ class SocketManagement {
         int send_receive_msg_by_command(std::string tosend, std::string toreceive);
 
         void process_command(std::string, std::vector<std::string>);
-        
-        std::vector<std::string> lower_str_params_decoded(const std::vector<DecodedResultPtr>& params);
-    
+            
     public:
         void handle_connection(const int& clientfd);
 
-        std::string run_command(std::string cmd, const std::vector<DecodedResultPtr>& extra_params, std::string data, int clientfd);
+        std::string run_command(std::string cmd, std::vector<std::string> extra_params, std::string data, int clientfd);
 
         short socket_family;
 
