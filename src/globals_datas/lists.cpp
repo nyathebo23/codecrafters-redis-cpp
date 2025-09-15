@@ -1,5 +1,6 @@
 #include "lists.h"
 #include <algorithm> 
+#include <iostream>
 
 long Lists::append_right(std::string list_key, std::vector<std::string> values) {
     if (this->lists_map.count(list_key) == 0) {
@@ -109,8 +110,9 @@ bool Lists::checkAndDeleteClientWaiting(std::string list_key, int clientfd) {
 }
 
 int Lists::getFirstClient(std::string list_key) {
-    std::vector<int> clientfdList = this->clientfdWaitingBLPOP[list_key];
+    std::vector<int> &clientfdList = this->clientfdWaitingBLPOP[list_key];
     int clientfd = clientfdList.front();
-    this->clientfdWaitingBLPOP[list_key].erase(this->clientfdWaitingBLPOP[list_key].begin());
+    clientfdList.erase(clientfdList.begin());
+    std::cout << std::to_string(clientfdList[0]) << " size " << std::to_string(clientfdList.size());
     return clientfd;
 };

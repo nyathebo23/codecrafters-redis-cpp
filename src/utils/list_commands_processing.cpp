@@ -29,8 +29,8 @@ void ListCommandsProcessing::rpush(std::vector<std::string> extras, int clientfd
     std::vector<std::string> values;
     std::copy(extras.begin()+1, extras.end(), std::back_inserter(values));
     long size = GlobalDatas::lists.append_right(listkey, values);
-    CommandProcessing::send_data(parse_encode_integer(size), clientfd);
-    try_run_waiting_lpop(listkey);
+    if (CommandProcessing::send_data(parse_encode_integer(size), clientfd));
+        try_run_waiting_lpop(listkey);
 }
 
 std::string ListCommandsProcessing::lrange(std::vector<std::string> extras) {
@@ -55,8 +55,8 @@ void ListCommandsProcessing::lpush(std::vector<std::string> extras, int clientfd
     std::vector<std::string> values;
     std::copy(extras.begin()+1, extras.end(), std::back_inserter(values));
     long size = GlobalDatas::lists.append_left(listkey, values);
-    CommandProcessing::send_data(parse_encode_integer(size), clientfd);
-    try_run_waiting_lpop(listkey);
+    if (CommandProcessing::send_data(parse_encode_integer(size), clientfd));
+        try_run_waiting_lpop(listkey);
 }
 
 std::string ListCommandsProcessing::llen(std::vector<std::string> extras) {
