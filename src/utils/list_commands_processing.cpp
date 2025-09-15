@@ -112,6 +112,6 @@ void ListCommandsProcessing::try_run_waiting_lpop(std::string list_key) {
 void ListCommandsProcessing::check_blpop_exec(double delay, std::string list_key, int clientfd) {
     std::this_thread::sleep_for(std::chrono::duration<double>(delay));
     if (GlobalDatas::lists.checkAndDeleteClientWaiting(list_key, clientfd)) {
-        CommandProcessing::send_data(NULL_BULK_STRING, clientfd);
+        CommandProcessing::send_data(NULL_ARRAY, clientfd);
     }
 }

@@ -1,7 +1,8 @@
 #include "resp_constants.h"
 #include "encode/simple_data_parser_enc.h"
-
+ 
 const std::string NULL_BULK_STRING = "$-1\r\n";
+const std::string NULL_ARRAY = "*-1\r\n";
 const std::string okResp = parse_encode_simple_string("OK");
 const std::string pongResp = parse_encode_simple_string("PONG");
 const std::string queueResp = parse_encode_simple_string("QUEUED");
