@@ -91,11 +91,12 @@ void ListCommandsProcessing::blpop(std::vector<std::string> extras, int clientfd
         CommandProcessing::send_data(err, clientfd);
         return;
     }
-    unsigned long timeout = std::stoul(extras[1]);
+    double timeout = std::stod(extras[1]);
     std::string key = extras[0];
     GlobalDatas::lists.addOnWaitingBLPOPList(key, clientfd);
     if (timeout > 0) {
-        check_blpop_exec(timeout, key, clientfd);
+        std::thread t(check_blpop_exec, timeout, key, clientfd);
+        t.detach();
     }
 }
 
@@ -108,8 +109,8 @@ void ListCommandsProcessing::try_run_waiting_lpop(std::string list_key) {
     }
 }
 
-void ListCommandsProcessing::check_blpop_exec(unsigned long delay, const std::string& list_key, int clientfd) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+void ListCommandsProcessing::check_blpop_exec(double delay, std::string list_key, int clientfd) {
+    std::this_thread::sleep_for(std::chrono::duration<double>(delay));
     if (GlobalDatas::lists.checkAndDeleteClientWaiting(list_key, clientfd)) {
         CommandProcessing::send_data(NULL_BULK_STRING, clientfd);
     }

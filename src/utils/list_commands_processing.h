@@ -9,7 +9,7 @@
 class ListCommandsProcessing {
 
     protected:
-        static void check_blpop_exec(unsigned long delay, const std::string& list_key, int clientfd);
+        static void check_blpop_exec(double delay, std::string list_key, int clientfd);
 
     public:
         static void rpush(std::vector<std::string> extras, int clientfd);
