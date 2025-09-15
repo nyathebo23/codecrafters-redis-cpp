@@ -132,13 +132,15 @@ void SocketManagement::handle_connection(const int& clientfd){
                 cmds_to_exec.push_back(data);
                 CommandProcessing::send_data(queueResp, clientfd);
             }
-            continue;
         }
         else if (cmd == "blpop") {
-            if (command.args.size() != 2) {
-                return parse_encode_error_msg("blpop command format error");
-            }
             ListCommandsProcessing::blpop(command.args, clientfd);
+        }
+        else if (cmd == "rpush") {
+            ListCommandsProcessing::rpush(command.args, clientfd);
+        }
+        else if (cmd == "lpush") {
+            ListCommandsProcessing::lpush(command.args, clientfd);
         }
         else if (cmd == "multi"){
             is_queue_active = true;
@@ -157,8 +159,7 @@ void SocketManagement::handle_connection(const int& clientfd){
             CommandProcessing::send_data(resp, clientfd);
             if (cmd == "psync")
                 CommandProcessing::process_file_datas(clientfd);
-
-
+            
         }
     }
 }
