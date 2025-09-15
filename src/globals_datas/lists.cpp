@@ -95,7 +95,7 @@ bool Lists::isClientWaitingBLPOP(std::string list_key) {
 };
 
 void Lists::addOnWaitingBLPOPList(std::string list_key, int clientfd) {
-    if (!this->exist(list_key)) this->clientfdWaitingBLPOP[list_key] = std::vector<int>();
+    if (this->clientfdWaitingBLPOP.count(list_key) == 0) this->clientfdWaitingBLPOP[list_key] = std::vector<int>();
     this->clientfdWaitingBLPOP[list_key].push_back(clientfd);
 };
 
@@ -113,6 +113,6 @@ int Lists::getFirstClient(std::string list_key) {
     std::vector<int> &clientfdList = this->clientfdWaitingBLPOP[list_key];
     int clientfd = clientfdList.front();
     clientfdList.erase(clientfdList.begin());
-    std::cout << std::to_string(clientfdList[0]) << " size " << std::to_string(clientfdList.size());
+    //std::cout << std::to_string(clientfdList[0]) << " size " << std::to_string(clientfdList.size());
     return clientfd;
 };
