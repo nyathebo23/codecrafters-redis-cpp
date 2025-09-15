@@ -111,6 +111,6 @@ bool Lists::checkAndDeleteClientWaiting(std::string list_key, int clientfd) {
 int Lists::getFirstClient(std::string list_key) {
     std::vector<int> clientfdList = this->clientfdWaitingBLPOP[list_key];
     int clientfd = clientfdList.front();
-    this->clientfdWaitingBLPOP[list_key].erase(clientfdList.begin());
+    this->clientfdWaitingBLPOP[list_key].erase(this->clientfdWaitingBLPOP[list_key].begin());
     return clientfd;
 };
