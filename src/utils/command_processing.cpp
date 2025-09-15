@@ -237,8 +237,8 @@ int64_t CommandProcessing::get_now_time_milliseconds() {
 }
 
 std::string CommandProcessing::replconf(std::vector<std::string> extras, int dest_fd){
-    std::string resp = parse_encode_error_msg("replconf command format error");
-    if (extras.size() != 2) return resp;
+    std::string resp;
+    if (extras.size() != 2) return parse_encode_error_msg("replconf command format error");
     if (extras[0] == "listening-port" ){
         resp = okResp;
     } 
