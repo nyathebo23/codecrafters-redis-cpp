@@ -67,7 +67,7 @@ void ChannelsCommandsProcessing::unsubscribe(std::vector<std::string> extras, in
     std::string channelname = extras[0];
     long count = GlobalDatas::channels.unsubscribe(channelname, clientfd);
     std::string channelNameEnc = parse_encode_bulk_string(channelname);
-    std::string resp = "*3\r\n" + SUBSCRIBE_ENC + channelNameEnc + parse_encode_integer(count);
+    std::string resp = "*3\r\n" + UNSUBSCRIBE_ENC + channelNameEnc + parse_encode_integer(count);
     CommandProcessing::send_data(resp, clientfd);
 };
 

@@ -4,6 +4,7 @@
 const std::string NULL_BULK_STRING = "$-1\r\n";
 const std::string NULL_ARRAY = "*-1\r\n";
 const std::string SUBSCRIBE_ENC = "$9\r\nsubscribe\r\n";
+const std::string UNSUBSCRIBE_ENC = "$11\r\nunsubscribe\r\n";
 const std::string PING_SUBS_MODE_RESP = "*2\r\n$4\r\npong\r\n$0\r\n\r\n";
 const std::string okResp = parse_encode_simple_string("OK");
 const std::string pongResp = parse_encode_simple_string("PONG");
