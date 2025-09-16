@@ -21,7 +21,7 @@
 
 void ListCommandsProcessing::rpush(std::vector<std::string> extras, int clientfd) {
     if (extras.size() < 2) {
-        std::string errResp = parse_encode_error_msg("rpush command format error");
+        std::string errResp = CommandProcessing::params_count_error("rpush");
         CommandProcessing::send_data(errResp, clientfd);
         return;
     }
@@ -35,7 +35,7 @@ void ListCommandsProcessing::rpush(std::vector<std::string> extras, int clientfd
 
 std::string ListCommandsProcessing::lrange(std::vector<std::string> extras) {
     if (extras.size() != 3) {
-        return parse_encode_error_msg("lrange command format error");
+        return CommandProcessing::params_count_error("lrange");
     }
     std::string list_key = extras[0];
     std::transform(list_key.begin(), list_key.end(), list_key.begin(), ::tolower);
@@ -47,7 +47,7 @@ std::string ListCommandsProcessing::lrange(std::vector<std::string> extras) {
 
 void ListCommandsProcessing::lpush(std::vector<std::string> extras, int clientfd) {
     if (extras.size() < 2) {
-        std::string errResp = parse_encode_error_msg("lpush command format error");
+        std::string errResp = CommandProcessing::params_count_error("lpush");
         CommandProcessing::send_data(errResp, clientfd);
         return;
     }
@@ -61,7 +61,7 @@ void ListCommandsProcessing::lpush(std::vector<std::string> extras, int clientfd
 
 std::string ListCommandsProcessing::llen(std::vector<std::string> extras) {
     if (extras.size() != 1) {
-        return parse_encode_error_msg("lrange command format error");
+        return CommandProcessing::params_count_error("lrange");
     }
     long size = GlobalDatas::lists.get_size(extras[0]);
     return parse_encode_integer(size);
@@ -82,12 +82,12 @@ std::string ListCommandsProcessing::lpop(std::vector<std::string> extras) {
         auto values = GlobalDatas::lists.left_pop_list(extras[0], count);
         return parse_encode_string_array(values);
     }
-    return parse_encode_error_msg("lpop command format error");
+    return CommandProcessing::params_count_error("lpop");
 }
 
 void ListCommandsProcessing::blpop(std::vector<std::string> extras, int clientfd) {
     if (extras.size() != 2) {
-        std::string err = parse_encode_error_msg("blpop command format error");
+        std::string err = CommandProcessing::params_count_error("blpop");
         CommandProcessing::send_data(err, clientfd);
         return;
     }

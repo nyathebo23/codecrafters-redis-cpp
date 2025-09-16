@@ -9,6 +9,7 @@
 #include "lists.h"
 #include "stream.h"
 #include "channels.h"
+#include "sorted_sets.h"
 
 using VectorMapEntries = std::vector<std::map<std::string, std::string>>;
 
@@ -20,6 +21,7 @@ class GlobalDatas {
         static RDBDatasDict datasDict;
         static Channels channels;
         static Lists lists;
+        static SortedSets sortedSets;
 };
 
 class GlobalMasterDatas {

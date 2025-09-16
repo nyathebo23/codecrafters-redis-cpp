@@ -7,8 +7,8 @@
 
 void ChannelsCommandsProcessing::subsribe(std::vector<std::string> extras, int clientfd) {
     if (extras.size() != 1) {
-        std::string errorMsg = CommandProcessing::params_count_error("subscribe");
-        CommandProcessing::send_data(parse_encode_error_msg(errorMsg), clientfd);
+        std::string errorResp = CommandProcessing::params_count_error("subscribe");
+        CommandProcessing::send_data(errorResp, clientfd);
     }
     std::string channelname = extras[0];
     long count = GlobalDatas::channels.subscribe(channelname, clientfd);
@@ -61,8 +61,8 @@ void ChannelsCommandsProcessing::enter_subscribe_mode(int clientfd) {
 
 void ChannelsCommandsProcessing::unsubscribe(std::vector<std::string> extras, int clientfd) {
     if (extras.size() != 1) {
-        std::string errorMsg = CommandProcessing::params_count_error("unsubscribe");
-        CommandProcessing::send_data(parse_encode_error_msg(errorMsg), clientfd);
+        std::string errorResp = CommandProcessing::params_count_error("unsubscribe");
+        CommandProcessing::send_data(errorResp, clientfd);
     }
     std::string channelname = extras[0];
     long count = GlobalDatas::channels.unsubscribe(channelname, clientfd);
@@ -73,8 +73,8 @@ void ChannelsCommandsProcessing::unsubscribe(std::vector<std::string> extras, in
 
 void ChannelsCommandsProcessing::publish(std::vector<std::string> extras, int clientfd) {
     if (extras.size() != 2) {
-        std::string errorMsg = CommandProcessing::params_count_error("publish");
-        CommandProcessing::send_data(parse_encode_error_msg(errorMsg), clientfd);
+        std::string errorResp = CommandProcessing::params_count_error("publish");
+        CommandProcessing::send_data(errorResp, clientfd);
     }
     std::string channelname = extras[0];
     std::vector<int> clientfdList = GlobalDatas::channels.get_clients_fd(channelname);
@@ -91,8 +91,8 @@ void ChannelsCommandsProcessing::publish(std::vector<std::string> extras, int cl
 
 void ChannelsCommandsProcessing::ping(std::vector<std::string> extras, int clientfd) {
     if (extras.size() != 0) {
-        std::string errorMsg = CommandProcessing::params_count_error("subscribe mode ping");
-        CommandProcessing::send_data(parse_encode_error_msg(errorMsg), clientfd);
+        std::string errorResp = CommandProcessing::params_count_error("subscribe mode ping");
+        CommandProcessing::send_data(errorResp, clientfd);
     }
     CommandProcessing::send_data(PING_SUBS_MODE_RESP, clientfd);
 };
