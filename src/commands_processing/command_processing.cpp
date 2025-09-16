@@ -306,7 +306,8 @@ void CommandProcessing::multi(int clientfd, std::map<std::string, std::string> e
                 }
                 CommandProcessing::send_data(resp_array_str, clientfd);
                 cmds_to_exec.clear();            
-            }        
+            }  
+            return;      
         }
         else if (cmd == "discard") {           
             CommandProcessing::send_data(okResp, clientfd);
