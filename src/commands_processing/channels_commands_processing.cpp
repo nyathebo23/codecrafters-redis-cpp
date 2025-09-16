@@ -52,7 +52,7 @@ void ChannelsCommandsProcessing::enter_subscribe_mode(int clientfd) {
         }
         else {
             std::string err = ChannelsCommandsProcessing::unallowed_command_error(cmd);
-            CommandProcessing::send_data(err, clientfd);
+            CommandProcessing::send_data(parse_encode_error_msg(err), clientfd);
         }
     }
 

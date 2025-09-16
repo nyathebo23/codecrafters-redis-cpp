@@ -351,7 +351,7 @@ Command CommandProcessing::get_command_array_from_rawdata(std::string data){
     return Command(cmd, array_cmd);
 };
 
-std::optional<Command> CommandProcessing::receive_command_from_client(int clientfd) {
+std::optional<Command> CommandProcessing::receive_command_from_client(const int& clientfd) {
     char buffer[1024] = {0};  
     int bytesReceived = recv(clientfd, &buffer, sizeof(buffer) - 1, 0);
     if (bytesReceived <= 0) {
