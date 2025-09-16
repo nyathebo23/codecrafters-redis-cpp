@@ -19,7 +19,7 @@ std::size_t Channels::unsubscribe(std::string channelName, int sockfd) {
 };
 
 template <typename T>
-bool Channels::remove_from_vector(std::vector<T> vec, const T& item) {
+bool Channels::remove_from_vector(std::vector<T>& vec, const T& item) {
     auto it = std::find(vec.begin(), vec.end(), item);
     if (it != vec.end()) {
         vec.erase(it);

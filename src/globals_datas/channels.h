@@ -10,7 +10,7 @@ class Channels {
         std::map<std::string, std::vector<int>> mapChannelClientsFD;
         std::map<int, std::vector<std::string>> mapClientFDChannels;
         template <typename T>
-        bool static remove_from_vector(std::vector<T> vec, const T& item);
+        bool static remove_from_vector(std::vector<T>& vec, const T& item);
 
     public:
         std::size_t subscribe(std::string channelName, int sockfd);
