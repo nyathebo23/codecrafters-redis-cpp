@@ -7,17 +7,17 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <errno.h>
-#include "encode/array_parser_enc.h"
-#include "encode/simple_data_parser_enc.h"
-#include "encode/small_aggregate_parser_enc.h"
-#include "decode/simple_data_parser_dec.h"
+#include "../utils/encode/array_parser_enc.h"
+#include "../utils/encode/simple_data_parser_enc.h"
+#include "../utils/encode/small_aggregate_parser_enc.h"
+#include "../utils/decode/simple_data_parser_dec.h"
 #include "command_processing.h"
 #include "stream_commands_processing.h"
 #include "../globals_datas/global_datas.h"
 
 
 std::string StreamCommandsProcessing::xadd(std::vector<std::string> extras){
-    //int index_stream = GlobalDatas::get_entry_index(extras[0]);
+
     std::string id;
     std::string str_error;
 

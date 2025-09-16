@@ -7,7 +7,7 @@ CommandsOffset GlobalDatas::cmdsOffset = CommandsOffset();
 StreamList GlobalDatas::streamList = StreamList();
 RDBDatasDict GlobalDatas::datasDict = RDBDatasDict();
 Lists GlobalDatas::lists = Lists();
-
+Channels GlobalDatas::channels = Channels();
 
 
 std::map<int, int> GlobalMasterDatas::replicas_offsets;

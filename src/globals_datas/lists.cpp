@@ -91,28 +91,46 @@ bool Lists::exist(std::string list_key) {
 }
 
 bool Lists::isClientWaitingBLPOP(std::string list_key) {
-    return this->exist(list_key) && this->clientfdWaitingBLPOP[list_key].size() != 0;
+    return this->exist(list_key) && this->mapKeysClientsBLPOP[list_key].size() != 0;
 };
 
 void Lists::addOnWaitingBLPOPList(std::string list_key, int clientfd) {
-    if (this->clientfdWaitingBLPOP.count(list_key) == 0) this->clientfdWaitingBLPOP[list_key] = std::vector<int>();
-    this->clientfdWaitingBLPOP[list_key].push_back(clientfd);
+    this->mapKeysClientsBLPOP[list_key].push_back(clientfd);
+    this->mapClientsBLPOPKeys[clientfd].push_back(list_key);
+};
+
+void Lists::deleteListKeyByClientFD(std::string list_key, int clientfd) {
+    std::vector<std::string>& clientKeysList = this->mapClientsBLPOPKeys[clientfd];
+    auto key_iter = std::find(clientKeysList.begin(), clientKeysList.end(), list_key);
+    clientKeysList.erase(key_iter);
+}
+
+void Lists::deleteListKeysByClientFD(int clientfd) {
+    if (this->mapClientsBLPOPKeys.count(clientfd) == 0) return;
+    std::vector<std::string> clientKeysLists = this->mapClientsBLPOPKeys[clientfd];
+    for (std::string key: clientKeysLists) {
+        std::vector<int> &clientfdList = this->mapKeysClientsBLPOP[key];
+        auto fd_it = std::find(clientfdList.begin(), clientfdList.end(), clientfd);
+        clientfdList.erase(fd_it);
+    }
+    this->mapClientsBLPOPKeys.erase(clientfd);
 };
 
 bool Lists::checkAndDeleteClientWaiting(std::string list_key, int clientfd) {
-    std::vector<int>& clientfdList = this->clientfdWaitingBLPOP[list_key];
-    auto it = std::find(clientfdList.begin(), clientfdList.end(), clientfd);
-    if (it != clientfdList.end()) {
-        clientfdList.erase(it);
+    std::vector<int>& clientfdList = this->mapKeysClientsBLPOP[list_key];
+    auto fd_it = std::find(clientfdList.begin(), clientfdList.end(), clientfd);
+    if (fd_it != clientfdList.end()) {
+        clientfdList.erase(fd_it);
+        deleteListKeyByClientFD(list_key, clientfd);
         return true;
     }
     return false;
 }
 
 int Lists::getFirstClient(std::string list_key) {
-    std::vector<int> &clientfdList = this->clientfdWaitingBLPOP[list_key];
+    std::vector<int> &clientfdList = this->mapKeysClientsBLPOP[list_key];
     int clientfd = clientfdList.front();
+    deleteListKeyByClientFD(list_key, clientfd);
     clientfdList.erase(clientfdList.begin());
-    //std::cout << std::to_string(clientfdList[0]) << " size " << std::to_string(clientfdList.size());
     return clientfd;
 };

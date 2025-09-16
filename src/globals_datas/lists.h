@@ -21,11 +21,14 @@ class Lists {
         bool isClientWaitingBLPOP(std::string list_key);
         void addOnWaitingBLPOPList(std::string list_key, int clientfd);
         bool checkAndDeleteClientWaiting(std::string list_key, int clientfd);
+        void deleteListKeysByClientFD(int clientfd);
         int getFirstClient(std::string list_key);
 
     private:
-        std::map<std::string, std::vector<int>> clientfdWaitingBLPOP;
+        std::map<std::string, std::vector<int>> mapKeysClientsBLPOP;
+        std::map<int, std::vector<std::string>> mapClientsBLPOPKeys;
         std::map<std::string, std::deque<std::string>> lists_map;
+        void deleteListKeyByClientFD(std::string list_key, int clientfd);
 
 };
 

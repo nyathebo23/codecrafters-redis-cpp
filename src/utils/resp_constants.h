@@ -5,6 +5,8 @@
 
 extern const std::string NULL_BULK_STRING;
 extern const std::string NULL_ARRAY;
+extern const std::string SUBSCRIBE_ENC;
+extern const std::string PING_SUBS_MODE_RESP;
 extern const std::string okResp;
 extern const std::string pongResp;
 extern const std::string queueResp;

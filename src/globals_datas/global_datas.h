@@ -8,6 +8,7 @@
 #include "commands_offset.h"
 #include "lists.h"
 #include "stream.h"
+#include "channels.h"
 
 using VectorMapEntries = std::vector<std::map<std::string, std::string>>;
 
@@ -17,6 +18,7 @@ class GlobalDatas {
         static StreamList streamList;
         static CommandsOffset cmdsOffset;
         static RDBDatasDict datasDict;
+        static Channels channels;
         static Lists lists;
 };
 

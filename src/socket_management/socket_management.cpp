@@ -8,86 +8,25 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <unistd.h>
-#include "encode/array_parser_enc.h"
-#include "encode/simple_data_parser_enc.h"
-#include "encode/small_aggregate_parser_enc.h"
-#include "decode/array_parser_dec.h"
-#include "decode/small_aggregate_parser_dec.h"
-#include "process_rdbfile_datas.h"
-#include "decode/simple_data_parser_dec.h"
+#include "../utils/encode/array_parser_enc.h"
+#include "../utils/encode/simple_data_parser_enc.h"
+#include "../utils/encode/small_aggregate_parser_enc.h"
+#include "../utils/decode/array_parser_dec.h"
+#include "../utils/decode/small_aggregate_parser_dec.h"
+#include "../utils/process_rdbfile_datas.h"
+#include "../utils/decode/simple_data_parser_dec.h"
 #include "socket_management.h"
-#include "command_processing.h"
-#include "stream_commands_processing.h"
-#include "list_commands_processing.h"
+#include "../commands_processing/command_processing.h"
+#include "../commands_processing/channels_commands_processing.h"
+#include "../commands_processing/stream_commands_processing.h"
+#include "../commands_processing/list_commands_processing.h"
 #include "../globals_datas/global_datas.h"
-#include "resp_constants.h"
+#include "../utils/resp_constants.h"
 #include <iomanip>
 
 
-std::string SocketManagement::run_command(std::string cmd, std::vector<std::string> extra_params, std::string data, int clientfd){
-    if (cmd == "echo"){
-        return CommandProcessing::echo(extra_params);
-    }
-    else if (cmd == "wait"){
-        return CommandProcessing::wait(extra_params);
-    }
-    else if (cmd == "ping"){
-        return CommandProcessing::ping();
-    }
-    else if (cmd == "incr"){
-        return CommandProcessing::incr(extra_params);
-    }
-    else if (cmd == "type"){
-        return CommandProcessing::type(extra_params);
-    }
-    else if (cmd == "xadd"){
-        return StreamCommandsProcessing::xadd(extra_params);
-    }
-    else if (cmd == "xrange"){
-        return StreamCommandsProcessing::xrange(extra_params);
-    }
-    else if (cmd == "xread"){
-        if (extra_params.size() >= 1 && extra_params[0] == "block")
-            return StreamCommandsProcessing::xread_with_block(extra_params);
-        else
-            return StreamCommandsProcessing::xread(extra_params);
-    }
-    else if (cmd == "lrange") {
-        return ListCommandsProcessing::lrange(extra_params);
-    }
-    else if (cmd == "lpop") {
-        return ListCommandsProcessing::lpop(extra_params);
-    }
-    else if (cmd == "llen") {
-        return ListCommandsProcessing::llen(extra_params);
-    }
-    else if (cmd == "set") {
-        return CommandProcessing::set(extra_params, data);
-    }
-    else if (cmd == "get"){
-        return CommandProcessing::get(extra_params, extra_args["dir"] + "/" + extra_args["dbfilename"]);
-    }
-    else if (cmd == "config"){
-        return CommandProcessing::config(extra_params, extra_args);
-    }
-    else if (cmd == "keys"){
-        return CommandProcessing::keys(extra_params, extra_args["dir"] + "/" + extra_args["dbfilename"]);
-    }
-    else if (cmd == "info"){
-        return CommandProcessing::info(extra_params, GlobalDatas::isMaster ? "master" : "slave");
-    }
-    else if (cmd == "replconf"){
-        return CommandProcessing::replconf(extra_params, clientfd);
-    }
-    else if (cmd == "psync"){
-        return CommandProcessing::psync(extra_params);
-    }
-    return "-ERR\r\n";
-};
-
 void SocketManagement::handle_connection(const int& clientfd){
-    bool is_queue_active = false;
-    std::vector<std::string> cmds_to_exec;
+
     while (1) {
         char buffer[1024] = {0};  
         int bytesReceived = recv(clientfd, &buffer, sizeof(buffer) - 1, 0);
@@ -95,9 +34,7 @@ void SocketManagement::handle_connection(const int& clientfd){
             close(clientfd);
             break;
         }
-
         buffer[bytesReceived] = '\0';
-
         std::string data(buffer);
 
         auto command = CommandProcessing::get_command_array_from_rawdata(data);
@@ -106,32 +43,15 @@ void SocketManagement::handle_connection(const int& clientfd){
             continue;
         }
         std::string cmd = command.name;
-        if (is_queue_active){
-            if (cmd == "exec"){
-                if (cmds_to_exec.size() == 0){
-                    is_queue_active = false;
-                    CommandProcessing::send_data("*0\r\n", clientfd);
-                }
-                else {
-                    std::string resp_array_str = "*" + std::to_string(cmds_to_exec.size()) + "\r\n";
-                    for (auto cmd_data: cmds_to_exec){
-                        auto command_and_params = CommandProcessing::get_command_array_from_rawdata(cmd_data);
-                        resp_array_str += run_command(command_and_params.name, command_and_params.args, cmd_data, clientfd);
-                    }
-                    CommandProcessing::send_data(resp_array_str, clientfd);
-                    is_queue_active = false;
-                    cmds_to_exec.clear();            
-                }        
-            }
-            else if (cmd == "discard") {
-                is_queue_active = false;
-                cmds_to_exec.clear();            
-                CommandProcessing::send_data(okResp, clientfd);
-            }
-            else {
-                cmds_to_exec.push_back(data);
-                CommandProcessing::send_data(queueResp, clientfd);
-            }
+        if (cmd == "subscribe") {
+            ChannelsCommandsProcessing::subsribe(command.args, clientfd);
+            ChannelsCommandsProcessing::enter_subscribe_mode(clientfd);
+        }
+        else if (cmd == "unsubscribe") {
+            ChannelsCommandsProcessing::unsubscribe(command.args, clientfd);
+        }
+        else if (cmd == "publish") {
+            ChannelsCommandsProcessing::publish(command.args, clientfd);
         }
         else if (cmd == "blpop") {
             ListCommandsProcessing::blpop(command.args, clientfd);
@@ -143,8 +63,7 @@ void SocketManagement::handle_connection(const int& clientfd){
             ListCommandsProcessing::lpush(command.args, clientfd);
         }
         else if (cmd == "multi"){
-            is_queue_active = true;
-            CommandProcessing::send_data(okResp, clientfd);
+            CommandProcessing::multi(clientfd, extra_args);
         }
         else if (cmd == "exec"){
             std::string err_msg = "EXEC without MULTI";
@@ -154,12 +73,12 @@ void SocketManagement::handle_connection(const int& clientfd){
             std::string err_msg = "DISCARD without MULTI";
             CommandProcessing::send_data(parse_encode_error_msg(err_msg), clientfd);        
         }
+        else if (cmd == "psync"){
+            CommandProcessing::psync(command.args, clientfd);
+        }
         else {
-            std::string resp = run_command(cmd, command.args, data, clientfd);
+            std::string resp = CommandProcessing::get_command_response(cmd, command.args, data, clientfd, extra_args);
             CommandProcessing::send_data(resp, clientfd);
-            if (cmd == "psync")
-                CommandProcessing::process_file_datas(clientfd);
-            
         }
     }
 }

@@ -5,14 +5,14 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "encode/array_parser_enc.h"
-#include "encode/simple_data_parser_enc.h"
-#include "encode/small_aggregate_parser_enc.h"
-#include "encode/encoders.h"
-#include "decode/simple_data_parser_dec.h"
+#include "../utils/encode/array_parser_enc.h"
+#include "../utils/encode/simple_data_parser_enc.h"
+#include "../utils/encode/small_aggregate_parser_enc.h"
+#include "../utils/encode/encoders.h"
+#include "../utils/decode/simple_data_parser_dec.h"
 #include "command_processing.h"
 #include "list_commands_processing.h"
-#include "resp_constants.h"
+#include "../utils/resp_constants.h"
 #include "../globals_datas/global_datas.h"
 #include <thread>
 

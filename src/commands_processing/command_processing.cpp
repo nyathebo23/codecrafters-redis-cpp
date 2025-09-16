@@ -11,17 +11,19 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <errno.h>
-#include "encode/array_parser_enc.h"
-#include "encode/simple_data_parser_enc.h"
-#include "encode/small_aggregate_parser_enc.h"
-#include "encode/encoders.h"
-#include "decode/array_parser_dec.h"
-#include "decode/small_aggregate_parser_dec.h"
-#include "process_rdbfile_datas.h"
-#include "decode/simple_data_parser_dec.h"
+#include "../utils/encode/array_parser_enc.h"
+#include "../utils/encode/simple_data_parser_enc.h"
+#include "../utils/encode/small_aggregate_parser_enc.h"
+#include "../utils/encode/encoders.h"
+#include "../utils/decode/array_parser_dec.h"
+#include "../utils/decode/small_aggregate_parser_dec.h"
+#include "../utils/process_rdbfile_datas.h"
+#include "../utils/decode/simple_data_parser_dec.h"
 #include "command_processing.h"
+#include "stream_commands_processing.h"
+#include "list_commands_processing.h"
 #include "../globals_datas/global_datas.h"
-#include "resp_constants.h"
+#include "../utils/resp_constants.h"
 
 
 
@@ -34,8 +36,12 @@ void CommandProcessing::execute_after_delay(int delay, const std::string& key) {
     erase_key(key);
 }
 
+std::string CommandProcessing::params_count_error(std::string cmdname) {
+    return cmdname + " command format error";
+};
+
 std::string CommandProcessing::type(std::vector<std::string> extras){
-    std::string resp = parse_encode_error_msg("type command format error");
+    std::string resp = parse_encode_error_msg(params_count_error("type"));
     if (extras.size() != 1)
         return resp;
     std::string key = extras[0];
@@ -66,7 +72,7 @@ bool CommandProcessing::send_data(std::string data, int dest_fd){
 }
 
 std::string CommandProcessing::incr(std::vector<std::string> extras){
-    std::string resp = parse_encode_error_msg("incr command format error");
+    std::string resp = parse_encode_error_msg(params_count_error("incr"));
     if (extras.size() != 1)
         return resp;
     std::string key = extras[0];
@@ -92,7 +98,7 @@ std::string CommandProcessing::incr(std::vector<std::string> extras){
 }
 
 std::string CommandProcessing::echo(std::vector<std::string> extras){
-    std::string resp = parse_encode_error_msg("echo command format error");
+    std::string resp = parse_encode_error_msg(params_count_error("echo"));
     if (extras.size() == 1){
         resp = parse_encode_bulk_string(extras[0]);
     }
@@ -138,7 +144,7 @@ std::string CommandProcessing::set(std::vector<std::string> extras, std::string 
 }
 
 std::string CommandProcessing::keys(std::vector<std::string> extras, std::string filepath) {
-    std::string resp = parse_encode_error_msg("keys command format error");
+    std::string resp = parse_encode_error_msg(params_count_error("keys"));
     if (extras.size() == 1 && extras[0] == "*"){
         auto keys_values = get_keys_values_from_file(filepath);
         auto keys = keys_values.first;
@@ -148,7 +154,7 @@ std::string CommandProcessing::keys(std::vector<std::string> extras, std::string
 }
 
 std::string CommandProcessing::get(std::vector<std::string> extras, std::string filepath){
-    std::string resp = parse_encode_error_msg("get command format error");
+    std::string resp = parse_encode_error_msg(params_count_error("get"));
     if (extras.size() == 1){
         std::string key = extras[0];
         auto keys_values = get_keys_values_from_file(filepath);
@@ -170,7 +176,7 @@ std::string CommandProcessing::get(std::vector<std::string> extras, std::string 
 
 
 std::string CommandProcessing::config(std::vector<std::string> extras, std::map<std::string, std::string> args_map){
-    std::string resp = parse_encode_error_msg("config command format error");
+    std::string resp = parse_encode_error_msg(params_count_error("config"));
     if (extras[0] == "get"){
         std::string key = extras[1];
         if (key == "dir"){
@@ -187,7 +193,7 @@ std::string CommandProcessing::config(std::vector<std::string> extras, std::map<
 
 
 std::string CommandProcessing::info(std::vector<std::string> extras, std::string role){
-    std::string resp = parse_encode_error_msg("info command format error");
+    std::string resp = parse_encode_error_msg(params_count_error("info"));
     if (extras.size() == 1 && extras[0] == "replication"){
         std::string replication_id = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
         int replication_offset = 0;
@@ -200,7 +206,7 @@ std::string CommandProcessing::info(std::vector<std::string> extras, std::string
 
 std::string CommandProcessing::wait(std::vector<std::string> extras){
     if (extras.size() != 2) {
-        return parse_encode_error_msg("wait command format error");
+        return parse_encode_error_msg(params_count_error("wait"));
     }
     unsigned long numreplicas = std::stoul(extras[0]); 
     unsigned long timeout = std::stoul(extras[1]);
@@ -238,7 +244,7 @@ int64_t CommandProcessing::get_now_time_milliseconds() {
 
 std::string CommandProcessing::replconf(std::vector<std::string> extras, int dest_fd){
     std::string resp;
-    if (extras.size() != 2) return parse_encode_error_msg("replconf command format error");
+    if (extras.size() != 2) return parse_encode_error_msg(params_count_error("replconf"));
     if (extras[0] == "listening-port" ){
         resp = okResp;
     } 
@@ -257,13 +263,60 @@ std::string CommandProcessing::replconf(std::vector<std::string> extras, int des
 
 }
 
-std::string CommandProcessing::psync(std::vector<std::string> extras){
-    std::string resp = parse_encode_error_msg("psync command format error");
+void CommandProcessing::psync(std::vector<std::string> extras, int destfd){
+    std::string resp = parse_encode_error_msg(params_count_error("psync"));
     if (extras.size() == 2 && extras[0] == "?" && extras[1] == "-1"){
         std::string replication_id = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
         resp = parse_encode_simple_string("FULLRESYNC " + replication_id + " 0");
+        CommandProcessing::send_data(resp, destfd);
+        CommandProcessing::process_file_datas(destfd);
+        return;
     }   
-    return resp;
+    CommandProcessing::send_data(resp, destfd);
+}
+
+void CommandProcessing::multi(int clientfd, std::map<std::string, std::string> extra_args) {
+    CommandProcessing::send_data(okResp, clientfd);
+    std::vector<std::string> cmds_to_exec;
+    while (1) {
+        char buffer[1024] = {0};  
+        int bytesReceived = recv(clientfd, &buffer, sizeof(buffer) - 1, 0);
+        if (bytesReceived <= 0) {
+            close(clientfd);
+            break;
+        }
+        buffer[bytesReceived] = '\0';
+        std::string data(buffer);
+
+        auto command = CommandProcessing::get_command_array_from_rawdata(data);
+        if (command.error.has_value()){
+            CommandProcessing::send_data(parse_encode_error_msg(command.error.value()), clientfd);
+            continue;
+        }
+        std::string cmd = command.name;
+        if (cmd == "exec"){
+            if (cmds_to_exec.size() == 0){
+                CommandProcessing::send_data("*0\r\n", clientfd);
+            }
+            else {
+                std::string resp_array_str = "*" + std::to_string(cmds_to_exec.size()) + "\r\n";
+                for (auto cmd_data: cmds_to_exec){
+                    auto command_and_params = CommandProcessing::get_command_array_from_rawdata(cmd_data);
+                    resp_array_str += get_command_response(command_and_params.name, command_and_params.args, cmd_data, clientfd, extra_args);
+                }
+                CommandProcessing::send_data(resp_array_str, clientfd);
+                cmds_to_exec.clear();            
+            }        
+        }
+        else if (cmd == "discard") {           
+            CommandProcessing::send_data(okResp, clientfd);
+            return;
+        }
+        else {
+            cmds_to_exec.push_back(data);
+            CommandProcessing::send_data(queueResp, clientfd);
+        }
+    }
 }
 
 void CommandProcessing::process_file_datas(int dest_fd){
@@ -279,7 +332,6 @@ void CommandProcessing::process_file_datas(int dest_fd){
 
 Command CommandProcessing::get_command_array_from_rawdata(std::string data){
     ArrayDecodeResult arr_resp = parse_decode_array(data);
-
     if (arr_resp.getError().has_value()){
         return Command(arr_resp.getError().value());
     }
@@ -297,6 +349,82 @@ Command CommandProcessing::get_command_array_from_rawdata(std::string data){
     }
     return Command(cmd, array_cmd);
 };
+
+std::optional<Command> CommandProcessing::receive_command_from_client(int clientfd) {
+    char buffer[1024] = {0};  
+    int bytesReceived = recv(clientfd, &buffer, sizeof(buffer) - 1, 0);
+    if (bytesReceived <= 0) {
+        close(clientfd);
+        return std::nullopt;
+    }
+
+    buffer[bytesReceived] = '\0';
+
+    std::string data(buffer);
+    return CommandProcessing::get_command_array_from_rawdata(data);
+};
+
+
+std::string CommandProcessing::get_command_response(std::string cmd, std::vector<std::string> extra_params, 
+    std::string data, int clientfd, std::map<std::string, std::string> extra_args){
+    if (cmd == "echo"){
+        return CommandProcessing::echo(extra_params);
+    }
+    else if (cmd == "wait"){
+        return CommandProcessing::wait(extra_params);
+    }
+    else if (cmd == "ping"){
+        return CommandProcessing::ping();
+    }
+    else if (cmd == "incr"){
+        return CommandProcessing::incr(extra_params);
+    }
+    else if (cmd == "type"){
+        return CommandProcessing::type(extra_params);
+    }
+    else if (cmd == "xadd"){
+        return StreamCommandsProcessing::xadd(extra_params);
+    }
+    else if (cmd == "xrange"){
+        return StreamCommandsProcessing::xrange(extra_params);
+    }
+    else if (cmd == "xread"){
+        if (extra_params.size() >= 1 && extra_params[0] == "block")
+            return StreamCommandsProcessing::xread_with_block(extra_params);
+        else
+            return StreamCommandsProcessing::xread(extra_params);
+    }
+    else if (cmd == "lrange") {
+        return ListCommandsProcessing::lrange(extra_params);
+    }
+    else if (cmd == "lpop") {
+        return ListCommandsProcessing::lpop(extra_params);
+    }
+    else if (cmd == "llen") {
+        return ListCommandsProcessing::llen(extra_params);
+    }
+    else if (cmd == "set") {
+        return CommandProcessing::set(extra_params, data);
+    }
+    else if (cmd == "get"){
+        return CommandProcessing::get(extra_params, extra_args["dir"] + "/" + extra_args["dbfilename"]);
+    }
+    else if (cmd == "config"){
+        return CommandProcessing::config(extra_params, extra_args);
+    }
+    else if (cmd == "keys"){
+        return CommandProcessing::keys(extra_params, extra_args["dir"] + "/" + extra_args["dbfilename"]);
+    }
+    else if (cmd == "info"){
+        return CommandProcessing::info(extra_params, GlobalDatas::isMaster ? "master" : "slave");
+    }
+    else if (cmd == "replconf"){
+        return CommandProcessing::replconf(extra_params, clientfd);
+    }
+
+    return "-ERR\r\n";
+};
+
 
 void CommandProcessing::send_replconf_getack(int dest_fd){
     send_data(replconfGetackCmd, dest_fd);
