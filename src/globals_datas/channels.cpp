@@ -1,4 +1,5 @@
 #include "channels.h"
+#include <algorithm>
 
 std::size_t Channels::subscribe(std::string channelName, int sockfd) {
     this->mapChannelClientsFD[channelName].push_back(sockfd);
