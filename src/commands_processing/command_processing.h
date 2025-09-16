@@ -25,7 +25,7 @@ class CommandProcessing {
     public:
         static int64_t get_now_time_milliseconds();
         static Command get_command_array_from_rawdata(std::string data);
-        static std::optional<Command> receive_command_from_client(int clientfd);
+        static std::optional<Command> receive_command_from_client(const int& clientfd);
         static std::string get_command_response(std::string cmd, std::vector<std::string> extra_params, 
             std::string data, int clientfd, std::map<std::string, std::string> extra_args);
         static std::string params_count_error(std::string cmdname);
