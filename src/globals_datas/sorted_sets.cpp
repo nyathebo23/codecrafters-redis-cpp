@@ -1,25 +1,26 @@
 #include "sorted_sets.h"
 #include <algorithm> 
 #include <iterator>
+#include <sstream>
+#include <iomanip>
 
 bool SortedSetElement::operator<(const SortedSetElement& other) const {
     return score < other.score || (score == other.score && member < other.member );
 }
 
 long SortedSets::zadd(std::string setName, double score, std::string member) {
-    SortedSetElement element = {
-        .member = member,
-        .score = score
-    };
     auto &sortedSet = this->setsMap[setName];
     for (SortedSetElement &item: sortedSet) {
-        if (item.member == element.member) {
-            item.score = element.score;
+        if (item.member == member) {
+            item.score = score;
             sortedSet.sort();
             return 0;
         }
     }
-
+    SortedSetElement element = {
+        .member = member,
+        .score = score
+    };
     auto iter = std::lower_bound(sortedSet.begin(), sortedSet.end(), element);
     sortedSet.insert(iter, element);
     return 1;
@@ -70,7 +71,9 @@ std::string SortedSets::zscore(std::string setName, std::string member) {
     auto sortedSet = this->setsMap[setName];
     for (SortedSetElement item: sortedSet) {
         if (item.member == member) {
-            return std::to_string(item.score);
+            std::ostringstream score_ostream;
+            score_ostream << std::setprecision(17) << item.score;
+            return score_ostream.str();
         }
     } 
     return ""; 
