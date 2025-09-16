@@ -4,7 +4,6 @@
 #include "../utils/resp_constants.h"
 #include "../globals_datas/global_datas.h"
 #include "command_processing.h"
-#include <iostream>
 
 void ChannelsCommandsProcessing::subsribe(std::vector<std::string> extras, int clientfd) {
     if (extras.size() != 1) {
@@ -29,7 +28,7 @@ void ChannelsCommandsProcessing::enter_subscribe_mode(int clientfd) {
             continue;
         }
         std::string cmd = command.name;
-        std::cout << cmd + " command";
+
         if (cmd == "subscribe") {
             ChannelsCommandsProcessing::subsribe(command.args, clientfd);
         }
@@ -42,7 +41,7 @@ void ChannelsCommandsProcessing::enter_subscribe_mode(int clientfd) {
         else if (cmd == "ping") {
             ChannelsCommandsProcessing::ping(command.args, clientfd);
         }
-        if (cmd == "psubscribe") {
+        else if (cmd == "psubscribe") {
 
         }
         else if (cmd == "punsubscribe") {
