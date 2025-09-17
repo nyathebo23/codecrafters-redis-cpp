@@ -129,12 +129,10 @@ std::string GeospatialCommandsProcessing::geosearch(std::vector<std::string> ext
 double GeospatialCommandsProcessing::haversine(SpatialCoords coords1, SpatialCoords coords2) {
    double radius = 6372797.560856;
    double PI_180 = M_PI / 180;
-   double lat1 = coords1.latitude;
-   double lat2 = coords2.latitude;
-   double dLat =  (lat2 - lat1) * PI_180;
+   double lat1 = coords1.latitude * PI_180;
+   double lat2 = coords2.latitude * PI_180;
+   double dLat =  lat2 - lat1;
    double dLon = (coords2.longitude - coords1.longitude) * PI_180;
-   double rlat1 = lat1 * PI_180;
-   double rlat2 = lat2 * PI_180;
    double a = std::pow(std::sin(dLat / 2), 2) + std::cos(lat1) * std::cos(lat2) * std::pow(std::sin(dLon / 2), 2);
    double c = 2 * std::asin(std::sqrt(a));
    return radius * c;
