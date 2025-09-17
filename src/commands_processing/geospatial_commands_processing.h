@@ -19,14 +19,20 @@ struct SpatialCoord {
     std::optional<std::string> error;
 };
 
+struct SpatialCoordsFloat{
+    double longitude;
+    double latitude;
+};
+
 
 class GeospatialCommandsProcessing {
     private:
-        static std::string convert_grid_numbers_to_coordinates(long grid_lat_num, long grid_lon_num);
+        static std::string convert_geocode_into_resp_string(long geocode);
         static long compact_int64_to_int32(long value); 
         static long interleave(long x, long y);
         static long spread_int32_to_int64(long value);
-        static double haversine(double lat1, double lon1, double lat2, double lon2);
+        static double haversine(SpatialCoordsFloat coords1, SpatialCoordsFloat coords2);
+        static SpatialCoordsFloat get_coords_from_compact_long(long value);
         static SpatialCoord validate_and_normalize_coordinates(std::string longitude, std::string latitude);
 
     public:

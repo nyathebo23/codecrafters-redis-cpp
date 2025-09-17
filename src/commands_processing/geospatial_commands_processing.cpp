@@ -8,6 +8,7 @@
 #include "../utils/encode/small_aggregate_parser_enc.h"
 #include "../globals_datas/global_datas.h"
 #include "../utils/resp_constants.h"
+#include <cmath> 
 
 SpatialCoord GeospatialCommandsProcessing::validate_and_normalize_coordinates(std::string longitude, std::string latitude) {
     SpatialCoord coordErrorDefault = {
@@ -21,8 +22,8 @@ SpatialCoord GeospatialCommandsProcessing::validate_and_normalize_coordinates(st
         double lat = std::stod(latitude);
         if (lon > MAX_LONGITUDE || lon < MIN_LONGITUDE) return coordErrorDefault;
         if (lat > MAX_LATITUDE || lat < MIN_LATITUDE) return coordErrorDefault;
-        double normalizedLatitude = (2^26) * (lat - MIN_LATITUDE) / LATITUDE_RANGE;
-        double normalizedLongitude = (2^26) * (lon - MIN_LONGITUDE) / LONGITUDE_RANGE;
+        double normalizedLatitude = std::pow(2.0, 26) * (lat - MIN_LATITUDE) / LATITUDE_RANGE;
+        double normalizedLongitude = std::pow(2.0, 26) * (lon - MIN_LONGITUDE) / LONGITUDE_RANGE;
         long normLatitude = static_cast<long>(normalizedLatitude);
         long normLongitude = static_cast<long>(normalizedLongitude);
         SpatialCoord normCoords = {
@@ -38,7 +39,6 @@ SpatialCoord GeospatialCommandsProcessing::validate_and_normalize_coordinates(st
         return coordErrorDefault;
     }
 }
-
 
 std::string GeospatialCommandsProcessing::geoadd(std::vector<std::string> extras) {
     if (extras.size() != 4) {
@@ -63,11 +63,7 @@ std::string GeospatialCommandsProcessing::geopos(std::vector<std::string> extras
         if (zscore == "") resp += NULL_BULK_STRING;
         else {
             long geocode = std::stol(zscore);
-            long transformedLon = geocode >> 1;
-            long transformedLat = geocode;
-            transformedLon = compact_int64_to_int32(transformedLon);
-            transformedLat = compact_int64_to_int32(transformedLat);
-            resp += convert_grid_numbers_to_coordinates(transformedLat, transformedLon);
+            resp += convert_geocode_into_resp_string(geocode);
         };
     }
     return resp;
@@ -77,20 +73,49 @@ std::string GeospatialCommandsProcessing::geodist(std::vector<std::string> extra
     if (extras.size() != 3) {
         return CommandProcessing::params_count_error("geodist");
     }
-
-    return "";
+    std::string locationKey = extras[0];
+    std::string location1 = extras[1];
+    std::string location2 = extras[2];
+    std::string zgeocode1 = GlobalDatas::sortedSets.zscore(locationKey, location1);
+    std::string zgeocode2 = GlobalDatas::sortedSets.zscore(locationKey, location2);
+    std::string respErr = zgeocode1 == "" ? location1 : "";
+    std::string err2 = zgeocode2 == "" ? location2 : "";
+    respErr += (respErr == "" ? err2 : ", " + err2);
+    if (respErr != "") {
+        respErr += " not found in location key " + locationKey;
+        return parse_encode_error_msg(respErr);
+    }
+    SpatialCoordsFloat coords1 = get_coords_from_compact_long(std::stol(zgeocode1));
+    SpatialCoordsFloat coords2 = get_coords_from_compact_long(std::stol(zgeocode2));
+    double dist = haversine(coords1, coords2);
+    return parse_encode_bulk_string(std::to_string(dist));
 }
 
 std::string GeospatialCommandsProcessing::geosearch(std::vector<std::string> extras) {
     if (extras.size() < 7) {
         return CommandProcessing::params_count_error("geosearch");
     }
+    std::string locationKey = extras[0];
+    std::string longitudeStr = extras[2];
+    std::string latitudeStr = extras[3];
+    std::string radiusStr = extras[5];
+    std::string unit = extras[6];
 
     return "";
 }
 
-double GeospatialCommandsProcessing::haversine(double lat1, double lon1, double lat2, double lon2) {
-
+double GeospatialCommandsProcessing::haversine(SpatialCoordsFloat coords1, SpatialCoordsFloat coords2) {
+   double radius = 6372797.560856;
+   double PI_180 = M_PI / 180;
+   double lat1 = coords1.latitude;
+   double lat2 = coords2.latitude;
+   double dLat =  (lat2 - lat1) * PI_180;
+   double dLon = (coords2.longitude - coords1.longitude) * PI_180;
+   double rlat1 = lat1 * PI_180;
+   double rlat2 = lat2 * PI_180;
+   double a = std::pow(std::sin(dLat / 2), 2) + std::cos(lat1) * std::cos(lat2) * std::pow(std::sin(dLon / 2), 2);
+   double c = 2 * std::asin(std::sqrt(a));
+   return radius * c;
 };
 
 long GeospatialCommandsProcessing::interleave(long x, long y) {
@@ -159,26 +184,40 @@ long GeospatialCommandsProcessing::compact_int64_to_int32(long v) {
     //-----
 }
 
-std::string GeospatialCommandsProcessing::convert_grid_numbers_to_coordinates(long gridLatNum, long gridLonNum) {
-    // Calculate the grid boundaries
-    double gridLatitudeMin = MIN_LATITUDE + LATITUDE_RANGE * (gridLatNum / (2^26));
-    double gridLatitudeMax = MIN_LATITUDE + LATITUDE_RANGE * ((gridLatNum + 1) / (2^26));
-    double gridLongitudeMin = MIN_LONGITUDE + LONGITUDE_RANGE * (gridLonNum / (2^26));
-    double gridLongitudeMax = MIN_LONGITUDE + LONGITUDE_RANGE * ((gridLonNum + 1) / (2^26));
-    
-    // Calculate the center point of the grid cell
-    double latitude = (gridLatitudeMin + gridLatitudeMax) / 2;
-    double longitude = (gridLongitudeMin + gridLongitudeMax) / 2;
+
+
+std::string GeospatialCommandsProcessing::convert_geocode_into_resp_string(long geocode) {
+    SpatialCoordsFloat coords = get_coords_from_compact_long(geocode);
     std::ostringstream latOstream;
     std::ostringstream lonOstream;
-    latOstream << std::setprecision(17) << latitude;
-    lonOstream << std::setprecision(17) << longitude;
+    latOstream << std::setprecision(17) << coords.latitude;
+    lonOstream << std::setprecision(17) << coords.longitude;
     std::string latitudeEnc = parse_encode_bulk_string(latOstream.str());
     std::string longitudeEnc = parse_encode_bulk_string(lonOstream.str());
 
     std::string resp = "*2\r\n" + longitudeEnc + latitudeEnc;     
     return resp;
+}
 
+SpatialCoordsFloat GeospatialCommandsProcessing::get_coords_from_compact_long(long value) {
+    long transformedLon = value >> 1;
+    long transformedLat = value;
+    long gridLonNum = compact_int64_to_int32(transformedLon);
+    long gridLatNum = compact_int64_to_int32(transformedLat);
+    // Calculate the grid boundaries
+    double gridLatitudeMin = MIN_LATITUDE + LATITUDE_RANGE * (gridLatNum / std::pow(2.0, 26));
+    double gridLatitudeMax = MIN_LATITUDE + LATITUDE_RANGE * ((gridLatNum + 1) / std::pow(2.0, 26));
+    double gridLongitudeMin = MIN_LONGITUDE + LONGITUDE_RANGE * (gridLonNum / std::pow(2.0, 26));
+    double gridLongitudeMax = MIN_LONGITUDE + LONGITUDE_RANGE * ((gridLonNum + 1) / std::pow(2.0, 26));
+    
+    // Calculate the center point of the grid cell
+    double latitude = (gridLatitudeMin + gridLatitudeMax) / 2;
+    double longitude = (gridLongitudeMin + gridLongitudeMax) / 2;
+    SpatialCoordsFloat coords = {
+        .longitude = longitude,
+        .latitude = latitude
+    };
+    return coords;
     //The decoded coordinates represent the center of a grid cell, not the exact original coordinates. 
     //This is because the encoding process truncates coordinates to grid cells. The precision depends on the grid resolution 
     //(which is determined by the 26-bit normalization).
