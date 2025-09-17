@@ -113,6 +113,12 @@ std::string GeospatialCommandsProcessing::geosearch(std::vector<std::string> ext
     if (coords.error.has_value()) return parse_encode_error_msg(coords.error.value());
     double radius = std::stod(extras[5]);
     std::string unit = extras[6];
+    if (unit == "mi") {
+        radius *= 1609.34;
+    }
+    else if (unit == "km") {
+        radius *= 1000;
+    }
     std::vector<std::string> result;
     std::list<SortedSetElement> locationNames = GlobalDatas::sortedSets.zall(locationKey);
     for (SortedSetElement item: locationNames) {
