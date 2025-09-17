@@ -60,7 +60,7 @@ std::string GeospatialCommandsProcessing::geopos(std::vector<std::string> extras
     std::string resp = "*" + std::to_string(nbLocations) + "\r\n";
     for (int i = 1; i <= nbLocations; i++) {
         std::string zscore = GlobalDatas::sortedSets.zscore(locationKey, extras[i]);
-        if (zscore == "") resp += NULL_BULK_STRING;
+        if (zscore == "") resp += NULL_ARRAY;
         else {
             long geocode = std::stol(zscore);
             resp += convert_geocode_into_resp_string(geocode);
@@ -96,9 +96,9 @@ std::string GeospatialCommandsProcessing::geosearch(std::vector<std::string> ext
         return CommandProcessing::params_count_error("geosearch");
     }
     std::string locationKey = extras[0];
-    std::string longitudeStr = extras[2];
-    std::string latitudeStr = extras[3];
-    std::string radiusStr = extras[5];
+    SpatialCoord coords = validate_and_normalize_coordinates(extras[2], extras[3]);
+    if (coords.error.has_value()) return parse_encode_error_msg(coords.error.value());
+    double radius = std::stol(extras[5]);
     std::string unit = extras[6];
 
     return "";
