@@ -62,6 +62,10 @@ std::vector<std::string> SortedSets::zrange(std::string setName, long start, lon
     return result;
 }
 
+std::list<SortedSetElement> SortedSets::zall(std::string setName) {
+    return this->setsMap[setName];   
+}
+
 long SortedSets::zcard(std::string setName) {
     auto sortedSet = this->setsMap[setName];
     return sortedSet.size();

@@ -23,6 +23,7 @@ class SortedSets {
         long zadd(std::string setName, double score, std::string member);
         std::optional<long> zrank(std::string setName, std::string member);
         std::vector<std::string> zrange(std::string setName, long start, long end);
+        std::list<SortedSetElement> zall(std::string setName);
         long zcard(std::string setName);
         std::string zscore(std::string setName, std::string member);
         long zrem(std::string setName, std::string member);

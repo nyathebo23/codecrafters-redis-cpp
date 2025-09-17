@@ -430,7 +430,7 @@ std::string CommandProcessing::get_command_response(std::string cmd, std::vector
     else if (cmd == "geopos") {
         return GeospatialCommandsProcessing::geopos(extra_params);
     }
-    else if (cmd == "geodis") {
+    else if (cmd == "geodist") {
         return GeospatialCommandsProcessing::geodist(extra_params);
     }
     else if (cmd == "geosearch") {
