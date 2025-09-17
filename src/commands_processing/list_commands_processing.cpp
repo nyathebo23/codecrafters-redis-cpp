@@ -19,10 +19,10 @@
 
 
 
-void ListCommandsProcessing::rpush(std::vector<std::string> extras, int clientfd) {
+void ListCommandsProcessing::rpush(const std::vector<std::string>& extras, const int& clientfd) {
     if (extras.size() < 2) {
-        std::string errResp = CommandProcessing::params_count_error("rpush");
-        CommandProcessing::send_data(errResp, clientfd);
+        std::string err_resp = CommandProcessing::params_count_error("rpush");
+        CommandProcessing::send_data(err_resp, clientfd);
         return;
     }
     std::string listkey = extras[0];
@@ -33,7 +33,7 @@ void ListCommandsProcessing::rpush(std::vector<std::string> extras, int clientfd
         try_run_waiting_lpop(listkey);
 }
 
-std::string ListCommandsProcessing::lrange(std::vector<std::string> extras) {
+std::string ListCommandsProcessing::lrange(const std::vector<std::string>& extras) {
     if (extras.size() != 3) {
         return CommandProcessing::params_count_error("lrange");
     }
@@ -45,10 +45,10 @@ std::string ListCommandsProcessing::lrange(std::vector<std::string> extras) {
     return parse_encode_string_array(result);
 }
 
-void ListCommandsProcessing::lpush(std::vector<std::string> extras, int clientfd) {
+void ListCommandsProcessing::lpush(const std::vector<std::string>& extras, const int& clientfd) {
     if (extras.size() < 2) {
-        std::string errResp = CommandProcessing::params_count_error("lpush");
-        CommandProcessing::send_data(errResp, clientfd);
+        std::string err_resp = CommandProcessing::params_count_error("lpush");
+        CommandProcessing::send_data(err_resp, clientfd);
         return;
     }
     std::string listkey = extras[0];
@@ -59,7 +59,7 @@ void ListCommandsProcessing::lpush(std::vector<std::string> extras, int clientfd
         try_run_waiting_lpop(listkey);
 }
 
-std::string ListCommandsProcessing::llen(std::vector<std::string> extras) {
+std::string ListCommandsProcessing::llen(const std::vector<std::string>& extras) {
     if (extras.size() != 1) {
         return CommandProcessing::params_count_error("lrange");
     }
@@ -67,7 +67,7 @@ std::string ListCommandsProcessing::llen(std::vector<std::string> extras) {
     return parse_encode_integer(size);
 }
 
-std::string ListCommandsProcessing::lpop(std::vector<std::string> extras) {
+std::string ListCommandsProcessing::lpop(const std::vector<std::string>& extras) {
     if (extras.size() == 1) {
         auto value = GlobalDatas::lists.left_pop(extras[0]);
         if (value.has_value()) {
@@ -85,7 +85,7 @@ std::string ListCommandsProcessing::lpop(std::vector<std::string> extras) {
     return CommandProcessing::params_count_error("lpop");
 }
 
-void ListCommandsProcessing::blpop(std::vector<std::string> extras, int clientfd) {
+void ListCommandsProcessing::blpop(const std::vector<std::string>& extras, const int& clientfd) {
     if (extras.size() != 2) {
         std::string err = CommandProcessing::params_count_error("blpop");
         CommandProcessing::send_data(err, clientfd);
@@ -93,7 +93,7 @@ void ListCommandsProcessing::blpop(std::vector<std::string> extras, int clientfd
     }
     double timeout = std::stod(extras[1]);
     std::string key = extras[0];
-    GlobalDatas::lists.addOnWaitingBLPOPList(key, clientfd);
+    GlobalDatas::lists.add_on_waiting_blpop_list(key, clientfd);
     if (timeout > 0) {
         std::thread t(check_blpop_exec, timeout, key, clientfd);
         t.detach();
@@ -101,17 +101,17 @@ void ListCommandsProcessing::blpop(std::vector<std::string> extras, int clientfd
 }
 
 void ListCommandsProcessing::try_run_waiting_lpop(std::string list_key) {
-    if (GlobalDatas::lists.isClientWaitingBLPOP(list_key)) {
+    if (GlobalDatas::lists.is_client_waiting_blpop(list_key)) {
         auto value = GlobalDatas::lists.left_pop(list_key).value();
         std::vector<std::string> resp_array = {list_key, value};
-        int clientfd = GlobalDatas::lists.getFirstClient(list_key);
+        int clientfd = GlobalDatas::lists.get_first_client(list_key);
         CommandProcessing::send_data(parse_encode_string_array(resp_array), clientfd);
     }
 }
 
-void ListCommandsProcessing::check_blpop_exec(double delay, std::string list_key, int clientfd) {
+void ListCommandsProcessing::check_blpop_exec(const double& delay, const std::string& list_key, const int& clientfd) {
     std::this_thread::sleep_for(std::chrono::duration<double>(delay));
-    if (GlobalDatas::lists.checkAndDeleteClientWaiting(list_key, clientfd)) {
+    if (GlobalDatas::lists.check_and_delete_client_waiting(list_key, clientfd)) {
         CommandProcessing::send_data(NULL_ARRAY, clientfd);
     }
 }

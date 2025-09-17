@@ -27,20 +27,20 @@ struct SpatialCoords{
 
 class GeospatialCommandsProcessing {
     private:
-        static std::string convert_geocode_into_resp_string(long geocode);
-        static long compact_int64_to_int32(long value); 
-        static long interleave(long x, long y);
-        static long spread_int32_to_int64(long value);
-        static double haversine(SpatialCoords coords1, SpatialCoords coords2);
-        static SpatialCoords get_coords_from_compact_long(long value);
-        static SpatialCoords validate_coordinates(std::string longitude, std::string latitude);
-        static NormalizedCoords normalize_coordinates(SpatialCoords coords);
+        static std::string convert_geocode_into_resp_string(const long& geocode);
+        static long compact_int64_to_int32(const long& value); 
+        static long interleave(const long& x, const long& y);
+        static long spread_int32_to_int64(const long& value);
+        static double haversine(const SpatialCoords& coords1, const SpatialCoords& coords2);
+        static SpatialCoords get_coords_from_compact_long(const long& value);
+        static SpatialCoords validate_coordinates(const std::string& longitude, const std::string& latitude);
+        static NormalizedCoords normalize_coordinates(const SpatialCoords& coords);
 
     public:
-        static std::string geoadd(std::vector<std::string> extras);
-        static std::string geopos(std::vector<std::string> extras);
-        static std::string geodist(std::vector<std::string> extras);
-        static std::string geosearch(std::vector<std::string> extras);
+        static std::string geoadd(const std::vector<std::string>& extras);
+        static std::string geopos(const std::vector<std::string>& extras);
+        static std::string geodist(const std::vector<std::string>& extras);
+        static std::string geosearch(const std::vector<std::string>& extras);
 };
 
 #endif

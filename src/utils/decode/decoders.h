@@ -11,13 +11,14 @@ class DecodedResult
 {
     private:
         std::optional<std::string> error;
+        
     public:
-        std::optional<std::string> getError();
+        std::optional<std::string> get_error();
         DecodedResult(std::optional<std::string> error);
-        virtual std::string asString() = 0;
-        virtual long asInteger() = 0;
-        virtual double asDouble() = 0;
-        virtual std::vector<std::shared_ptr<DecodedResult>> asArray() = 0;
+        virtual std::string as_string() = 0;
+        virtual long as_integer() = 0;
+        virtual double as_double() = 0;
+        virtual std::vector<std::shared_ptr<DecodedResult>> as_array() = 0;
 };
 
 using DecodedResultPtr = std::shared_ptr<DecodedResult>;
@@ -28,10 +29,10 @@ class StringDecodeResult: public DecodedResult {
     public:
         StringDecodeResult(std::string value, std::optional<std::string> error);  
         StringDecodeResult(std::string error);
-        std::string asString() override;
-        long asInteger() override;
-        double asDouble() override;
-        std::vector<DecodedResultPtr> asArray() override;
+        std::string as_string() override;
+        long as_integer() override;
+        double as_double() override;
+        std::vector<DecodedResultPtr> as_array() override;
 };
 
 class IntDecodeResult: public DecodedResult {
@@ -40,10 +41,10 @@ class IntDecodeResult: public DecodedResult {
     public:
         IntDecodeResult(long value);  
         IntDecodeResult(std::string error);  
-        std::string asString() override;
-        long asInteger() override;
-        double asDouble() override;
-        std::vector<DecodedResultPtr> asArray() override;
+        std::string as_string() override;
+        long as_integer() override;
+        double as_double() override;
+        std::vector<DecodedResultPtr> as_array() override;
 };
 
 class DoubleDecodeResult: public DecodedResult {
@@ -52,10 +53,10 @@ class DoubleDecodeResult: public DecodedResult {
     public:
         DoubleDecodeResult(double value);  
         DoubleDecodeResult(std::string error);  
-        std::string asString() override;
-        long asInteger() override;
-        double asDouble() override;
-        std::vector<DecodedResultPtr> asArray() override;
+        std::string as_string() override;
+        long as_integer() override;
+        double as_double() override;
+        std::vector<DecodedResultPtr> as_array() override;
 };
 
 class BooleanDecodeResult: public DecodedResult {
@@ -64,10 +65,10 @@ class BooleanDecodeResult: public DecodedResult {
     public:
         BooleanDecodeResult(bool value);  
         BooleanDecodeResult(std::string error);  
-        std::string asString() override;
-        long asInteger() override;
-        double asDouble() override;
-        std::vector<DecodedResultPtr> asArray() override;
+        std::string as_string() override;
+        long as_integer() override;
+        double as_double() override;
+        std::vector<DecodedResultPtr> as_array() override;
 
 };
 
@@ -78,11 +79,11 @@ class ArrayDecodeResult: public DecodedResult {
     public:
         ArrayDecodeResult(std::vector<DecodedResultPtr> value, int charEndInd); 
         ArrayDecodeResult(std::string error); 
-        int getCharEndIndex();
-        std::string asString() override;
-        long asInteger() override;
-        double asDouble() override;
-        std::vector<DecodedResultPtr> asArray() override;
+        int get_char_end_index();
+        std::string as_string() override;
+        long as_integer() override;
+        double as_double() override;
+        std::vector<DecodedResultPtr> as_array() override;
 };
 
 

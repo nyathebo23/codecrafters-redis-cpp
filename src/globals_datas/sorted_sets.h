@@ -20,13 +20,13 @@ class SortedSets {
         std::map<std::string, std::list<SortedSetElement>> setsMap;
 
     public:
-        long zadd(std::string setName, double score, std::string member);
-        std::optional<long> zrank(std::string setName, std::string member);
-        std::vector<std::string> zrange(std::string setName, long start, long end);
-        std::list<SortedSetElement> zall(std::string setName);
-        long zcard(std::string setName);
-        std::string zscore(std::string setName, std::string member);
-        long zrem(std::string setName, std::string member);
+        long zadd(const std::string& setName, const double& score, const std::string& member);
+        std::optional<long> zrank(const std::string& setName, const std::string& member);
+        std::vector<std::string> zrange(const std::string& setName, const long& start, const long& end);
+        std::list<SortedSetElement> zall(const std::string& setName);
+        long zcard(const std::string& setName);
+        std::string zscore(const std::string& setName, const std::string& member);
+        long zrem(const std::string& setName, const std::string& member);
 
 };
 

@@ -29,12 +29,12 @@ void SocketManagement::handle_connection(const int& clientfd){
 
     while (1) {
         char buffer[1024] = {0};  
-        int bytesReceived = recv(clientfd, &buffer, sizeof(buffer) - 1, 0);
-        if (bytesReceived <= 0) {
+        int bytes_received = recv(clientfd, &buffer, sizeof(buffer) - 1, 0);
+        if (bytes_received <= 0) {
             close(clientfd);
             break;
         }
-        buffer[bytesReceived] = '\0';
+        buffer[bytes_received] = '\0';
         std::string data(buffer);
 
         auto command = CommandProcessing::get_command_array_from_rawdata(data);
@@ -130,18 +130,18 @@ void SocketManagement::handshake_and_check_incoming_master_connections(int port)
         std::cout << "Connect to master failed";
     }
 
-    if(send_receive_msg_by_command(pingAsListEnc, "PONG") < 0)
+    if(send_receive_msg_by_command(PING_AS_LIST_ENC, "PONG") < 0)
         std::cout << "PING failed";
 
-    std::string replconfMsg1Enc = replconfMsg1PartEnc + parse_encode_bulk_string(std::to_string(port));
-    if(send_receive_msg_by_command(replconfMsg1Enc, "OK") < 0)
+    std::string replconf_msg1_enc = REPLCONF_MSG1_PART_ENC + parse_encode_bulk_string(std::to_string(port));
+    if(send_receive_msg_by_command(replconf_msg1_enc, "OK") < 0)
         std::cout << "REPLCONF failed";
     
-    if(send_receive_msg_by_command(replconfMsg2Enc, "OK") < 0)
+    if(send_receive_msg_by_command(REPLCONF_MSG2_ENC, "OK") < 0)
         std::cout << "REPLCONF failed";
 
-    if (send(server_fd, psyncMsgEnc.c_str(), psyncMsgEnc.length(), 0) < 0){
-        std::cout << "Send "+ psyncMsgEnc + " handshake failed";
+    if (send(server_fd, PSYNC_MSG_ENC.c_str(), PSYNC_MSG_ENC.length(), 0) < 0){
+        std::cout << "Send "+ PSYNC_MSG_ENC + " handshake failed";
     }
 
     const int SIZE = 256;
@@ -201,9 +201,9 @@ void SocketManagement::process_command(std::string cmd, std::vector<std::string>
     }
 }
 
-void SocketManagement::retrieve_commands_from_master(int bytes_receive, char* buffe, const int size, int p) {
-    char buffer[size];
-    for (int i = 0; i < size; i++)
+void SocketManagement::retrieve_commands_from_master(int bytes_receive, char* buffe, const int SIZE, int p) {
+    char buffer[SIZE];
+    for (int i = 0; i < SIZE; i++)
         buffer[i] = buffe[i];
     int bytes_received = bytes_receive;
     int pos = p;
@@ -212,25 +212,25 @@ void SocketManagement::retrieve_commands_from_master(int bytes_receive, char* bu
         ArrayDecodeResult arr_resp = ArrayDecodeResult(std::vector<DecodedResultPtr>(), 0);
         while (pos < bytes_received){
             arr_resp = parse_decode_array(data);
-            auto command = arr_resp.asArray();
-            pos += arr_resp.getCharEndIndex();
-            std::string cmd = command[0]->asString();
+            auto command = arr_resp.as_array();
+            pos += arr_resp.get_char_end_index();
+            std::string cmd = command[0]->as_string();
             std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
             std::vector<std::string> array_cmd;
             for (int i = 1; i < command.size(); i++){
-                std::string param_str = command[i]->asString();
+                std::string param_str = command[i]->as_string();
                 std::transform(param_str.begin(), param_str.end(), param_str.begin(), ::tolower);
                 array_cmd.push_back(param_str);
             }
-            if (arr_resp.getCharEndIndex() < data.size())
-                data = data.substr(arr_resp.getCharEndIndex());
+            if (arr_resp.get_char_end_index() < data.size())
+                data = data.substr(arr_resp.get_char_end_index());
             std::cout << "bytes " << bytes_received << "   " << data;
-            GlobalDatas::cmdsOffset.set(arr_resp.getCharEndIndex());
+            GlobalDatas::cmds_offset.set(arr_resp.get_char_end_index());
             process_command(cmd, array_cmd);
         }
         pos = 0;
-        std::memset(buffer, 0, size);
-        bytes_received = recv(server_fd, &buffer, size, 0);
+        std::memset(buffer, 0, SIZE);
+        bytes_received = recv(server_fd, &buffer, SIZE, 0);
     }
 };
 

@@ -8,12 +8,12 @@ bool SortedSetElement::operator<(const SortedSetElement& other) const {
     return score < other.score || (score == other.score && member < other.member );
 }
 
-long SortedSets::zadd(std::string setName, double score, std::string member) {
-    auto &sortedSet = this->setsMap[setName];
-    for (SortedSetElement &item: sortedSet) {
+long SortedSets::zadd(const std::string& setName, const double& score, const std::string& member) {
+    auto &sorted_set = this->setsMap[setName];
+    for (SortedSetElement &item: sorted_set) {
         if (item.member == member) {
             item.score = score;
-            sortedSet.sort();
+            sorted_set.sort();
             return 0;
         }
     }
@@ -21,26 +21,26 @@ long SortedSets::zadd(std::string setName, double score, std::string member) {
         .member = member,
         .score = score
     };
-    auto iter = std::lower_bound(sortedSet.begin(), sortedSet.end(), element);
-    sortedSet.insert(iter, element);
+    auto iter = std::lower_bound(sorted_set.begin(), sorted_set.end(), element);
+    sorted_set.insert(iter, element);
     return 1;
 }
 
-std::optional<long> SortedSets::zrank(std::string setName, std::string member) {
+std::optional<long> SortedSets::zrank(const std::string& setName, const std::string& member) {
     if (this->setsMap.count(setName) == 0) return std::nullopt;
-    auto sortedSet = this->setsMap[setName];
-    auto iter = sortedSet.begin();
-    while (iter != sortedSet.end() && (*iter).member != member)
+    auto sorted_set = this->setsMap[setName];
+    auto iter = sorted_set.begin();
+    while (iter != sorted_set.end() && (*iter).member != member)
     {
         ++iter;
     }
-    if (iter == sortedSet.end()) return std::nullopt;;
-    return std::distance(sortedSet.begin(), iter);
+    if (iter == sorted_set.end()) return std::nullopt;;
+    return std::distance(sorted_set.begin(), iter);
 };
 
-std::vector<std::string> SortedSets::zrange(std::string setName, long start, long end) {
-    auto sortedSet = this->setsMap[setName];
-    long listsize = sortedSet.size();
+std::vector<std::string> SortedSets::zrange(const std::string& setName, const long& start, const long& end) {
+    auto sorted_set = this->setsMap[setName];
+    long listsize = sorted_set.size();
     long startind = start < 0 ? listsize + start : start;
     long endind = end < 0 ? listsize + end : end;
     startind = startind < 0 ? 0: startind;
@@ -51,9 +51,9 @@ std::vector<std::string> SortedSets::zrange(std::string setName, long start, lon
     }
     std::vector<std::string> result;
 
-    auto it_begin = sortedSet.begin();
+    auto it_begin = sorted_set.begin();
     std::advance(it_begin, startind);
-    auto it_end = sortedSet.begin();
+    auto it_end = sorted_set.begin();
     std::advance(it_end, endind + 1);
 
     for (auto it = it_begin; it != it_end; ++it) {
@@ -62,18 +62,18 @@ std::vector<std::string> SortedSets::zrange(std::string setName, long start, lon
     return result;
 }
 
-std::list<SortedSetElement> SortedSets::zall(std::string setName) {
+std::list<SortedSetElement> SortedSets::zall(const std::string& setName) {
     return this->setsMap[setName];   
 }
 
-long SortedSets::zcard(std::string setName) {
-    auto sortedSet = this->setsMap[setName];
-    return sortedSet.size();
+long SortedSets::zcard(const std::string& setName) {
+    auto sorted_set = this->setsMap[setName];
+    return sorted_set.size();
 }
 
-std::string SortedSets::zscore(std::string setName, std::string member) {
-    auto sortedSet = this->setsMap[setName];
-    for (SortedSetElement item: sortedSet) {
+std::string SortedSets::zscore(const std::string& setName, const std::string& member) {
+    auto sorted_set = this->setsMap[setName];
+    for (SortedSetElement item: sorted_set) {
         if (item.member == member) {
             std::ostringstream score_ostream;
             score_ostream << std::setprecision(17) << item.score;
@@ -83,16 +83,16 @@ std::string SortedSets::zscore(std::string setName, std::string member) {
     return ""; 
 }
 
-long SortedSets::zrem(std::string setName, std::string member) {
+long SortedSets::zrem(const std::string& setName, const std::string& member) {
     if (this->setsMap.count(setName) == 0) return 0;
-    auto &sortedSet = this->setsMap[setName];
-    auto iter = sortedSet.begin();
-    while (iter != sortedSet.end() && (*iter).member != member)
+    auto &sorted_set = this->setsMap[setName];
+    auto iter = sorted_set.begin();
+    while (iter != sorted_set.end() && (*iter).member != member)
     {
         ++iter;
     }
-    if (iter == sortedSet.end())
+    if (iter == sorted_set.end())
         return 0;
-    sortedSet.erase(iter);
+    sorted_set.erase(iter);
     return 1;
 };

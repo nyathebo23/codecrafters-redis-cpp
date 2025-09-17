@@ -5,24 +5,24 @@
 #include "../globals_datas/global_datas.h"
 #include "command_processing.h"
 
-void ChannelsCommandsProcessing::subsribe(std::vector<std::string> extras, int clientfd) {
+void ChannelsCommandsProcessing::subsribe(const std::vector<std::string>& extras, int clientfd) {
     if (extras.size() != 1) {
-        std::string errorResp = CommandProcessing::params_count_error("subscribe");
-        CommandProcessing::send_data(errorResp, clientfd);
+        std::string error_resp = CommandProcessing::params_count_error("subscribe");
+        CommandProcessing::send_data(error_resp, clientfd);
     }
     std::string channelname = extras[0];
     long count = GlobalDatas::channels.subscribe(channelname, clientfd);
-    std::string channelNameEnc = parse_encode_bulk_string(channelname);
-    std::string resp = "*3\r\n" + SUBSCRIBE_ENC + channelNameEnc + parse_encode_integer(count);
+    std::string channel_name_enc = parse_encode_bulk_string(channelname);
+    std::string resp = "*3\r\n" + SUBSCRIBE_ENC + channel_name_enc + parse_encode_integer(count);
     CommandProcessing::send_data(resp, clientfd);
 };
 
 void ChannelsCommandsProcessing::enter_subscribe_mode(int clientfd) {
     while (1) {
-        auto commandOpt = CommandProcessing::receive_command_from_client(clientfd);
-        if (!commandOpt.has_value())
+        auto command_opt = CommandProcessing::receive_command_from_client(clientfd);
+        if (!command_opt.has_value())
             break;
-        Command command = commandOpt.value();
+        Command command = command_opt.value();
         if (command.error.has_value()){
             CommandProcessing::send_data(parse_encode_error_msg(command.error.value()), clientfd);
             continue;
@@ -59,40 +59,40 @@ void ChannelsCommandsProcessing::enter_subscribe_mode(int clientfd) {
 }
 
 
-void ChannelsCommandsProcessing::unsubscribe(std::vector<std::string> extras, int clientfd) {
+void ChannelsCommandsProcessing::unsubscribe(const std::vector<std::string>& extras, int clientfd) {
     if (extras.size() != 1) {
-        std::string errorResp = CommandProcessing::params_count_error("unsubscribe");
-        CommandProcessing::send_data(errorResp, clientfd);
+        std::string error_resp = CommandProcessing::params_count_error("unsubscribe");
+        CommandProcessing::send_data(error_resp, clientfd);
     }
     std::string channelname = extras[0];
     long count = GlobalDatas::channels.unsubscribe(channelname, clientfd);
-    std::string channelNameEnc = parse_encode_bulk_string(channelname);
-    std::string resp = "*3\r\n" + UNSUBSCRIBE_ENC + channelNameEnc + parse_encode_integer(count);
+    std::string channel_name_enc = parse_encode_bulk_string(channelname);
+    std::string resp = "*3\r\n" + UNSUBSCRIBE_ENC + channel_name_enc + parse_encode_integer(count);
     CommandProcessing::send_data(resp, clientfd);
 };
 
-void ChannelsCommandsProcessing::publish(std::vector<std::string> extras, int clientfd) {
+void ChannelsCommandsProcessing::publish(const std::vector<std::string>& extras, int clientfd) {
     if (extras.size() != 2) {
-        std::string errorResp = CommandProcessing::params_count_error("publish");
-        CommandProcessing::send_data(errorResp, clientfd);
+        std::string error_resp = CommandProcessing::params_count_error("publish");
+        CommandProcessing::send_data(error_resp, clientfd);
     }
     std::string channelname = extras[0];
-    std::vector<int> clientfdList = GlobalDatas::channels.get_clients_fd(channelname);
+    std::vector<int> clientfd_list = GlobalDatas::channels.get_clients_fd(channelname);
     std::string msg = extras[1];
-    std::string channelNameEnc = parse_encode_bulk_string(channelname);
-    CommandProcessing::send_data(parse_encode_integer(clientfdList.size()), clientfd);
+    std::string channel_name_enc = parse_encode_bulk_string(channelname);
+    CommandProcessing::send_data(parse_encode_integer(clientfd_list.size()), clientfd);
 
-    for (int fd: clientfdList) {
-        std::string resp = "*3\r\n$7\r\nmessage\r\n" + channelNameEnc + parse_encode_bulk_string(msg);
+    for (int fd: clientfd_list) {
+        std::string resp = "*3\r\n$7\r\nmessage\r\n" + channel_name_enc + parse_encode_bulk_string(msg);
         CommandProcessing::send_data(resp, fd);
     }
 };
 
 
-void ChannelsCommandsProcessing::ping(std::vector<std::string> extras, int clientfd) {
+void ChannelsCommandsProcessing::ping(const std::vector<std::string>& extras, int clientfd) {
     if (extras.size() != 0) {
-        std::string errorResp = CommandProcessing::params_count_error("subscribe mode ping");
-        CommandProcessing::send_data(errorResp, clientfd);
+        std::string error_resp = CommandProcessing::params_count_error("subscribe mode ping");
+        CommandProcessing::send_data(error_resp, clientfd);
     }
     CommandProcessing::send_data(PING_SUBS_MODE_RESP, clientfd);
 };

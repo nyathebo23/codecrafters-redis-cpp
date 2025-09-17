@@ -11,10 +11,10 @@ class ChannelsCommandsProcessing {
             return "Can't execute '" + cmdname + "': only (P|S)SUBSCRIBE / (P|S)UNSUBSCRIBE / PING / QUIT / RESET are allowed in this context";
         }
     public:
-        static void subsribe(std::vector<std::string> extras, int clientfd);
-        static void unsubscribe(std::vector<std::string> extras, int clientfd);
-        static void publish(std::vector<std::string> extras, int clientfd);
-        static void ping(std::vector<std::string> extras, int clientfd);
+        static void subsribe(const std::vector<std::string>& extras, int clientfd);
+        static void unsubscribe(const std::vector<std::string>& extras, int clientfd);
+        static void publish(const std::vector<std::string>& extras, int clientfd);
+        static void ping(const std::vector<std::string>& extras, int clientfd);
         static void enter_subscribe_mode(int clientfd);
 };
 

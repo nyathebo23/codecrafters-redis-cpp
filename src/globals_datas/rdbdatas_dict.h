@@ -6,10 +6,10 @@
 
 class RDBDatasDict {
     public:
-        void set(std::string key, std::string value);
-        void erase(std::string key);
-        bool exist(std::string key);
-        std::string get(std::string key);
+        void set(const std::string& key, const std::string& value);
+        void erase(const std::string& key);
+        bool exist(const std::string& key);
+        std::string get(const std::string& key);
 
     private:
         std::map<std::string, std::string> datas_dict;

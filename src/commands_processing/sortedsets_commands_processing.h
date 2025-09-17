@@ -7,12 +7,12 @@
 class SortedSetsCommandsProcessing {
 
     public:
-        static std::string zadd(std::vector<std::string> extras);
-        static std::string zrank(std::vector<std::string> extras);
-        static std::string zrange(std::vector<std::string> extras);
-        static std::string zcard(std::vector<std::string> extras);
-        static std::string zscore(std::vector<std::string> extras);
-        static std::string zrem(std::vector<std::string> extras);
+        static std::string zadd(const std::vector<std::string>& extras);
+        static std::string zrank(const std::vector<std::string>& extras);
+        static std::string zrange(const std::vector<std::string>& extras);
+        static std::string zcard(const std::vector<std::string>& extras);
+        static std::string zscore(const std::vector<std::string>& extras);
+        static std::string zrem(const std::vector<std::string>& extras);
 
 };
 

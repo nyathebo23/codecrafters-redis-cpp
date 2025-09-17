@@ -2,13 +2,13 @@
 #include <iostream>
 
 
-bool GlobalDatas::isMaster = true;
-CommandsOffset GlobalDatas::cmdsOffset = CommandsOffset();
-StreamList GlobalDatas::streamList = StreamList();
-RDBDatasDict GlobalDatas::datasDict = RDBDatasDict();
+bool GlobalDatas::is_master = true;
+CommandsOffset GlobalDatas::cmds_offset = CommandsOffset();
+StreamList GlobalDatas::stream_list = StreamList();
+RDBDatasDict GlobalDatas::datas_dict = RDBDatasDict();
 Lists GlobalDatas::lists = Lists();
 Channels GlobalDatas::channels = Channels();
-SortedSets GlobalDatas::sortedSets = SortedSets();
+SortedSets GlobalDatas::sorted_sets = SortedSets();
 
 std::map<int, int> GlobalMasterDatas::replicas_offsets;
 unsigned int GlobalMasterDatas::prec_commands_offset = 0;

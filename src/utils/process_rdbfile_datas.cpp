@@ -20,10 +20,10 @@ bool is_file_empty(const std::string& fileName) {
 std::string decode_str_length(int& index, std::vector<unsigned char>& buffer){
     int n = buffer[index], len;
     std::stringstream ss;
-    const std::string str_byte = std::bitset<8>(n).to_string();
+    const std::string STR_BYTE = std::bitset<8>(n).to_string();
     index++;
-    if (str_byte.substr(0, 2) == "00"){
-        len = std::stoi(str_byte.substr(2, 6), nullptr, 2);
+    if (STR_BYTE.substr(0, 2) == "00"){
+        len = std::stoi(STR_BYTE.substr(2, 6), nullptr, 2);
         while (len > 0){
             ss << buffer[index];
             len --;
@@ -31,9 +31,9 @@ std::string decode_str_length(int& index, std::vector<unsigned char>& buffer){
         }
         return  ss.str();
     }
-    else if (str_byte.substr(0, 2) == "01"){
+    else if (STR_BYTE.substr(0, 2) == "01"){
         n = buffer[index];
-        len = std::stoi(str_byte.substr(2, 6) + std::bitset<8>(n).to_string(), nullptr, 2);
+        len = std::stoi(STR_BYTE.substr(2, 6) + std::bitset<8>(n).to_string(), nullptr, 2);
         index++;
         while (len > 0){
             ss << buffer[index];
@@ -42,7 +42,7 @@ std::string decode_str_length(int& index, std::vector<unsigned char>& buffer){
         }
         return ss.str();
     }
-    else if (str_byte.substr(0, 2) == "10"){
+    else if (STR_BYTE.substr(0, 2) == "10"){
         std::string lenstr = "";
         for (int i = 0; i < 4; i++){
             n = buffer[index]; 
@@ -58,19 +58,19 @@ std::string decode_str_length(int& index, std::vector<unsigned char>& buffer){
         return  ss.str();   
     }
     else {
-        if (str_byte == "11000000"){
+        if (STR_BYTE == "11000000"){
             n = buffer[index];
             index++;
             return std::to_string(n);            
         } 
-        else if (str_byte == "11000001"){
+        else if (STR_BYTE == "11000001"){
             unsigned char binary_num[] = {buffer[index+1], buffer[index]};
             int num;
             std::memcpy(&num, binary_num, sizeof(int)/2); 
             index += 2;
             return std::to_string(num);           
         }
-        else if (str_byte == "11000010"){
+        else if (STR_BYTE == "11000010"){
             unsigned char binary_num[] = {buffer[index+3], buffer[index+2], buffer[index+1], buffer[index]};
             int num;
             std::memcpy(&num, binary_num, sizeof(int)); 
@@ -93,7 +93,7 @@ void get_key_value_pair(std::vector<unsigned char>& buffer, int &index, std::vec
         index++;
 }
 
-enum byte_space {one_byte=1, two_bytes=2, four_bytes=4, eight_bytes=8};
+enum byte_space {ONE_BYTE=1, TWO_BYTES=2, FOUR_BYTES=4, EIGHT_BYTES=8};
 
 bool check_key_date_validity(std::vector<unsigned char>& buffer, int &index, byte_space nb_bytes){
     unsigned char binary_num[nb_bytes];
@@ -104,7 +104,7 @@ bool check_key_date_validity(std::vector<unsigned char>& buffer, int &index, byt
     auto duration = now.time_since_epoch();
     // Convert duration to milliseconds
     int64_t timestamp;
-    if (nb_bytes == four_bytes){
+    if (nb_bytes == FOUR_BYTES){
         std::memcpy(&timestamp, binary_num, sizeof(int32_t));
         return timestamp > std::chrono::duration_cast<std::chrono::seconds>(duration).count();
     }
@@ -120,7 +120,7 @@ void skip_key(std::vector<unsigned char>& buffer, int& ind, byte_space nb){
     decode_str_length(ind, buffer);
 }
 
-std::pair<std::vector<std::string>, std::vector<std::string>> get_keys_values_from_file(std::string filepath){
+std::pair<std::vector<std::string>, std::vector<std::string>> get_keys_values_from_file(const std::string& filepath){
     std::ifstream input_file(filepath, std::ios::binary);
     if (std::filesystem::is_directory(filepath) || !input_file.is_open())
         return {};
@@ -143,21 +143,21 @@ std::pair<std::vector<std::string>, std::vector<std::string>> get_keys_values_fr
     index += 3;
     while (index < buffer_size && buffer[index] != 0xFF){
        if (buffer[index] == 0xFD) { 
-            if (check_key_date_validity(buffer, index, four_bytes)){
+            if (check_key_date_validity(buffer, index, FOUR_BYTES)){
                 index += 5;
                 get_key_value_pair(buffer, index, keys, values);
             }
             else 
-                skip_key(buffer, index, four_bytes);
+                skip_key(buffer, index, FOUR_BYTES);
             continue;     
        }
        if (buffer[index] == 0xFC) { 
-            if (check_key_date_validity(buffer, index, eight_bytes)){
+            if (check_key_date_validity(buffer, index, EIGHT_BYTES)){
                 index += 9;
                 get_key_value_pair(buffer, index, keys, values);
             }
             else 
-                skip_key(buffer, index, eight_bytes);
+                skip_key(buffer, index, EIGHT_BYTES);
             continue;           
        } 
         get_key_value_pair(buffer, index, keys, values);
@@ -166,7 +166,7 @@ std::pair<std::vector<std::string>, std::vector<std::string>> get_keys_values_fr
     return std::make_pair(keys, values);
 }
 
-std::vector<unsigned char> string_to_binary(std::string str){
+std::vector<unsigned char> string_to_binary(const std::string& str){
     
     int len = str.length();
     int str_binary_len = len / 2;
@@ -178,7 +178,7 @@ std::vector<unsigned char> string_to_binary(std::string str){
     return bytes;
 } 
 
-std::pair<int, std::vector<unsigned char>> read_file_sent(char* buffer_data, int size, int& pos){
+std::pair<int, std::vector<unsigned char>> read_file_sent(char* buffer_data, const int& size, int& pos){
     std::string str_num;
     pos++;
     while (pos < size && buffer_data[pos] != '\r')

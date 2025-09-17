@@ -10,28 +10,28 @@
 std::string parse_encode_array(const std::vector<EncoderPtr>& msg){
     if (msg.size() == 0)
         return "*0\r\n";
-    const std::string startenc = "*" + std::to_string(msg.size()) + "\r\n";
+    const std::string STARTENC = "*" + std::to_string(msg.size()) + "\r\n";
     std::string encode_text = ""; 
 
     for (EncoderPtr encoder: msg){
         encode_text += encoder->encode();
     }
-    return startenc + encode_text; 
+    return STARTENC + encode_text; 
 }
 
 std::string parse_encode_string_array(const std::vector<std::string>& msg){
     if (msg.size() == 0)
         return "*0\r\n";
-    const std::string startenc = "*" + std::to_string(msg.size()) + "\r\n";
+    const std::string STARTENC = "*" + std::to_string(msg.size()) + "\r\n";
     std::string encode_text = ""; 
 
     for (std::string item: msg){
         encode_text += parse_encode_bulk_string(item);
     }
-    return startenc + encode_text; 
+    return STARTENC + encode_text; 
 }
 
-std::string parse_encode_array_for_xrange(const VectorMapEntries data){
+std::string parse_encode_array_for_xrange(const VectorMapEntries& data){
     long vector_map_size = data.size();
     if (vector_map_size == 0)
         return "*0\r\n";
@@ -54,7 +54,7 @@ std::string parse_encode_array_for_xrange(const VectorMapEntries data){
     return entry_encoded; 
 }
 
-std::string parse_encode_array_for_xread(const std::vector<std::pair<std::string, VectorMapEntries>> data){
+std::string parse_encode_array_for_xread(const std::vector<std::pair<std::string, VectorMapEntries>>& data){
     long vector_size = data.size();
     if (vector_size == 0)
         return "*-1\r\n";

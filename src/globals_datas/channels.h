@@ -13,9 +13,9 @@ class Channels {
         bool static remove_from_vector(std::vector<T>& vec, const T& item);
 
     public:
-        std::size_t subscribe(std::string channelName, int sockfd);
-        std::size_t unsubscribe(std::string channelName, int sockfd);
-        std::vector<int> get_clients_fd(std::string channelName);
+        std::size_t subscribe(const std::string& channelName, const int& sockfd);
+        std::size_t unsubscribe(const std::string& channelName, const int& sockfd);
+        std::vector<int> get_clients_fd(const std::string& channelName);
 };
 
 #endif

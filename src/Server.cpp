@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
   if (args_map.count("replicaof") != 0){
       args_map_master["host"] = args_map["replicaof"].substr(0, args_map["replicaof"].find_first_of(" "));
       args_map_master["port"] = args_map["replicaof"].substr(args_map["replicaof"].find_last_of(" ")+1);
-      GlobalDatas::isMaster = false;
+      GlobalDatas::is_master = false;
   }
 
 

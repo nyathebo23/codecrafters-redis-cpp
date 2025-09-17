@@ -15,13 +15,13 @@ using VectorMapEntries = std::vector<std::map<std::string, std::string>>;
 
 class GlobalDatas {
     public:
-        static bool isMaster;
-        static StreamList streamList;
-        static CommandsOffset cmdsOffset;
-        static RDBDatasDict datasDict;
+        static bool is_master;
+        static StreamList stream_list;
+        static CommandsOffset cmds_offset;
+        static RDBDatasDict datas_dict;
         static Channels channels;
         static Lists lists;
-        static SortedSets sortedSets;
+        static SortedSets sorted_sets;
 };
 
 class GlobalMasterDatas {

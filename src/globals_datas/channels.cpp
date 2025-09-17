@@ -1,13 +1,13 @@
 #include "channels.h"
 #include <algorithm>
 
-std::size_t Channels::subscribe(std::string channelName, int sockfd) {
+std::size_t Channels::subscribe(const std::string& channelName, const int& sockfd) {
     this->mapChannelClientsFD[channelName].push_back(sockfd);
     this->mapClientFDChannels[sockfd].push_back(channelName);
     return this->mapClientFDChannels[sockfd].size();
 };
 
-std::size_t Channels::unsubscribe(std::string channelName, int sockfd) {
+std::size_t Channels::unsubscribe(const std::string& channelName, const int& sockfd) {
     if (this->mapChannelClientsFD.count(channelName) == 0) {
         return 0;
     }
@@ -28,6 +28,6 @@ bool Channels::remove_from_vector(std::vector<T>& vec, const T& item) {
     return false;
 };
 
-std::vector<int> Channels::get_clients_fd(std::string channelName) {
+std::vector<int> Channels::get_clients_fd(const std::string& channelName) {
     return this->mapChannelClientsFD[channelName];
 };

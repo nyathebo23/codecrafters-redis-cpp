@@ -33,9 +33,9 @@ std::string StreamCommandsProcessing::xadd(std::vector<std::string> extras){
             str_error = "The ID specified in XADD must be greater than 0-0";
             return parse_encode_error_msg(str_error);
         }
-        int index_stream = GlobalDatas::streamList.get_stream_index(extras[0]);        
-        if (index_stream < GlobalDatas::streamList.size()){
-            auto last_entry = GlobalDatas::streamList.get_by_index(index_stream).last_entry();
+        int index_stream = GlobalDatas::stream_list.get_stream_index(extras[0]);        
+        if (index_stream < GlobalDatas::stream_list.size()){
+            auto last_entry = GlobalDatas::stream_list.get_by_index(index_stream).last_entry();
             auto last_entry_id = split_entry_id(last_entry["id"]);
             long last_entry_ms_time = std::stol(last_entry_id.first);
             int last_entry_seq_num = std::stol(last_entry_id.second);
@@ -65,14 +65,14 @@ std::string StreamCommandsProcessing::xadd(std::vector<std::string> extras){
             extras[1] = id;
         }  
     }
-    GlobalDatas::streamList.set_entry(extras);
+    GlobalDatas::stream_list.set_entry(extras);
     std::string resp = parse_encode_bulk_string(extras[1]);
     return resp;
         
 };
 
 
-std::string StreamCommandsProcessing::xrange(std::vector<std::string> extras) {
+std::string StreamCommandsProcessing::xrange(const std::vector<std::string>& extras) {
     std::string entry_key = extras[0];
     std::pair<unsigned long, unsigned int> range_inf_id;
     std::pair<unsigned long, unsigned int> range_sup_id;
@@ -88,10 +88,10 @@ std::string StreamCommandsProcessing::xrange(std::vector<std::string> extras) {
         range_inf_id = split_entry_id_num(extras[1]);
         range_sup_id = split_entry_id_num(extras[2]);
     }
-    int index_stream = GlobalDatas::streamList.get_stream_index(entry_key);
+    int index_stream = GlobalDatas::stream_list.get_stream_index(entry_key);
     VectorMapEntries entry_data_filtered;
-    if (index_stream < GlobalDatas::streamList.size()){
-        auto entry_data = GlobalDatas::streamList.get_by_index(index_stream).get_entries();
+    if (index_stream < GlobalDatas::stream_list.size()){
+        auto entry_data = GlobalDatas::stream_list.get_by_index(index_stream).get_entries();
         VectorMapEntries::iterator it = entry_data.begin();
         auto elt_id = split_entry_id_num((*it)["id"]);
         while ((elt_id.first < range_inf_id.first) || ((elt_id.first == range_inf_id.first) && (elt_id.second < range_inf_id.second)))
@@ -116,7 +116,7 @@ std::string StreamCommandsProcessing::xrange(std::vector<std::string> extras) {
     return resp;
 };
 
-std::string StreamCommandsProcessing::xread(std::vector<std::string> extras) {
+std::string StreamCommandsProcessing::xread(const std::vector<std::string>& extras) {
 
     unsigned short nb_keys = (extras.size() - 1) / 2;
     std::vector<std::pair<std::string, VectorMapEntries>> keys_and_vectors_map;
@@ -125,10 +125,10 @@ std::string StreamCommandsProcessing::xread(std::vector<std::string> extras) {
         std::string key = extras[i];
         std::string value = extras[i+nb_keys];
         auto key_value_pair = split_entry_id_num(value);
-        int index_stream = GlobalDatas::streamList.get_stream_index(key);
+        int index_stream = GlobalDatas::stream_list.get_stream_index(key);
         VectorMapEntries entry_data_filtered;
-        if (index_stream < GlobalDatas::streamList.size()){
-            auto entry_data = GlobalDatas::streamList.get_by_index(index_stream).get_entries();
+        if (index_stream < GlobalDatas::stream_list.size()){
+            auto entry_data = GlobalDatas::stream_list.get_by_index(index_stream).get_entries();
             VectorMapEntries::iterator it = entry_data.begin();
             auto elt_id = split_entry_id_num((*it)["id"]);
             while ((elt_id.first < key_value_pair.first) || ((elt_id.first == key_value_pair.first) && (elt_id.second <= key_value_pair.second)))
@@ -159,9 +159,9 @@ std::string StreamCommandsProcessing::xread_with_block(std::vector<std::string> 
     unsigned short nb_keys = (extras.size() - 1) / 2;
     for (int i = 1; i <= nb_keys; i++){
         if (extras[i+nb_keys] == "$"){
-            int index_stream = GlobalDatas::streamList.get_stream_index(extras[i]);
-            if (index_stream < GlobalDatas::streamList.size()){
-                auto last_elt = GlobalDatas::streamList.get_by_index(index_stream).last_entry();
+            int index_stream = GlobalDatas::stream_list.get_stream_index(extras[i]);
+            if (index_stream < GlobalDatas::stream_list.size()){
+                auto last_elt = GlobalDatas::stream_list.get_by_index(index_stream).last_entry();
                 extras[i+nb_keys] = last_elt["id"];
             }
             else 
@@ -169,7 +169,7 @@ std::string StreamCommandsProcessing::xread_with_block(std::vector<std::string> 
         }
     }
     if (delay == 0){
-        auto init_streams = GlobalDatas::streamList.get_stream_list();
+        auto init_streams = GlobalDatas::stream_list.get_stream_list();
         int init_streams_size = init_streams.size();
         bool new_item_received_on_key = false;
         while (!new_item_received_on_key){
@@ -179,10 +179,10 @@ std::string StreamCommandsProcessing::xread_with_block(std::vector<std::string> 
                     index++;
                 }
                 if (index == init_streams_size){
-                    if (GlobalDatas::streamList.get_stream_index(extras[k]) != GlobalDatas::streamList.size())
+                    if (GlobalDatas::stream_list.get_stream_index(extras[k]) != GlobalDatas::stream_list.size())
                         new_item_received_on_key = true;
                 }
-                else if (init_streams[index].get_entries().size() != GlobalDatas::streamList.get_by_index(index).get_entries().size()){
+                else if (init_streams[index].get_entries().size() != GlobalDatas::stream_list.get_by_index(index).get_entries().size()){
                     new_item_received_on_key = true;
                 }
             }
@@ -195,12 +195,12 @@ std::string StreamCommandsProcessing::xread_with_block(std::vector<std::string> 
 
 };
 
-std::pair<std::string, std::string> StreamCommandsProcessing::split_entry_id(std::string str){
+std::pair<std::string, std::string> StreamCommandsProcessing::split_entry_id(const std::string& str){
     size_t ind_separator = str.find("-");
     return std::make_pair(str.substr(0, ind_separator), str.substr(ind_separator+1));
 };
 
-std::pair<unsigned long, unsigned int> StreamCommandsProcessing::split_entry_id_num(std::string str){
+std::pair<unsigned long, unsigned int> StreamCommandsProcessing::split_entry_id_num(const std::string& str){
     size_t ind_separator = str.find("-");
     if (ind_separator == std::string::npos)
         return std::make_pair(std::stol(str), 0);

@@ -1,7 +1,7 @@
 #include "decoders.h"
 #include <iostream>
 
-std::optional<std::string> DecodedResult::getError() {
+std::optional<std::string> DecodedResult::get_error() {
     return this->error;
 };
 DecodedResult::DecodedResult(std::optional<std::string> error) {
@@ -14,11 +14,11 @@ StringDecodeResult::StringDecodeResult(std::string value, std::optional<std::str
 
 StringDecodeResult::StringDecodeResult(std::string error): DecodedResult(error) {}
 
-std::string StringDecodeResult::asString() {
+std::string StringDecodeResult::as_string() {
     return value;
 }
 
-long StringDecodeResult::asInteger() {
+long StringDecodeResult::as_integer() {
     try {
         long val_int = std::stol(this->value);
         return val_int;
@@ -31,7 +31,7 @@ long StringDecodeResult::asInteger() {
     }        
 }
 
-double StringDecodeResult::asDouble() {
+double StringDecodeResult::as_double() {
     try {
         double val_double = std::stod(this->value);
         return val_double;
@@ -44,7 +44,7 @@ double StringDecodeResult::asDouble() {
     }      
 }
 
-std::vector<DecodedResultPtr> StringDecodeResult::asArray() {
+std::vector<DecodedResultPtr> StringDecodeResult::as_array() {
     throw CastException("string cannot be converted into Array");
 }
 
@@ -53,16 +53,16 @@ IntDecodeResult::IntDecodeResult(long value): DecodedResult(std::nullopt) {
     this->value = value;
 };  
 IntDecodeResult::IntDecodeResult(std::string error): DecodedResult(error) {}
-std::string IntDecodeResult::asString() {
+std::string IntDecodeResult::as_string() {
     return std::to_string(this->value);
 }
-long IntDecodeResult::asInteger() {
+long IntDecodeResult::as_integer() {
     return this->value;
 }
-double IntDecodeResult::asDouble() {
+double IntDecodeResult::as_double() {
     return (double)this->value;
 }
-std::vector<DecodedResultPtr> IntDecodeResult::asArray() {
+std::vector<DecodedResultPtr> IntDecodeResult::as_array() {
     throw CastException("integer cannot be converted into Array");
 }
 
@@ -71,16 +71,16 @@ DoubleDecodeResult::DoubleDecodeResult(double value): DecodedResult(std::nullopt
 };  
 DoubleDecodeResult::DoubleDecodeResult(std::string error): DecodedResult(error) {}
 
-std::string DoubleDecodeResult::asString() {
+std::string DoubleDecodeResult::as_string() {
     return std::to_string(this->value);
 }
-long DoubleDecodeResult::asInteger() {
+long DoubleDecodeResult::as_integer() {
     return (long)this->value;
 }
-double DoubleDecodeResult::asDouble() {
+double DoubleDecodeResult::as_double() {
     return this->value;
 }  
-std::vector<DecodedResultPtr> DoubleDecodeResult::asArray() {
+std::vector<DecodedResultPtr> DoubleDecodeResult::as_array() {
     throw CastException("double cannot be converted into Array");
 }
 
@@ -91,16 +91,16 @@ BooleanDecodeResult::BooleanDecodeResult(bool value): DecodedResult(std::nullopt
 };  
 BooleanDecodeResult::BooleanDecodeResult(std::string error): DecodedResult(error) {}
 
-std::string BooleanDecodeResult::asString() {
+std::string BooleanDecodeResult::as_string() {
     return std::to_string(this->value);
 };
-long BooleanDecodeResult::asInteger() {
+long BooleanDecodeResult::as_integer() {
     throw CastException("boolean cannot be converted into integer");
 };
-double BooleanDecodeResult::asDouble() {
+double BooleanDecodeResult::as_double() {
     throw CastException("boolean cannot be converted into double");
 };
-std::vector<DecodedResultPtr> BooleanDecodeResult::asArray() {
+std::vector<DecodedResultPtr> BooleanDecodeResult::as_array() {
     throw CastException("boolean cannot be converted into Array");
 }
 
@@ -109,18 +109,18 @@ ArrayDecodeResult::ArrayDecodeResult(std::vector<DecodedResultPtr> value, int ch
     this->value = value;
 };  
 ArrayDecodeResult::ArrayDecodeResult(std::string error): DecodedResult(error) {}
-int ArrayDecodeResult::getCharEndIndex() {
+int ArrayDecodeResult::get_char_end_index() {
     return this->charEndIndex;
 }
-std::string ArrayDecodeResult::asString() {
+std::string ArrayDecodeResult::as_string() {
     throw CastException("Array cannot be converted into string");
 };
-long ArrayDecodeResult::asInteger() {
+long ArrayDecodeResult::as_integer() {
     throw CastException("Array cannot be converted into int");
 };
-double ArrayDecodeResult::asDouble() {
+double ArrayDecodeResult::as_double() {
     throw CastException("Array cannot be converted into double");
 };
-std::vector<DecodedResultPtr> ArrayDecodeResult::asArray() {
+std::vector<DecodedResultPtr> ArrayDecodeResult::as_array() {
     return this->value;
 };
