@@ -27,7 +27,7 @@ SpatialCoord GeospatialCommandsProcessing::validate_and_normalize_coordinates(st
         long normLongitude = static_cast<long>(normalizedLongitude);
         SpatialCoord normCoords = {
             .longitude = normLongitude,
-            .latitude = normalizedLatitude,
+            .latitude = normLatitude,
             .error = std::nullopt
         };
         return normCoords;
@@ -88,6 +88,10 @@ std::string GeospatialCommandsProcessing::geosearch(std::vector<std::string> ext
 
     return "";
 }
+
+double GeospatialCommandsProcessing::haversine(double lat1, double lon1, double lat2, double lon2) {
+
+};
 
 long GeospatialCommandsProcessing::interleave(long x, long y) {
     //First, the values are spread from 32-bit to 64-bit integers.
