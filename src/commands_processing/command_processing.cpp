@@ -23,6 +23,7 @@
 #include "stream_commands_processing.h"
 #include "list_commands_processing.h"
 #include "sortedsets_commands_processing.h"
+#include "geospatial_commands_processing.h"
 #include "../globals_datas/global_datas.h"
 #include "../utils/resp_constants.h"
 
@@ -422,6 +423,18 @@ std::string CommandProcessing::get_command_response(std::string cmd, std::vector
     }
     else if (cmd == "zrem") {
         return SortedSetsCommandsProcessing::zrem(extra_params);
+    }
+    else if (cmd == "geoadd") {
+        return GeospatialCommandsProcessing::geoadd(extra_params);
+    }
+    else if (cmd == "geopos") {
+        return GeospatialCommandsProcessing::geopos(extra_params);
+    }
+    else if (cmd == "geodis") {
+        return GeospatialCommandsProcessing::geodist(extra_params);
+    }
+    else if (cmd == "geosearch") {
+        return GeospatialCommandsProcessing::geosearch(extra_params);
     }
     else if (cmd == "set") {
         return CommandProcessing::set(extra_params, data);
