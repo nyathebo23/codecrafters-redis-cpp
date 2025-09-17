@@ -27,7 +27,7 @@ class CommandProcessing {
         static Command get_command_array_from_rawdata(const std::string& data);
         static std::optional<Command> receive_command_from_client(const int& clientfd);
         static std::string get_command_response(const std::string& cmd, const std::vector<std::string>& extra_params, 
-           const std::string& data, const int& clientfd, const std::map<std::string, std::string>& extra_args);
+           const std::string& data, const int& clientfd, std::map<std::string, std::string> extra_args);
         static std::string params_count_error(const std::string& cmdname);
         static std::string echo(const std::vector<std::string>& extras);
         static bool send_data(const std::string& data, const int& dest_fd);
@@ -40,7 +40,7 @@ class CommandProcessing {
         static std::string info(const std::vector<std::string>& extras, const std::string& role);
         static std::string replconf(const std::vector<std::string>& extras, const int& destfd);
         static std::string wait(const std::vector<std::string>& extras);
-        static void multi(const int& clientfd, const std::map<std::string, std::string>& extra_args);
+        static void multi(const int& clientfd, std::map<std::string, std::string> extra_args);
         static void psync(const std::vector<std::string>& extras, const int& destfd);
         static std::string type(const std::vector<std::string>& extras);
         static std::string incr(const std::vector<std::string>& extras);

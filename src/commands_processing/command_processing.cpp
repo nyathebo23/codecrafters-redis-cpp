@@ -277,7 +277,7 @@ void CommandProcessing::psync(const std::vector<std::string>& extras, const int&
     CommandProcessing::send_data(resp, destfd);
 }
 
-void CommandProcessing::multi(const int& clientfd, const std::map<std::string, std::string>& extra_args) {
+void CommandProcessing::multi(const int& clientfd, std::map<std::string, std::string> extra_args) {
     CommandProcessing::send_data(OK_RESP, clientfd);
     std::vector<std::string> cmds_to_exec;
     while (1) {
@@ -369,7 +369,7 @@ std::optional<Command> CommandProcessing::receive_command_from_client(const int&
 
 
 std::string CommandProcessing::get_command_response(const std::string&  cmd, const std::vector<std::string>& extra_params, 
-    const std::string&  data, const int& clientfd, const std::map<std::string, std::string>& extra_args){
+    const std::string&  data, const int& clientfd, std::map<std::string, std::string> extra_args){
     if (cmd == "echo"){
         return CommandProcessing::echo(extra_params);
     }
@@ -440,13 +440,13 @@ std::string CommandProcessing::get_command_response(const std::string&  cmd, con
         return CommandProcessing::set(extra_params, data);
     }
     else if (cmd == "get"){
-        return CommandProcessing::get(extra_params, extra_args.at("dir") + "/" + extra_args.at("dbfilename"));
+        return CommandProcessing::get(extra_params, extra_args["dir"] + "/" + extra_args["dbfilename"]);
     }
     else if (cmd == "config"){
         return CommandProcessing::config(extra_params, extra_args);
     }
     else if (cmd == "keys"){
-        return CommandProcessing::keys(extra_params, extra_args.at("dir") + "/" + extra_args.at("dbfilename"));
+        return CommandProcessing::keys(extra_params, extra_args["dir"] + "/" + extra_args["dbfilename"]);
     }
     else if (cmd == "info"){
         return CommandProcessing::info(extra_params, GlobalDatas::is_master ? "master" : "slave");
